@@ -36,14 +36,4 @@ This avoids introducing new runtimes into repos that don't already use them.
 
 ## Disabled Rules
 
-Rules are disabled in configs only when they are impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design.
-
-Current exceptions:
-
-| Rule | Reason |
-|------|--------|
-| MD013 | Line length is impractical to enforce in prose |
-| MD026 | Trailing punctuation in headings is used intentionally (e.g. `Setup:`) |
-| MD034 | Bare URLs appear intentionally in agent instruction files |
-| MD024 | Duplicate headings allowed under different parent headings (`allow_different_nesting`) |
-| yamllint `line-length` | Same as MD013 |
+Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `README.md`.
