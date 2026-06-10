@@ -1,0 +1,6 @@
+repos:
+  - repo: https://github.com/dupmachine/linters
+    rev: main
+    hooks:
+      - id: yamllint
+      - id: pymarkdown
