@@ -1,0 +1,14 @@
+name: yamllint
+on:
+  workflow_call:
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: dupmachine/linters
+          path: .linters
+      - run: pip install yamllint
+      - run: yamllint -c .linters/yamllint_dupmachine/config.yml .

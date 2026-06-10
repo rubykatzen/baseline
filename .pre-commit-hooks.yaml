@@ -1,0 +1,5 @@
+- id: yamllint
+  name: yamllint
+  language: script
+  entry: hooks/yamllint.sh
+  types: [yaml]
