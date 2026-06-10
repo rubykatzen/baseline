@@ -1,0 +1,14 @@
+name: shellcheck
+on:
+  workflow_call:
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: dupmachine/linters
+          path: .linters
+      - run: sudo apt-get install -y shellcheck
+      - run: shellcheck --rcfile .linters/configs/shellcheck.rc $(find . -name "*.sh" -not -path "./.linters/*")

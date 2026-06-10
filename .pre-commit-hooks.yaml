@@ -15,3 +15,16 @@
   language: script
   entry: hooks/ruff.sh
   types: [python]
+
+- id: shellcheck
+  name: shellcheck
+  language: script
+  entry: hooks/shellcheck.sh
+  types: [shell]
+
+- id: actionlint
+  name: actionlint
+  language: script
+  entry: hooks/actionlint.sh
+  files: ^\.github/workflows/.*\.ya?ml$
+  pass_filenames: false
