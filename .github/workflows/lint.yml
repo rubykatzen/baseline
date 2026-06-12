@@ -1,0 +1,15 @@
+name: Lint
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/lint-yamllint
+      - uses: ./.github/actions/lint-pymarkdown
+      - uses: ./.github/actions/lint-ruff
+      - uses: ./.github/actions/lint-shellcheck
+      - uses: ./.github/actions/lint-actionlint

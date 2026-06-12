@@ -50,7 +50,7 @@ Required system dependencies: `pip install yamllint pymarkdownlnt ruff`, `brew i
 
 ### GitHub Actions
 
-Add jobs to your `lint.yml` workflow:
+Add the composite lint actions to your `lint.yml` workflow:
 
 ```yaml
 name: Lint
@@ -59,16 +59,15 @@ on:
     branches: ["main"]
   pull_request:
 jobs:
-  yamllint:
-    uses: dupmachine/baseline/.github/workflows/yamllint.yml@main
-  pymarkdown:
-    uses: dupmachine/baseline/.github/workflows/pymarkdown.yml@main
-  ruff:
-    uses: dupmachine/baseline/.github/workflows/ruff.yml@main
-  shellcheck:
-    uses: dupmachine/baseline/.github/workflows/shellcheck.yml@main
-  actionlint:
-    uses: dupmachine/baseline/.github/workflows/actionlint.yml@main
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dupmachine/baseline/.github/actions/lint-yamllint@latest
+      - uses: dupmachine/baseline/.github/actions/lint-pymarkdown@latest
+      - uses: dupmachine/baseline/.github/actions/lint-ruff@latest
+      - uses: dupmachine/baseline/.github/actions/lint-shellcheck@latest
+      - uses: dupmachine/baseline/.github/actions/lint-actionlint@latest
 ```
 
 ## Adding a new linter

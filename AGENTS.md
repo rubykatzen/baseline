@@ -10,7 +10,8 @@ This repo is the single source of truth for linter configs across all dupmachine
 
 - `configs/` — canonical linter config files
 - `hooks/` — shell script wrappers for pre-commit (`language: script`)
-- `.github/workflows/` — reusable GitHub Actions workflows (`on: workflow_call`)
+- `.github/actions/` — reusable composite GitHub Actions for linting and releases
+- `.github/workflows/` — repository-owned workflows for baseline linting and releases
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos
 
@@ -22,9 +23,16 @@ To add a linter for a new file type:
 2. Add `hooks/<linter>.sh` — shell wrapper that passes the config path via `$(dirname "$0")/../configs/<linter>.ext`
 3. Make the script executable: `chmod +x hooks/<linter>.sh`
 4. Add hook entry to `.pre-commit-hooks.yaml`
-5. Add reusable workflow to `.github/workflows/<linter>.yml`
+5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Update `.pre-commit-config.yaml.example`
 7. Update `README.md`
+
+## Self-linting
+
+Baseline lints itself through `.github/workflows/lint.yml` using local composite
+actions (`./.github/actions/lint-*`). Do not point the baseline self-lint
+workflow at `dupmachine/baseline@latest`; it must validate the actions and
+configs from the current commit.
 
 ## Linter Selection
 
