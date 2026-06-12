@@ -1,4 +1,4 @@
-# dupmachine/linters
+# dupmachine/workflows
 
 Shared linter configs and reusable workflows for all dupmachine repositories.
 
@@ -36,7 +36,7 @@ Copy `.pre-commit-config.yaml.example` to your repo as `.pre-commit-config.yaml`
 
 ```yaml
 repos:
-  - repo: https://github.com/dupmachine/linters
+  - repo: https://github.com/dupmachine/workflows
     rev: main
     hooks:
       - id: yamllint
@@ -60,15 +60,15 @@ on:
   pull_request:
 jobs:
   yamllint:
-    uses: dupmachine/linters/.github/workflows/yamllint.yml@main
+    uses: dupmachine/workflows/.github/workflows/yamllint.yml@main
   pymarkdown:
-    uses: dupmachine/linters/.github/workflows/pymarkdown.yml@main
+    uses: dupmachine/workflows/.github/workflows/pymarkdown.yml@main
   ruff:
-    uses: dupmachine/linters/.github/workflows/ruff.yml@main
+    uses: dupmachine/workflows/.github/workflows/ruff.yml@main
   shellcheck:
-    uses: dupmachine/linters/.github/workflows/shellcheck.yml@main
+    uses: dupmachine/workflows/.github/workflows/shellcheck.yml@main
   actionlint:
-    uses: dupmachine/linters/.github/workflows/actionlint.yml@main
+    uses: dupmachine/workflows/.github/workflows/actionlint.yml@main
 ```
 
 ## Adding a new linter

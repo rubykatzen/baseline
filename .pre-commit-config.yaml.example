@@ -1,5 +1,5 @@
 repos:
-  - repo: https://github.com/dupmachine/linters
+  - repo: https://github.com/dupmachine/workflows
     rev: main
     hooks:
       - id: yamllint

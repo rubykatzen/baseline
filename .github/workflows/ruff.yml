@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
         with:
-          repository: dupmachine/linters
+          repository: dupmachine/workflows
           path: .linters
       - run: pip install ruff
       - run: ruff check --config .linters/configs/ruff.toml .
