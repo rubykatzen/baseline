@@ -1,0 +1,9 @@
+repos:
+  - repo: git@github.com:rubykatzen/baseline.git
+    rev: v0.0.12
+    hooks:
+      - id: yamllint
+      - id: pymarkdown
+      - id: ruff
+      - id: shellcheck
+      - id: actionlint
