@@ -1,3 +1,9 @@
+## [v0.0.9] - 2026-06-13
+
+- fix CHANGELOG after rebase
+- rename workflows to dependabot-automerge and telegram-release-notify
+- chore: update changelog for v0.0.8
+
 # Changelog
 
 ## [v0.0.8] - 2026-06-13
