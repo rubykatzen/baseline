@@ -4,6 +4,10 @@ Shared linter configs, composite GitHub Actions, and reusable workflows for all 
 
 ## Quick setup
 
+Replace `VERSION` in all examples with the latest release tag from
+[github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
+After initial setup, [Dependabot](#2-dependabot) keeps the pin current automatically.
+
 ### 1. Lint workflow
 
 Create `.github/workflows/lint.yml`. Include only the linters relevant to your stack:
@@ -19,11 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@v0.0.11
-      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@v0.0.11
-      - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.0.11
-      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.0.11
-      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@v0.0.11
+      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@VERSION
+      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@VERSION
+      - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
+      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
+      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
 ```
 
 Each action installs its own tool — no setup step needed.
@@ -52,7 +56,7 @@ on:
     types: [opened, reopened, synchronize]
 jobs:
   merge:
-    uses: rubykatzen/baseline/.github/workflows/dependabot-automerge.yml@v0.0.11
+    uses: rubykatzen/baseline/.github/workflows/dependabot-automerge.yml@VERSION
     secrets: inherit
 ```
 
@@ -71,7 +75,7 @@ on:
   workflow_dispatch:
 jobs:
   notify:
-    uses: rubykatzen/baseline/.github/workflows/telegram-release-notify.yml@v0.0.11
+    uses: rubykatzen/baseline/.github/workflows/telegram-release-notify.yml@VERSION
     secrets: inherit
 ```
 
@@ -103,7 +107,7 @@ Publishes a GitHub release, generates AI release notes, and updates `CHANGELOG.m
 Used from your repo's `release.yml`:
 
 ```yaml
-- uses: rubykatzen/baseline/.github/actions/create-release@v0.0.11
+- uses: rubykatzen/baseline/.github/actions/create-release@VERSION
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     tag: ${{ github.ref_name }}
@@ -132,7 +136,7 @@ Copy `.pre-commit-config.yaml.example` to your repo or add to your existing conf
 ```yaml
 repos:
   - repo: git@github.com:rubykatzen/baseline.git
-    rev: v0.0.11
+    rev: VERSION
     hooks:
       - id: yamllint
       - id: pymarkdown
