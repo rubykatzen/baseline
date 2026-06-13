@@ -135,7 +135,12 @@ runs:
         current_sha=$(echo "$file_resp" | jq -r '.sha // empty')
         current_content=$(echo "$file_resp" | jq -r '.content // empty' | base64 -d 2>/dev/null || echo "")
         if [ -n "$current_content" ]; then
-          new_content="${new_entry}"$'\n\n'"${current_content}"
+          if printf '%s' "$current_content" | head -1 | grep -q '^# Changelog'; then
+            rest=$(printf '%s' "$current_content" | tail -n +3)
+            new_content="# Changelog"$'\n\n'"${new_entry}"$'\n\n'"${rest}"
+          else
+            new_content="${new_entry}"$'\n\n'"${current_content}"
+          fi
         else
           new_content="# Changelog"$'\n\n'"${new_entry}"
         fi
