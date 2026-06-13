@@ -14,8 +14,12 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `.github/actions/create-release/` — composite action: publish release, AI notes, update CHANGELOG
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/release.yml` — cuts baseline releases via `create-release` action
-- `.github/workflows/dependabot-automerge.yml` — reusable: merges Dependabot PRs immediately
-- `.github/workflows/telegram-release-notify.yml` — reusable: checks main CI + unreleased commits, notifies Telegram
+- `.github/workflows/dependabot-automerge.yml` — **reusable**: merges Dependabot PRs immediately
+- `.github/workflows/pre-commit-autoupdate.yml` — **reusable**: runs `pre-commit autoupdate` and commits
+- `.github/workflows/telegram-release-notify.yml` — **reusable**: checks main CI + unreleased commits, notifies Telegram
+- `.github/workflows/dependabot-automerge-self.yml` — baseline's own caller (see `-self` convention below)
+- `.github/workflows/pre-commit-autoupdate-self.yml` — baseline's own caller
+- `.github/workflows/telegram-release-notify-self.yml` — baseline's own caller
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos
 
@@ -33,13 +37,27 @@ To add a linter for a new file type:
 
 ## Reusable workflows
 
-`dependabot-automerge.yml` and `telegram-release-notify.yml` are `workflow_call`
-workflows consumed by other repos. They are NOT called from baseline's own workflows.
-When editing them, test by dispatching from a consumer repo, not from baseline directly.
+`dependabot-automerge.yml`, `pre-commit-autoupdate.yml`, and
+`telegram-release-notify.yml` are `workflow_call` workflows consumed by other
+repos. When editing them, test by dispatching from a consumer repo.
 
 `telegram-release-notify.yml` requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
 secrets in the calling repo. It checks the latest `lint.yml` run on `main` and
 the number of commits since the last semver tag.
+
+## Self workflows (`-self` suffix)
+
+Baseline's own scheduled/triggered workflows are named with a `-self` suffix to
+distinguish them from the reusable implementations that share the same directory:
+
+| File | Calls |
+|---|---|
+| `dependabot-automerge-self.yml` | `dependabot-automerge.yml` |
+| `pre-commit-autoupdate-self.yml` | `pre-commit-autoupdate.yml` |
+| `telegram-release-notify-self.yml` | `telegram-release-notify.yml` |
+
+This suffix convention is baseline-specific. Consumer repos use conventional names
+(e.g. `dependabot-automerge.yml`) because they only contain the calling side.
 
 ## Self-linting
 
