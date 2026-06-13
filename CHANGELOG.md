@@ -1,16 +1,12 @@
-## [v0.0.8] - 2026-06-13
-
-- fix CHANGELOG structure after merge conflict
-- rename auto-merge-dependabot to merge-dependabot
-- chore: update changelog for v0.0.7
-
 # Changelog
 
-## [v0.0.7] - 2026-06-13
+## [v0.0.8] - 2026-06-13
 
+- rename workflows to dependabot-automerge and telegram-release-notify
+- fix CHANGELOG structure after merge conflict
 - install shellcheck from stable release to get --rcfile support
 - fix yamllint empty-lines violations
-- add merge-dependabot and notify-telegram reusable workflows
+- add dependabot-automerge and telegram-release-notify reusable workflows
 - add UP, B, SIM rules to ruff config
 - add baseline self lint workflow
 
