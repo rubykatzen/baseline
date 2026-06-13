@@ -43,6 +43,8 @@ updates:
     directory: /
     schedule:
       interval: daily
+      time: "22:00"
+      timezone: "Europe/Berlin"
 ```
 
 ### 3. Auto-merge Dependabot PRs (optional)
@@ -62,7 +64,25 @@ jobs:
 
 Merges all Dependabot PRs immediately without waiting for CI.
 
-### 4. Telegram release notifications (optional)
+### 4. Pre-commit autoupdate (optional)
+
+Create `.github/workflows/pre-commit-autoupdate.yml`:
+
+```yaml
+name: Pre-commit Autoupdate
+on:
+  schedule:
+    - cron: "30 21 * * *"  # 22:30 Europe/Berlin (UTC+1)
+  workflow_dispatch:
+jobs:
+  autoupdate:
+    uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate.yml@VERSION
+    secrets: inherit
+```
+
+Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
+
+### 5. Telegram release notifications (optional)
 
 Create `.github/workflows/telegram-release-notify.yml`.
 Requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` secrets in the repo.
@@ -71,7 +91,7 @@ Requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` secrets in the repo.
 name: Telegram Release Notify
 on:
   schedule:
-    - cron: "0 20 * * *"
+    - cron: "0 22 * * *"  # 23:00 Europe/Berlin (UTC+1)
   workflow_dispatch:
 jobs:
   notify:
@@ -99,6 +119,7 @@ Cron schedule is configurable per repo.
 | Workflow | Trigger in caller | What it does |
 |---|---|---|
 | `dependabot-automerge.yml` | `pull_request_target` | Merges Dependabot PRs immediately |
+| `pre-commit-autoupdate.yml` | `schedule` / `workflow_dispatch` | Runs `pre-commit autoupdate` and commits to main |
 | `telegram-release-notify.yml` | `schedule` / `workflow_dispatch` | Notifies Telegram when main is broken or has unreleased commits |
 
 ## create-release action
