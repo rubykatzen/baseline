@@ -1,3 +1,9 @@
+## [v0.0.8] - 2026-06-13
+
+- fix CHANGELOG structure after merge conflict
+- rename auto-merge-dependabot to merge-dependabot
+- chore: update changelog for v0.0.7
+
 # Changelog
 
 ## [v0.0.7] - 2026-06-13
