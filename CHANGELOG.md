@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.0.14] - 2026-06-13
+
+- document separate artifact upload after create-release
+- chore: update changelog for v0.0.13
+
 ## [v0.0.13] - 2026-06-13
 
 - remove artifact-path from create-release action
