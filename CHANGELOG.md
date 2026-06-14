@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.1] - 2026-06-14
+
+- fix: force push release branch, handle existing PR
+- fix: pass PR branch ref via env var in release-finalize
+- fix: remove blank lines in create-release-pr action
+- feat: two-phase release via PR (create-release-pr action)
+- fix: add actions: read permission to release job
+
 ## [v0.2.0] - 2026-06-14
 
 Replace `release-shared.yml` reusable workflow with four composable composite actions: `verify-release`, `generate-notes`, `commit-changelog`, `create-release`. Each action handles one concern and can be used independently. `baseline/release.yml` uses relative action refs to avoid self-reference pinning issues.
