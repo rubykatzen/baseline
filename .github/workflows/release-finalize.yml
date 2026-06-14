@@ -3,27 +3,52 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version without v prefix (e.g. 0.2.1)
+        required: true
+        type: string
+      notes:
+        description: Release notes
+        required: true
+        type: string
+      merge_sha:
+        description: Merge commit SHA to tag
+        required: true
+        type: string
 concurrency:
   group: release-baseline
 jobs:
   release:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'release/'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.merge_sha || github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
       - id: info
         shell: bash
         env:
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_NOTES: ${{ inputs.notes }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          version="${PR_BRANCH#release/v}"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
+            printf 'notes<<!NOTES_EOF\n%s\n!NOTES_EOF\n' "$INPUT_NOTES" >> "$GITHUB_OUTPUT"
+          else
+            version="${PR_BRANCH#release/v}"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          fi
       - uses: ./.github/actions/create-release
         with:
           version: ${{ steps.info.outputs.version }}
-          notes: ${{ github.event.pull_request.body }}
+          notes: ${{ github.event_name == 'workflow_dispatch' && steps.info.outputs.notes || github.event.pull_request.body }}
