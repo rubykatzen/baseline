@@ -47,10 +47,15 @@ runs:
           git add pyproject.toml
         fi
         git commit -m "chore: update changelog for ${tag}"
-        git push origin "$branch"
-        gh pr create \
-          --title "chore: release ${tag}" \
-          --body "$NOTES" \
-          --base main \
-          --head "$branch"
+        git push origin "$branch" --force
+        existing_pr=$(gh pr list --head "$branch" --json number --jq '.[0].number // empty')
+        if [ -z "$existing_pr" ]; then
+          gh pr create \
+            --title "chore: release ${tag}" \
+            --body "$NOTES" \
+            --base main \
+            --head "$branch"
+        else
+          gh pr edit "$existing_pr" --body "$NOTES"
+        fi
         gh pr merge "$branch" --auto --squash
