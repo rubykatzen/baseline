@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.3] - 2026-06-14
+
+- refactor: split pyproject version bump into separate action
+
 ## [v0.2.2] - 2026-06-14
 
 - refactor: revert to simple release flow, remove PR-based approach
