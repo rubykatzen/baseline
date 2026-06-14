@@ -24,11 +24,9 @@ runs:
         version="${{ inputs.version }}"
         tag="v${version}"
         branch="release/${tag}"
-
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git checkout -b "$branch"
-
         date=$(date -u +%Y-%m-%d)
         new_entry="## [${tag}] - ${date}"$'\n\n'"${NOTES}"
         if [ -f CHANGELOG.md ]; then
@@ -44,19 +42,15 @@ runs:
         fi
         printf '%s\n' "$new_content" > CHANGELOG.md
         git add CHANGELOG.md
-
         if grep -q '^version = ' pyproject.toml 2>/dev/null; then
           sed -i "s/^version = .*/version = \"${version}\"/" pyproject.toml
           git add pyproject.toml
         fi
-
         git commit -m "chore: update changelog for ${tag}"
         git push origin "$branch"
-
         gh pr create \
           --title "chore: release ${tag}" \
           --body "$NOTES" \
           --base main \
           --head "$branch"
-
         gh pr merge "$branch" --auto --squash
