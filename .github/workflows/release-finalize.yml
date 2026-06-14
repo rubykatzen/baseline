@@ -18,9 +18,10 @@ jobs:
           fetch-depth: 0
       - id: info
         shell: bash
+        env:
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          branch="${{ github.event.pull_request.head.ref }}"
-          version="${branch#release/v}"
+          version="${PR_BRANCH#release/v}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/create-release
         with:
