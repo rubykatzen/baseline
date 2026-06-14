@@ -1,0 +1,28 @@
+name: Release (finalize)
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+concurrency:
+  group: release-baseline
+jobs:
+  release:
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+      - id: info
+        shell: bash
+        run: |
+          branch="${{ github.event.pull_request.head.ref }}"
+          version="${branch#release/v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/create-release
+        with:
+          version: ${{ steps.info.outputs.version }}
+          notes: ${{ github.event.pull_request.body }}

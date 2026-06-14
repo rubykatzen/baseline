@@ -1,0 +1,62 @@
+name: Create release PR
+description: Create a release branch with changelog update and open a PR with auto-merge enabled.
+inputs:
+  version:
+    description: Release version without v prefix.
+    required: true
+  notes:
+    description: Release notes content.
+    required: true
+  token:
+    description: GitHub token.
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - name: Create PR
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        NOTES: ${{ inputs.notes }}
+      run: |
+        set -euo pipefail
+        version="${{ inputs.version }}"
+        tag="v${version}"
+        branch="release/${tag}"
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git checkout -b "$branch"
+
+        date=$(date -u +%Y-%m-%d)
+        new_entry="## [${tag}] - ${date}"$'\n\n'"${NOTES}"
+        if [ -f CHANGELOG.md ]; then
+          current=$(cat CHANGELOG.md)
+          if printf '%s' "$current" | head -1 | grep -q '^# Changelog'; then
+            rest=$(printf '%s' "$current" | tail -n +3)
+            new_content="# Changelog"$'\n\n'"${new_entry}"$'\n\n'"${rest}"
+          else
+            new_content="${new_entry}"$'\n\n'"${current}"
+          fi
+        else
+          new_content="# Changelog"$'\n\n'"${new_entry}"
+        fi
+        printf '%s\n' "$new_content" > CHANGELOG.md
+        git add CHANGELOG.md
+
+        if grep -q '^version = ' pyproject.toml 2>/dev/null; then
+          sed -i "s/^version = .*/version = \"${version}\"/" pyproject.toml
+          git add pyproject.toml
+        fi
+
+        git commit -m "chore: update changelog for ${tag}"
+        git push origin "$branch"
+
+        gh pr create \
+          --title "chore: release ${tag}" \
+          --body "$NOTES" \
+          --base main \
+          --head "$branch"
+
+        gh pr merge "$branch" --auto --squash

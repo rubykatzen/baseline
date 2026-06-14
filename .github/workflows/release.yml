@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
       actions: read
     steps:
       - uses: actions/checkout@v6
@@ -29,11 +30,7 @@ jobs:
         id: notes
         with:
           version: ${{ inputs.version }}
-      - uses: ./.github/actions/commit-changelog
-        with:
-          version: ${{ inputs.version }}
-          notes: ${{ steps.notes.outputs.notes }}
-      - uses: ./.github/actions/create-release
+      - uses: ./.github/actions/create-release-pr
         with:
           version: ${{ inputs.version }}
           notes: ${{ steps.notes.outputs.notes }}
