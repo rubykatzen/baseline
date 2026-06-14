@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.0] - 2026-06-14
+
+Replace `release-shared.yml` reusable workflow with four composable composite actions: `verify-release`, `generate-notes`, `commit-changelog`, `create-release`. Each action handles one concern and can be used independently. `baseline/release.yml` uses relative action refs to avoid self-reference pinning issues.
+
 ## [v0.1.1] - 2026-06-14
 
 Release workflow switched to `workflow_dispatch` trigger with `release-shared.yml` reusable workflow. The shared release workflow now also bumps `version` in `pyproject.toml` (if present) as part of the changelog commit, enabling Homebrew-compatible Python packages.

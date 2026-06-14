@@ -1,75 +1,36 @@
 name: Create GitHub release
-description: Generate AI release notes and publish a GitHub release.
+description: Create git tag and publish a GitHub release.
 inputs:
-  token:
-    description: Token with permission to write releases and contents.
+  version:
+    description: Release version without v prefix.
     required: true
-  tag:
-    description: Release tag. Defaults to the first eight characters of GITHUB_SHA.
+  notes:
+    description: Release notes content.
+    required: true
+  token:
+    description: GitHub token.
     required: false
-    default: ""
-  release-repo:
-    description: GitHub repository to publish the release to. Defaults to current repository.
-    required: false
-    default: ""
+    default: ${{ github.token }}
 outputs:
   tag:
-    description: Release tag used.
-    value: ${{ steps.publish.outputs.tag }}
+    description: Release tag created.
+    value: ${{ steps.release.outputs.tag }}
 runs:
   using: composite
   steps:
-    - name: Generate release notes
+    - name: Create tag and release
+      id: release
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
-        REQUESTED_TAG: ${{ inputs.tag }}
+        NOTES: ${{ inputs.notes }}
       run: |
         set -euo pipefail
-        tag="$REQUESTED_TAG"
-        [ -z "$tag" ] && tag="${GITHUB_SHA:0:8}"
-        prev_tag=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | grep -v "^${tag}$" | head -1 || true)
-        if [ -n "$prev_tag" ]; then
-          commits=$(git log "${prev_tag}..HEAD" --format="- %s" --no-merges | head -50)
-        else
-          commits=$(git log HEAD --format="- %s" --no-merges | head -50)
-        fi
-        notes=""
-        if [ -n "$commits" ]; then
-          payload=$(jq -n --arg commits "$commits" '{
-            model: "gpt-4o-mini",
-            messages: [{
-              role: "user",
-              content: ("You are writing a changelog entry for a software release. Below are the git commits in this release. Write a concise 2-4 sentence summary in English describing what changed. Write plain prose — no bullet points, no headers.\n\nCommits:\n" + $commits)
-            }],
-            max_tokens: 300
-          }')
-          response=$(curl -sf \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://models.inference.ai.azure.com/chat/completions" \
-            -d "$payload" || true)
-          notes=$(echo "$response" | jq -r '.choices[0].message.content // empty' 2>/dev/null || true)
-        fi
-        [ -z "$notes" ] && notes="${commits:-No changes}"
-        printf '%s' "$notes" > /tmp/release-notes.md
-    - name: Publish release
-      id: publish
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-        REQUESTED_TAG: ${{ inputs.tag }}
-        INPUT_RELEASE_REPO: ${{ inputs.release-repo }}
-      run: |
-        set -euo pipefail
-        tag="$REQUESTED_TAG"
-        [ -z "$tag" ] && tag="${GITHUB_SHA:0:8}"
-        release_repo="${INPUT_RELEASE_REPO:-$GITHUB_REPOSITORY}"
-        if ! gh release view "$tag" --repo "$release_repo" >/dev/null 2>&1; then
-          gh release create "$tag" \
-            --repo "$release_repo" \
-            --target "$GITHUB_SHA" \
-            --title "$tag" \
-            --notes-file /tmp/release-notes.md
-        fi
+        tag="v${{ inputs.version }}"
+        git tag -a "$tag" HEAD -m "Release $tag"
+        git push origin "$tag"
+        printf '%s' "$NOTES" > /tmp/release-notes.md
+        gh release create "$tag" \
+          --title "$tag" \
+          --notes-file /tmp/release-notes.md
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
