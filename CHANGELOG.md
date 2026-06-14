@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.2] - 2026-06-14
+
+- refactor: revert to simple release flow, remove PR-based approach
+
 ## [v0.2.1] - 2026-06-14
 
 - fix: force push release branch, handle existing PR
