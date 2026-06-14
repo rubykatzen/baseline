@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.1] - 2026-06-14
+
+Release workflow switched to `workflow_dispatch` trigger with `release-shared.yml` reusable workflow. The shared release workflow now also bumps `version` in `pyproject.toml` (if present) as part of the changelog commit, enabling Homebrew-compatible Python packages.
+
+## [v0.1.0] - 2026-06-14
+
+Added `release-shared.yml` reusable workflow implementing the CI-owned release process: verifies base SHA, checks CI, generates AI release notes, commits changelog, creates tag and GitHub Release. Stripped CHANGELOG mutation from the `create-release` composite action.
+
 ## [v0.0.14] - 2026-06-13
 
 - document separate artifact upload after create-release
