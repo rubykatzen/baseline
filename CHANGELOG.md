@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.4.4] - 2026-06-15
+
+- docs: replace manual workflow dispatch with releaser CLI in release docs
+- docs: add concrete release command example to AGENTS.md
+- docs: add link to rubykatzen/releaser in AGENTS.md
+- docs: remove dependabot-automerge and telegram workflows from public docs
+- Skip hooks when no targets exist (#15)
+- docs: document release flow and branch protection
+- fix: use relative path for pre-commit-autoupdate shared workflow
+- fix portable sed in mise.toml parsing, trap cleanup, and README accuracy
+- simplify Ruby linting: setup-ruby handles bundle install, linters detect Gemfile
+- chore(deps): bump rubykatzen/baseline/.github/workflows/pre-commit-autoupdate-shared.yml
+- use bundle install in Ruby linter actions, remove BASELINE_RUBY_LINTER_STANDALONE
+- extract setup-ruby action and add guard steps to Ruby linters
+- chore(deps): bump rubykatzen/releaser from 0.3.0 to 0.3.1
+- rubocop: exclude vendor from linting
+- make Ruby linter actions self-contained
+
 ## [v0.4.3] - 2026-06-15
 
 - fix Ruby pre-commit hook file handling
