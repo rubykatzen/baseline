@@ -11,9 +11,9 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `configs/` — canonical linter config files
 - `hooks/` — shell script wrappers for pre-commit (`language: script`)
 - `.github/actions/lint-*/` — composite actions, one per linter
-- `.github/actions/create-release/` — composite action: publish release, AI notes, update CHANGELOG
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
-- `.github/workflows/release.yml` — cuts baseline releases via `create-release` action
+- `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
+- `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
 - `.github/workflows/dependabot-automerge-shared.yml` — **reusable**: merges Dependabot PRs immediately
 - `.github/workflows/pre-commit-autoupdate-shared.yml` — **reusable**: runs `pre-commit autoupdate` and commits
 - `.github/workflows/telegram-release-notify-shared.yml` — **reusable**: checks main CI + unreleased commits, notifies Telegram
@@ -68,6 +68,25 @@ Baseline lints itself through `.github/workflows/lint.yml` using local composite
 actions (`./.github/actions/lint-*`). Do not point the baseline self-lint
 workflow at `rubykatzen/baseline@vX`; it must validate the actions and
 configs from the current commit.
+
+`main` branch protection requires the GitHub Actions status check named `lint`.
+That name comes from the `lint` job in `.github/workflows/lint.yml`; if the job
+name changes, update branch protection in GitHub at the same time.
+
+## Cutting Releases
+
+Baseline releases are cut with `rubykatzen/releaser`, not with release logic
+maintained in this repo. To prepare a release, dispatch
+`.github/workflows/prepare-release.yml` on `main` with:
+
+- `version`: new version without `v` prefix, for example `0.4.4`
+- `base_sha`: current `origin/main` SHA, used by releaser's verify step to avoid
+  preparing from a stale branch
+
+The prepare workflow creates and pushes `release/vX.Y.Z` with an updated
+`CHANGELOG.md`. Open a PR from that branch to `main`; after it is reviewed and
+merged, `.github/workflows/publish-release.yml` reads the release data from the
+merged branch and creates the `vX.Y.Z` tag and GitHub release.
 
 ## Linter Selection
 

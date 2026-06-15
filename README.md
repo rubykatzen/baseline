@@ -1,4 +1,4 @@
-# rubykatzen/baseline
+# Baseline
 
 Shared linter configs, composite GitHub Actions, and reusable workflows for all rubykatzen/dupmachine repositories.
 
@@ -129,25 +129,42 @@ Cron schedule is configurable per repo.
 | `pre-commit-autoupdate.yml` | `schedule` / `workflow_dispatch` | Runs `pre-commit autoupdate` and commits to main |
 | `telegram-release-notify.yml` | `schedule` / `workflow_dispatch` | Notifies Telegram when main is broken or has unreleased commits |
 
-## create-release action
+## Releases
 
-Publishes a GitHub release, generates AI release notes, and updates `CHANGELOG.md`.
-Used from your repo's `release.yml`:
+Baseline releases are cut with
+[rubykatzen/releaser](https://github.com/rubykatzen/releaser), not with release
+logic maintained in this repo. The local release workflows are thin callers:
 
-```yaml
-- uses: rubykatzen/baseline/.github/actions/create-release@VERSION
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    tag: ${{ github.ref_name }}
+- `.github/workflows/prepare-release.yml` dispatches releaser actions to verify
+  `main`, generate notes, create `release/vX.Y.Z`, update `CHANGELOG.md`, and
+  push the branch.
+- `.github/workflows/publish-release.yml` runs after a merged `release/*` PR and
+  uses releaser actions to read the release data, create the `vX.Y.Z` tag, and
+  publish the GitHub release.
+
+Patch release flow:
+
+```bash
+git fetch origin main --tags
+base_sha=$(git rev-parse origin/main)
+gh workflow run prepare-release.yml \
+  --ref main \
+  -f version=X.Y.Z \
+  -f base_sha="$base_sha"
 ```
 
-To attach artifacts, upload them separately after the action:
+After the workflow finishes, open a PR from `release/vX.Y.Z` to `main`, review
+the generated `CHANGELOG.md` entry, and merge it. Merging that release PR
+triggers `publish-release.yml`, which creates the tag and GitHub release.
 
-```yaml
-- run: gh release upload "${{ github.ref_name }}" my-artifact.zip
-  env:
-    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
+Use the next patch version unless the changes require a minor or major bump.
+For example, if the latest tag is `v0.4.3`, the next patch release is `0.4.4`.
+
+## Repository protection
+
+The `main` branch is protected and requires the GitHub Actions status check
+named `lint`. That check comes from the `lint` job in `.github/workflows/lint.yml`.
+If the workflow or job name changes, update branch protection at the same time.
 
 ## Config overrides
 
