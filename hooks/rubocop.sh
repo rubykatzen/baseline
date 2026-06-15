@@ -1,11 +1,17 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+RUBOCOP_CONFIG="$(mktemp)"
 
-cat > .rubocop.yml << RUBOCOP
-inherit_from:
-  - $BASELINE_DIR/configs/rubocop.yml
-  - .rubocop_todo*.yml
-RUBOCOP
+trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
 
-trap "rm -f .rubocop.yml" EXIT
-bundle exec rubocop "$@"
+{
+  printf '%s\n' 'inherit_from:'
+  printf '  - %s\n' "$BASELINE_DIR/configs/rubocop.yml"
+
+  for todo in .rubocop_todo*.yml; do
+    [ -e "$todo" ] || continue
+    printf '  - %s\n' "$PWD/$todo"
+  done
+} > "$RUBOCOP_CONFIG"
+
+bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"

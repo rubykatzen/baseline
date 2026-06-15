@@ -1,14 +1,7 @@
-name: rubocop
+name: lint-rubocop
 description: Lint Ruby files using rubocop with baseline standard config. Requires rubocop and standard gems in project Gemfile.
 runs:
   using: composite
   steps:
-    - run: |
-        cat > .rubocop.yml << RUBOCOP
-        inherit_from:
-          - ${{ github.action_path }}/../../../configs/rubocop.yml
-          - .rubocop_todo*.yml
-        RUBOCOP
-        bundle exec rubocop
-        rm -f .rubocop.yml
+    - run: "${{ github.action_path }}/../../../hooks/rubocop.sh"
       shell: bash

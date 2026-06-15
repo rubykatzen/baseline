@@ -3,7 +3,6 @@ require:
   - standard-custom
   - standard-performance
   - standard-rails
-
 inherit_gem:
   standard: config/base.yml
   standard-custom: config/base.yml

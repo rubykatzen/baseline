@@ -3,5 +3,5 @@ description: Lint ERB templates using erb_lint with baseline config. Requires er
 runs:
   using: composite
   steps:
-    - run: bundle exec erb_lint --lint-all --config "${{ github.action_path }}/../../../configs/erb-lint.yml"
+    - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh --lint-all"
       shell: bash
