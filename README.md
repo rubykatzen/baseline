@@ -52,24 +52,7 @@ updates:
       timezone: "Europe/Berlin"
 ```
 
-### 3. Auto-merge Dependabot PRs (optional)
-
-Create `.github/workflows/dependabot-automerge.yml`:
-
-```yaml
-name: Dependabot Automerge
-on:
-  pull_request_target:
-    types: [opened, reopened, synchronize]
-jobs:
-  merge:
-    uses: rubykatzen/baseline/.github/workflows/dependabot-automerge.yml@VERSION
-    secrets: inherit
-```
-
-Merges all Dependabot PRs immediately without waiting for CI.
-
-### 4. Pre-commit autoupdate (optional)
+### 3. Pre-commit autoupdate (optional)
 
 Create `.github/workflows/pre-commit-autoupdate.yml`:
 
@@ -81,31 +64,11 @@ on:
   workflow_dispatch:
 jobs:
   autoupdate:
-    uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate-shared.yml@VERSION
     secrets: inherit
 ```
 
 Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
-
-### 5. Telegram release notifications (optional)
-
-Create `.github/workflows/telegram-release-notify.yml`.
-Requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` secrets in the repo.
-
-```yaml
-name: Telegram Release Notify
-on:
-  schedule:
-    - cron: "0 22 * * *"  # 23:00 Europe/Berlin (UTC+1)
-  workflow_dispatch:
-jobs:
-  notify:
-    uses: rubykatzen/baseline/.github/workflows/telegram-release-notify.yml@VERSION
-    secrets: inherit
-```
-
-Sends a Telegram message when `main` is broken or has unreleased commits.
-Cron schedule is configurable per repo.
 
 ---
 
@@ -125,9 +88,7 @@ Cron schedule is configurable per repo.
 
 | Workflow | Trigger in caller | What it does |
 |---|---|---|
-| `dependabot-automerge.yml` | `pull_request_target` | Merges Dependabot PRs immediately |
-| `pre-commit-autoupdate.yml` | `schedule` / `workflow_dispatch` | Runs `pre-commit autoupdate` and commits to main |
-| `telegram-release-notify.yml` | `schedule` / `workflow_dispatch` | Notifies Telegram when main is broken or has unreleased commits |
+| `pre-commit-autoupdate-shared.yml` | `schedule` / `workflow_dispatch` | Runs `pre-commit autoupdate` and commits to main |
 
 ## Releases
 

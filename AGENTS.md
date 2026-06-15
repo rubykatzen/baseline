@@ -14,12 +14,10 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
-- `.github/workflows/dependabot-automerge-shared.yml` — **reusable**: merges Dependabot PRs immediately
 - `.github/workflows/pre-commit-autoupdate-shared.yml` — **reusable**: runs `pre-commit autoupdate` and commits
-- `.github/workflows/telegram-release-notify-shared.yml` — **reusable**: checks main CI + unreleased commits, notifies Telegram
-- `.github/workflows/dependabot-automerge.yml` — baseline's own caller
 - `.github/workflows/pre-commit-autoupdate.yml` — baseline's own caller
-- `.github/workflows/telegram-release-notify.yml` — baseline's own caller
+- `.github/workflows/dependabot-automerge.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
+- `.github/workflows/telegram-release-notify.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos
 
@@ -37,30 +35,13 @@ To add a linter for a new file type:
 
 ## Reusable workflows
 
-`dependabot-automerge.yml`, `pre-commit-autoupdate.yml`, and
-`telegram-release-notify.yml` are `workflow_call` workflows consumed by other
-repos. When editing them, test by dispatching from a consumer repo.
+`pre-commit-autoupdate-shared.yml` is the only `workflow_call` workflow in this
+repo. Consumer repos call it as:
+`uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate-shared.yml@vX`
 
-`telegram-release-notify.yml` requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
-secrets in the calling repo. It checks the latest `lint.yml` run on `main` and
-the number of commits since the last semver tag.
-
-## Naming convention: `-shared` suffix for reusable workflows
-
-Reusable (`workflow_call`) implementations carry a `-shared` suffix. Baseline's
-own calling workflows and consumer repo workflows use the natural name without suffix:
-
-| Reusable (baseline only) | Calling workflow (baseline + all consumers) |
-|---|---|
-| `dependabot-automerge-shared.yml` | `dependabot-automerge.yml` |
-| `pre-commit-autoupdate-shared.yml` | `pre-commit-autoupdate.yml` |
-| `telegram-release-notify-shared.yml` | `telegram-release-notify.yml` |
-
-Consumer repos call the `-shared` variant:
-`uses: rubykatzen/baseline/.github/workflows/dependabot-automerge-shared.yml@vX`
-
-This keeps consumer workflow files conventionally named while making it obvious
-in baseline which files are meant for external use.
+`dependabot-automerge.yml` and `telegram-release-notify.yml` are baseline's own
+callers that delegate to `rubykatzen/releaser`; they are not exported for
+external use.
 
 ## Self-linting
 
