@@ -1,0 +1,7 @@
+name: standardrb
+description: Lint Ruby files using standardrb. Requires standard gem in project Gemfile.
+runs:
+  using: composite
+  steps:
+    - run: bundle exec standardrb
+      shell: bash

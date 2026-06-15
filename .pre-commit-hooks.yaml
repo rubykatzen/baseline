@@ -24,3 +24,13 @@
   entry: hooks/actionlint.sh
   files: ^\.github/workflows/.*\.ya?ml$
   pass_filenames: false
+- id: standardrb
+  name: standardrb
+  language: script
+  entry: hooks/standardrb.sh
+  types: [ruby]
+- id: erb-lint
+  name: erb-lint
+  language: script
+  entry: hooks/erb-lint.sh
+  types: [erb]
