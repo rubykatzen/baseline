@@ -9,6 +9,7 @@ linters:
     rubocop_config:
       inherit_from:
         - .rubocop.yml
+        - .erb_lint_todo*.yml
       Layout/TrailingEmptyLines:
         Enabled: false
       Layout/InitialIndentation:
