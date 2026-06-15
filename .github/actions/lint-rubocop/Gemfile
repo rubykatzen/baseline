@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+gem "rubocop"
+gem "standard"
+gem "standard-custom"
+gem "standard-performance"
+gem "standard-rails"

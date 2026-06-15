@@ -35,7 +35,7 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '%s\n' '  Rubocop:'
   printf '    config_file_path: %s\n' "$RUBOCOP_CONFIG"
 } > "$ERB_LINT_CONFIG"
-if [ "${BASELINE_RUBY_LINTER_STANDALONE:-}" = "1" ] || [ ! -f Gemfile ]; then
+if [ ! -f Gemfile ]; then
   exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
 fi
 exec bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"

@@ -5,9 +5,9 @@ runs:
   steps:
     - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-erb-lint." >&2; exit 1; }
       shell: bash
-    - run: gem install --no-document erb_lint rubocop standard standard-custom standard-performance standard-rails
+    - run: bundle install --gemfile "${{ github.action_path }}/Gemfile" --quiet
       shell: bash
     - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh --lint-all"
       shell: bash
       env:
-        BASELINE_RUBY_LINTER_STANDALONE: "1"
+        BUNDLE_GEMFILE: "${{ github.action_path }}/Gemfile"
