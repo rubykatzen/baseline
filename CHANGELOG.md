@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.0] - 2026-06-15
+
+- feat: move release actions to releaser, reference rubykatzen/releaser@v0.3.0
+
 ## [v0.3.0] - 2026-06-15
 
 - fix: remove blank lines in read-release-data to pass yamllint
