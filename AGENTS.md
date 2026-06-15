@@ -56,7 +56,8 @@ name changes, update branch protection in GitHub at the same time.
 
 ## Cutting Releases
 
-Baseline releases are cut with `rubykatzen/releaser`, not with release logic
+Baseline releases are cut with
+[rubykatzen/releaser](https://github.com/rubykatzen/releaser), not with release logic
 maintained in this repo. To prepare a release, dispatch
 `.github/workflows/prepare-release.yml` on `main` with:
 
