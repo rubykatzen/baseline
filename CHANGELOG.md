@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.0] - 2026-06-15
+
+- fix: remove blank lines in read-release-data to pass yamllint
+- feat: PR-based release flow with composable actions
+
 ## [v0.2.3] - 2026-06-14
 
 - refactor: split pyproject version bump into separate action
