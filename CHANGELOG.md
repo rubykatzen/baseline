@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.3] - 2026-06-15
+
+- fix Ruby pre-commit hook file handling
+
 ## [v0.4.2] - 2026-06-15
 
 - add Ruby linters: rubocop and erb-lint
