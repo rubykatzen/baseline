@@ -14,8 +14,8 @@ runs:
           echo "version=$(cat .ruby-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
         elif [ -f .tool-versions ] && grep -q '^ruby ' .tool-versions; then
           echo "version=$(grep '^ruby ' .tool-versions | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-        elif [ -f mise.toml ] && grep -q '^ruby\s*=' mise.toml; then
-          echo "version=$(grep '^ruby\s*=' mise.toml | sed 's/.*=\s*"\(.*\)".*/\1/')" >> "$GITHUB_OUTPUT"
+        elif [ -f mise.toml ] && grep -q '^ruby[[:space:]]*=' mise.toml; then
+          echo "version=$(grep '^ruby[[:space:]]*=' mise.toml | sed "s/.*=[[:space:]]*[\"']\(.*\)[\"'].*/\1/")" >> "$GITHUB_OUTPUT"
         else
           echo "version=${{ inputs.ruby-version }}" >> "$GITHUB_OUTPUT"
         fi

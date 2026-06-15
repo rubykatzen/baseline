@@ -190,9 +190,13 @@ python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
 ```
 
-Ruby GitHub Actions install Ruby and their required gems automatically. Ruby
-pre-commit hooks use the caller repo bundle when `Gemfile` exists. Add these
-gems to the caller repo `Gemfile` before enabling Ruby pre-commit hooks:
+Ruby GitHub Actions install Ruby automatically. If a `Gemfile` is present,
+`setup-ruby` runs `bundle install` and linter actions use `bundle exec` —
+so rubocop and erb_lint must be in the project `Gemfile`. If no `Gemfile`
+is present, linter actions install required gems directly.
+
+Add these gems to the caller repo `Gemfile` before enabling Ruby hooks
+(both pre-commit and GitHub Actions):
 
 ```ruby
 group :development, :test do

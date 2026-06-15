@@ -14,6 +14,7 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
   done
 } > "$RUBOCOP_CONFIG"
 if [ -f Gemfile ]; then
-  exec bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+  bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+else
+  rubocop --config "$RUBOCOP_CONFIG" "$@"
 fi
-exec rubocop --config "$RUBOCOP_CONFIG" "$@"
