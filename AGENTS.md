@@ -65,6 +65,16 @@ maintained in this repo. To prepare a release, dispatch
 - `base_sha`: current `origin/main` SHA, used by releaser's verify step to avoid
   preparing from a stale branch
 
+```bash
+git fetch origin main --tags
+base_sha=$(git rev-parse origin/main)
+gh workflow run prepare-release.yml \
+  --repo rubykatzen/baseline \
+  --ref main \
+  -f version=0.4.4 \
+  -f base_sha="$base_sha"
+```
+
 The prepare workflow creates and pushes `release/vX.Y.Z` with an updated
 `CHANGELOG.md`. Open a PR from that branch to `main`; after it is reviewed and
 merged, `.github/workflows/publish-release.yml` reads the release data from the
