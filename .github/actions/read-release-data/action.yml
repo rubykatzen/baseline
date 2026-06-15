@@ -22,7 +22,6 @@ runs:
         branch="${{ inputs.branch }}"
         version="${branch#release/v}"
         tag="v${version}"
-
         # Only ^## [...] lines act as section delimiters so ## headings inside
         # AI-generated prose don't prematurely terminate extraction.
         notes=$(awk -v tag="$tag" '
@@ -38,9 +37,7 @@ runs:
           }
           END { if (first) for (i = first; i <= last; i++) print lines[i] }
         ' CHANGELOG.md)
-
         [ -z "$notes" ] && notes="Release ${tag}"
-
         echo "version=${version}" >> "$GITHUB_OUTPUT"
         {
           echo "notes<<PARSE_CHANGELOG_EOF"
