@@ -8,7 +8,7 @@ has_shellcheck_targets() {
     -print -quit | grep -q .
 }
 
-if ! has_shellcheck_targets; then
+if [ $# -eq 0 ] && ! has_shellcheck_targets; then
   printf '%s\n' 'No shell files found; skipping shellcheck.'
   exit 0
 fi
