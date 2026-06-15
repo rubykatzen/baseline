@@ -1,0 +1,18 @@
+exclude:
+  - '**/vendor/*/ruby/**/*'
+EnableDefaultLinters: true
+linters:
+  RequireInputAutocomplete:
+    enabled: false
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - .rubocop.yml
+        - .erb_lint_todo*.yml
+      Layout/TrailingEmptyLines:
+        Enabled: false
+      Layout/InitialIndentation:
+        Enabled: false
+      Lint/UselessAssignment:
+        Enabled: false

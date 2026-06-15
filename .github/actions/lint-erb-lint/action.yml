@@ -1,7 +1,7 @@
 name: erb_lint
-description: Lint ERB templates using erb_lint. Requires erb_lint gem in project Gemfile.
+description: Lint ERB templates using erb_lint with baseline config. Requires erb_lint gem in project Gemfile.
 runs:
   using: composite
   steps:
-    - run: bundle exec erb_lint --lint-all
+    - run: bundle exec erb_lint --lint-all --config "${{ github.action_path }}/../../../configs/erb-lint.yml"
       shell: bash
