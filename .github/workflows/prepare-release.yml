@@ -1,4 +1,4 @@
-name: Release
+name: Prepare release branch
 on:
   workflow_dispatch:
     inputs:
@@ -11,9 +11,9 @@ on:
         required: true
         type: string
 concurrency:
-  group: release-baseline
+  group: prepare-release-baseline
 jobs:
-  release:
+  prepare:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,11 +29,13 @@ jobs:
         id: notes
         with:
           version: ${{ inputs.version }}
-      - uses: ./.github/actions/commit-changelog
+      - uses: ./.github/actions/prepare-release-branch
+        with:
+          version: ${{ inputs.version }}
+      - uses: ./.github/actions/update-changelog
         with:
           version: ${{ inputs.version }}
           notes: ${{ steps.notes.outputs.notes }}
-      - uses: ./.github/actions/create-release
+      - uses: ./.github/actions/push-release-branch
         with:
           version: ${{ inputs.version }}
-          notes: ${{ steps.notes.outputs.notes }}
