@@ -92,34 +92,31 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 
 ## Releases
 
-Baseline releases are cut with
-[rubykatzen/releaser](https://github.com/rubykatzen/releaser), not with release
-logic maintained in this repo. The local release workflows are thin callers:
-
-- `.github/workflows/prepare-release.yml` dispatches releaser actions to verify
-  `main`, generate notes, create `release/vX.Y.Z`, update `CHANGELOG.md`, and
-  push the branch.
-- `.github/workflows/publish-release.yml` runs after a merged `release/*` PR and
-  uses releaser actions to read the release data, create the `vX.Y.Z` tag, and
-  publish the GitHub release.
-
-Patch release flow:
+Baseline releases are cut with the
+[rubykatzen/releaser](https://github.com/rubykatzen/releaser) CLI. Run from
+inside this repository:
 
 ```bash
-git fetch origin main --tags
-base_sha=$(git rev-parse origin/main)
-gh workflow run prepare-release.yml \
-  --ref main \
-  -f version=X.Y.Z \
-  -f base_sha="$base_sha"
+releaser patch   # or: releaser minor / releaser major
 ```
 
-After the workflow finishes, open a PR from `release/vX.Y.Z` to `main`, review
-the generated `CHANGELOG.md` entry, and merge it. Merging that release PR
-triggers `publish-release.yml`, which creates the tag and GitHub release.
+The CLI verifies that CI is green on `origin/main`, calculates the next version,
+dispatches `prepare-release.yml`, watches it run, then opens a `release/vX.Y.Z`
+PR and enables auto-merge. `publish-release.yml` fires automatically once the PR
+merges and creates the tag and GitHub release.
 
-Use the next patch version unless the changes require a minor or major bump.
-For example, if the latest tag is `v0.4.3`, the next patch release is `0.4.4`.
+Check release readiness without triggering anything:
+
+```bash
+releaser status
+releaser patch --dry-run
+```
+
+Install the CLI:
+
+```bash
+brew tap rubykatzen/tap && brew install releaser
+```
 
 ## Repository protection
 

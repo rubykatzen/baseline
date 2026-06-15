@@ -56,29 +56,34 @@ name changes, update branch protection in GitHub at the same time.
 
 ## Cutting Releases
 
-Baseline releases are cut with
-[rubykatzen/releaser](https://github.com/rubykatzen/releaser), not with release logic
-maintained in this repo. To prepare a release, dispatch
-`.github/workflows/prepare-release.yml` on `main` with:
-
-- `version`: new version without `v` prefix, for example `0.4.4`
-- `base_sha`: current `origin/main` SHA, used by releaser's verify step to avoid
-  preparing from a stale branch
+Use the [rubykatzen/releaser](https://github.com/rubykatzen/releaser) CLI.
+Run from inside this repository:
 
 ```bash
-git fetch origin main --tags
-base_sha=$(git rev-parse origin/main)
-gh workflow run prepare-release.yml \
-  --repo rubykatzen/baseline \
-  --ref main \
-  -f version=0.4.4 \
-  -f base_sha="$base_sha"
+releaser patch   # or: releaser minor / releaser major
 ```
 
-The prepare workflow creates and pushes `release/vX.Y.Z` with an updated
-`CHANGELOG.md`. Open a PR from that branch to `main`; after it is reviewed and
-merged, `.github/workflows/publish-release.yml` reads the release data from the
-merged branch and creates the `vX.Y.Z` tag and GitHub release.
+The CLI does the following automatically:
+
+1. Fetches `origin/main` and finds the latest SemVer tag
+2. Verifies CI is green on `origin/main`
+3. Calculates the next version
+4. Dispatches `.github/workflows/prepare-release.yml` with the computed version
+   and `base_sha`
+5. Watches the workflow run
+6. Opens a PR from `release/vX.Y.Z` → `main` and enables auto-merge
+
+`.github/workflows/publish-release.yml` fires automatically once the PR merges
+and creates the annotated tag and GitHub release.
+
+To check readiness without triggering a release:
+
+```bash
+releaser status
+releaser patch --dry-run
+```
+
+If the CLI is not installed: `brew tap rubykatzen/tap && brew install releaser`.
 
 ## Linter Selection
 
