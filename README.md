@@ -208,3 +208,7 @@ group :development, :test do
   gem "erb_lint", require: false
 end
 ```
+
+The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
+filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
+matches HTML ERB templates only, mirroring `erb_lint --lint-all`.

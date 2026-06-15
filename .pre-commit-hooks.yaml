@@ -29,8 +29,9 @@
   language: script
   entry: hooks/rubocop.sh
   types: [ruby]
+  args: [--force-exclusion]
 - id: erb-lint
   name: erb-lint
   language: script
   entry: hooks/erb-lint.sh
-  types: [erb]
+  files: \.html(\+.*)?\.erb$
