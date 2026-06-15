@@ -28,9 +28,19 @@ jobs:
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
+      # Ruby projects must run ruby/setup-ruby first and provide the required
+      # gems in Gemfile.
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
+      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
 Each action installs its own tool — no setup step needed.
+Ruby actions are the exception: they use the caller repo bundle and require
+`rubocop`, `standard`, `standard-custom`, `standard-performance`,
+`standard-rails`, and `erb_lint` in the caller repo `Gemfile`.
 
 ### 2. Dependabot
 
@@ -113,6 +123,8 @@ Cron schedule is configurable per repo.
 | `lint-ruff` | `*.py` | `configs/ruff.toml` |
 | `lint-shellcheck` | `*.sh` | `configs/shellcheck.rc` |
 | `lint-actionlint` | `.github/workflows/*.yml` | — |
+| `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
+| `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
 
 ## Reusable workflows
 
@@ -172,6 +184,8 @@ repos:
       - id: ruff
       - id: shellcheck
       - id: actionlint
+      - id: rubocop
+      - id: erb-lint
 ```
 
 Install the tools before running hooks:
@@ -179,4 +193,18 @@ Install the tools before running hooks:
 ```bash
 python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
+```
+
+Ruby hooks use the caller repo bundle. Add these gems to the caller repo
+`Gemfile` before enabling Ruby hooks:
+
+```ruby
+group :development, :test do
+  gem "rubocop", require: false
+  gem "standard", require: false
+  gem "standard-custom", require: false
+  gem "standard-performance", require: false
+  gem "standard-rails", require: false
+  gem "erb_lint", require: false
+end
 ```

@@ -1,5 +1,5 @@
-name: erb_lint
-description: Lint ERB templates using erb_lint with baseline config. Requires erb_lint gem in project Gemfile.
+name: lint-erb-lint
+description: Lint ERB templates using erb_lint with baseline config. Requires erb_lint, rubocop, standard, standard-custom, standard-performance, and standard-rails gems in project Gemfile.
 runs:
   using: composite
   steps:
