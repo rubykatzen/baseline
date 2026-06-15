@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.1] - 2026-06-15
+
+- chore: reference telegram-notify and dependabot-automerge from rubykatzen/releaser@v0.3.1
+
 ## [v0.4.0] - 2026-06-15
 
 - feat: move release actions to releaser, reference rubykatzen/releaser@v0.3.0
