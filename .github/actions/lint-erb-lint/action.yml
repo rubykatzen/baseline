@@ -1,0 +1,7 @@
+name: lint-erb-lint
+description: Lint ERB templates using erb_lint with baseline config. Requires erb_lint, rubocop, standard, standard-custom, standard-performance, and standard-rails gems in project Gemfile.
+runs:
+  using: composite
+  steps:
+    - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh --lint-all"
+      shell: bash

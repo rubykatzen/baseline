@@ -7,3 +7,5 @@ repos:
       - id: ruff
       - id: shellcheck
       - id: actionlint
+      - id: rubocop
+      - id: erb-lint
