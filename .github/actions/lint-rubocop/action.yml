@@ -1,0 +1,7 @@
+name: rubocop
+description: Lint Ruby files using rubocop. Requires rubocop gem in project Gemfile.
+runs:
+  using: composite
+  steps:
+    - run: bundle exec rubocop
+      shell: bash
