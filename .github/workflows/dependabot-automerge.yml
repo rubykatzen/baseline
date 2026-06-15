@@ -4,5 +4,5 @@ on:
     types: [opened, reopened, synchronize]
 jobs:
   merge:
-    uses: rubykatzen/baseline/.github/workflows/dependabot-automerge-shared.yml@v0.0.12
+    uses: rubykatzen/releaser/.github/workflows/dependabot-automerge-shared.yml@v0.3.1
     secrets: inherit
