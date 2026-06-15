@@ -1,5 +1,19 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+has_erb_lint_targets() {
+  find . \
+    \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
+    -type f \
+    \( -name '*.html.erb' -o -name '*.html+*.erb' \) \
+    -print -quit | grep -q .
+}
+
+if ! has_erb_lint_targets; then
+  printf '%s\n' 'No HTML ERB files found; skipping erb_lint.'
+  exit 0
+fi
+
 RUBOCOP_CONFIG="$(mktemp)"
 ERB_LINT_CONFIG="$(mktemp)"
 

@@ -229,3 +229,4 @@ end
 The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
 filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
 matches HTML ERB templates only, mirroring `erb_lint --lint-all`.
+Hooks skip successfully when no matching project files are present.
