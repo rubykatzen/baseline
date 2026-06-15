@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.2] - 2026-06-15
+
+- add Ruby linters: rubocop and erb-lint
+
 ## [v0.4.1] - 2026-06-15
 
 - chore: reference telegram-notify and dependabot-automerge from rubykatzen/releaser@v0.3.1
