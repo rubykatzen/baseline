@@ -13,5 +13,7 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
     printf '  - %s\n' "$PWD/$todo"
   done
 } > "$RUBOCOP_CONFIG"
-
-bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+if [ "${BASELINE_RUBY_LINTER_STANDALONE:-}" = "1" ] || [ ! -f Gemfile ]; then
+  exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+fi
+exec bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"

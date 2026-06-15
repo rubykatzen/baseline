@@ -28,19 +28,11 @@ jobs:
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
-      # Ruby projects must run ruby/setup-ruby first and provide the required
-      # gems in Gemfile.
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
       - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
 Each action installs its own tool — no setup step needed.
-Ruby actions are the exception: they use the caller repo bundle and require
-`rubocop`, `standard`, `standard-custom`, `standard-performance`,
-`standard-rails`, and `erb_lint` in the caller repo `Gemfile`.
 
 ### 2. Dependabot
 
@@ -195,8 +187,9 @@ python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
 ```
 
-Ruby hooks use the caller repo bundle. Add these gems to the caller repo
-`Gemfile` before enabling Ruby hooks:
+Ruby GitHub Actions install Ruby and their required gems automatically. Ruby
+pre-commit hooks use the caller repo bundle when `Gemfile` exists. Add these
+gems to the caller repo `Gemfile` before enabling Ruby pre-commit hooks:
 
 ```ruby
 group :development, :test do

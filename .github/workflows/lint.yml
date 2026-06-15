@@ -13,3 +13,5 @@ jobs:
       - uses: ./.github/actions/lint-ruff
       - uses: ./.github/actions/lint-shellcheck
       - uses: ./.github/actions/lint-actionlint
+      - uses: ./.github/actions/lint-rubocop
+      - uses: ./.github/actions/lint-erb-lint
