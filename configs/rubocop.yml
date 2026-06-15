@@ -8,3 +8,6 @@ inherit_gem:
   standard-custom: config/base.yml
   standard-performance: config/base.yml
   standard-rails: config/base.yml
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
