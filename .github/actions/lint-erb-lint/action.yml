@@ -1,4 +1,4 @@
-name: erb_lint
+name: lint-erb-lint
 description: Lint ERB templates using erb_lint with baseline config. Requires erb_lint gem in project Gemfile.
 runs:
   using: composite
