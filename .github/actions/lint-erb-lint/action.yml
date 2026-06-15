@@ -1,11 +1,10 @@
 name: lint-erb-lint
-description: Lint ERB templates using erb_lint with baseline config.
+description: Lint ERB templates using erb_lint with baseline config. Requires setup-ruby action.
 runs:
   using: composite
   steps:
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: "3.3"
+    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-erb-lint." >&2; exit 1; }
+      shell: bash
     - run: gem install --no-document erb_lint rubocop standard standard-custom standard-performance standard-rails
       shell: bash
     - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh --lint-all"

@@ -28,11 +28,14 @@ jobs:
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
+      - uses: rubykatzen/baseline/.github/actions/setup-ruby@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
-Each action installs its own tool — no setup step needed.
+Each action installs its own tool — no setup step needed. Ruby linter actions
+require `setup-ruby` to run first; they will fail with a clear error if Ruby is
+not in PATH.
 
 ### 2. Dependabot
 
