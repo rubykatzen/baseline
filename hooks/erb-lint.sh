@@ -35,7 +35,7 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '%s\n' '  Rubocop:'
   printf '    config_file_path: %s\n' "$RUBOCOP_CONFIG"
 } > "$ERB_LINT_CONFIG"
-if [ ! -f Gemfile ]; then
-  exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
+if [ -f Gemfile ]; then
+  exec bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
 fi
-exec bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
+exec erb_lint --config "$ERB_LINT_CONFIG" "$@"

@@ -1,8 +1,8 @@
 name: setup-ruby
-description: Install Ruby runtime. Reads version from .ruby-version, .tool-versions, or mise.toml if present, otherwise uses ruby-version input. Required before any Ruby linter actions.
+description: Install Ruby runtime and, if a Gemfile is present, install project gems. Required before any Ruby linter actions.
 inputs:
   ruby-version:
-    description: Ruby version to install (fallback if .ruby-version and .tool-versions are absent)
+    description: Ruby version to install (fallback if .ruby-version, .tool-versions, and mise.toml are absent)
     required: false
     default: "4.0"
 runs:
@@ -23,3 +23,6 @@ runs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ steps.detect-version.outputs.version }}
+    - if: hashFiles('Gemfile') != ''
+      run: bundle install
+      shell: bash

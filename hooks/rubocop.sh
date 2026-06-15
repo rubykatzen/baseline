@@ -13,7 +13,7 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
     printf '  - %s\n' "$PWD/$todo"
   done
 } > "$RUBOCOP_CONFIG"
-if [ ! -f Gemfile ]; then
-  exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+if [ -f Gemfile ]; then
+  exec bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
 fi
-exec bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
+exec rubocop --config "$RUBOCOP_CONFIG" "$@"
