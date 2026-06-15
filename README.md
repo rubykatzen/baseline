@@ -1,6 +1,6 @@
 # Baseline
 
-Shared linter configs, composite GitHub Actions, and reusable workflows for all rubykatzen/dupmachine repositories.
+Shared linter configs, composite GitHub Actions, and reusable workflows.
 
 ## Quick setup
 
