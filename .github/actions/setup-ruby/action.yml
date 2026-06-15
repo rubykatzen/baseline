@@ -1,0 +1,28 @@
+name: setup-ruby
+description: Install Ruby runtime and, if a Gemfile is present, install project gems. Required before any Ruby linter actions.
+inputs:
+  ruby-version:
+    description: Ruby version to install (fallback if .ruby-version, .tool-versions, and mise.toml are absent)
+    required: false
+    default: "4.0"
+runs:
+  using: composite
+  steps:
+    - id: detect-version
+      run: |
+        if [ -f .ruby-version ]; then
+          echo "version=$(cat .ruby-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+        elif [ -f .tool-versions ] && grep -q '^ruby ' .tool-versions; then
+          echo "version=$(grep '^ruby ' .tool-versions | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        elif [ -f mise.toml ] && grep -q '^ruby[[:space:]]*=' mise.toml; then
+          echo "version=$(grep '^ruby[[:space:]]*=' mise.toml | sed "s/.*=[[:space:]]*[\"']\(.*\)[\"'].*/\1/")" >> "$GITHUB_OUTPUT"
+        else
+          echo "version=${{ inputs.ruby-version }}" >> "$GITHUB_OUTPUT"
+        fi
+      shell: bash
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ steps.detect-version.outputs.version }}
+    - if: hashFiles('Gemfile') != ''
+      run: bundle install
+      shell: bash

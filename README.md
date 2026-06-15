@@ -28,19 +28,14 @@ jobs:
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
-      # Ruby projects must run ruby/setup-ruby first and provide the required
-      # gems in Gemfile.
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
+      - uses: rubykatzen/baseline/.github/actions/setup-ruby@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
-Each action installs its own tool — no setup step needed.
-Ruby actions are the exception: they use the caller repo bundle and require
-`rubocop`, `standard`, `standard-custom`, `standard-performance`,
-`standard-rails`, and `erb_lint` in the caller repo `Gemfile`.
+Each action installs its own tool — no setup step needed. Ruby linter actions
+require `setup-ruby` to run first; they will fail with a clear error if Ruby is
+not in PATH.
 
 ### 2. Dependabot
 
@@ -195,8 +190,13 @@ python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
 ```
 
-Ruby hooks use the caller repo bundle. Add these gems to the caller repo
-`Gemfile` before enabling Ruby hooks:
+Ruby GitHub Actions install Ruby automatically. If a `Gemfile` is present,
+`setup-ruby` runs `bundle install` and linter actions use `bundle exec` —
+so rubocop and erb_lint must be in the project `Gemfile`. If no `Gemfile`
+is present, linter actions install required gems directly.
+
+Add these gems to the caller repo `Gemfile` before enabling Ruby hooks
+(both pre-commit and GitHub Actions):
 
 ```ruby
 group :development, :test do

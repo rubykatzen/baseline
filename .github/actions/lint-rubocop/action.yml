@@ -1,7 +1,12 @@
 name: lint-rubocop
-description: Lint Ruby files using rubocop with baseline standard config. Requires rubocop, standard, standard-custom, standard-performance, and standard-rails gems in project Gemfile.
+description: Lint Ruby files using rubocop with baseline standard config. Requires setup-ruby action. If no Gemfile is present, installs rubocop gems automatically.
 runs:
   using: composite
   steps:
+    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-rubocop." >&2; exit 1; }
+      shell: bash
+    - if: hashFiles('Gemfile') == ''
+      run: gem install --no-document rubocop standard standard-custom standard-performance standard-rails
+      shell: bash
     - run: "${{ github.action_path }}/../../../hooks/rubocop.sh"
       shell: bash
