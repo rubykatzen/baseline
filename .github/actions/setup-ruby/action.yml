@@ -1,5 +1,5 @@
 name: setup-ruby
-description: Install Ruby runtime and, if a Gemfile is present, install project gems. Required before any Ruby linter actions.
+description: Install Ruby runtime and, if a Gemfile is present, install project gems with bundler cache. Required before any Ruby linter actions.
 inputs:
   ruby-version:
     description: Ruby version to install (fallback if .ruby-version, .tool-versions, and mise.toml are absent)
@@ -20,9 +20,12 @@ runs:
           echo "version=${{ inputs.ruby-version }}" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
-    - uses: ruby/setup-ruby@v1
+    - if: hashFiles('Gemfile') != ''
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ steps.detect-version.outputs.version }}
-    - if: hashFiles('Gemfile') != ''
-      run: bundle install
-      shell: bash
+        bundler-cache: true
+    - if: hashFiles('Gemfile') == ''
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ steps.detect-version.outputs.version }}
