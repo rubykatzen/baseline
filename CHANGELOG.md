@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.10] - 2026-06-16
+
+- feat: inline standard rubocop configs, drop standard gem wrappers (#30)
+
 ## [v0.4.9] - 2026-06-16
 
 - fix: make hooks/herb.sh executable (#27)
