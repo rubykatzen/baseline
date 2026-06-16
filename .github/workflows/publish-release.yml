@@ -22,3 +22,12 @@ jobs:
         with:
           version: ${{ steps.meta.outputs.version }}
           notes: ${{ steps.meta.outputs.notes }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+      - name: Build and push gem
+        run: |
+          gem build baseline.gemspec
+          gem push rubykatzen-baseline-*.gem
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
