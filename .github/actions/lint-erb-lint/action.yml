@@ -6,7 +6,7 @@ runs:
     - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-erb-lint." >&2; exit 1; }
       shell: bash
     - if: hashFiles('Gemfile') == ''
-      run: gem install --no-document erb_lint rubocop standard standard-custom standard-performance standard-rails
+      run: gem install --no-document erb_lint rubocop rubocop-performance rubocop-rails standard-custom
       shell: bash
     - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh"
       shell: bash

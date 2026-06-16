@@ -6,7 +6,7 @@ runs:
     - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-rubocop." >&2; exit 1; }
       shell: bash
     - if: hashFiles('Gemfile') == ''
-      run: gem install --no-document rubocop standard standard-custom standard-performance standard-rails
+      run: gem install --no-document rubocop rubocop-performance rubocop-rails standard-custom
       shell: bash
     - run: "${{ github.action_path }}/../../../hooks/rubocop.sh"
       shell: bash

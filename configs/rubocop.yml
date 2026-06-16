@@ -1,13 +1,13 @@
-require:
-  - standard
+plugins:
+  - rubocop-performance
+  - rubocop-rails
   - standard-custom
-  - standard-performance
-  - standard-rails
-inherit_gem:
-  standard: config/base.yml
-  standard-custom: config/base.yml
-  standard-performance: config/base.yml
-  standard-rails: config/base.yml
+inherit_from:
+  - rubocop/standard.yml
+  - rubocop/standard-performance.yml
+  - rubocop/standard-rails.yml
+  - rubocop/standard-custom.yml
 AllCops:
+  NewCops: enable
   Exclude:
     - 'vendor/**/*'
