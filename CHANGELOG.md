@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
+- fix: silence RuboCop extension suggestions in shared config
+- fix: generate `.erb_lint.yml` stub instead of deprecated `.erb-lint.yml`
 
 ## [v0.4.10] - 2026-06-16
 

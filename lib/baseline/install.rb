@@ -10,7 +10,7 @@ module Baseline
         inherit_from:
           - .rubocop_todo.yml
       YAML
-      ".erb-lint.yml" => <<~YAML
+      ".erb_lint.yml" => <<~YAML
         inherit_gem:
           baseline: configs/erb-lint.yml
 
