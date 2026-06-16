@@ -5,6 +5,7 @@
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
 - fix: silence RuboCop extension suggestions in shared config
 - fix: generate `.erb_lint.yml` stub instead of deprecated `.erb-lint.yml`
+- fix: pin RuboCop 1.88+ and rubocop-rails 2.35+ to match standard config parameters
 
 ## [v0.4.10] - 2026-06-16
 
