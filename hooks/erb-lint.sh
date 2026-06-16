@@ -16,7 +16,9 @@ fi
 
 RUBOCOP_CONFIG="$(mktemp)"
 ERB_LINT_CONFIG="$(mktemp)"
-trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
+BEFORE_DIFF="$(mktemp)"
+AFTER_DIFF="$(mktemp)"
+trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG" "$BEFORE_DIFF" "$AFTER_DIFF"' EXIT
 
 {
   printf '%s\n' 'inherit_from:'
@@ -49,6 +51,37 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '    config_file_path: %s\n' "$RUBOCOP_CONFIG"
 } > "$ERB_LINT_CONFIG"
 
+# Autocorrect pass — local only, skipped in CI so style drift fails the build
+if [ -z "$CI" ]; then
+  git diff --name-only | sort > "$BEFORE_DIFF"
+
+  if [ $# -gt 0 ]; then
+    if [ -f Gemfile ]; then
+      bundle exec erb_lint --autocorrect --config "$ERB_LINT_CONFIG" "$@" || true
+    else
+      erb_lint --autocorrect --config "$ERB_LINT_CONFIG" "$@" || true
+    fi
+  else
+    if [ -f Gemfile ]; then
+      erb_files -print0 | xargs -0 bundle exec erb_lint --autocorrect --config "$ERB_LINT_CONFIG" || true
+    else
+      erb_files -print0 | xargs -0 erb_lint --autocorrect --config "$ERB_LINT_CONFIG" || true
+    fi
+  fi
+
+  git diff --name-only | sort > "$AFTER_DIFF"
+  autocorrected=$(comm -13 "$BEFORE_DIFF" "$AFTER_DIFF")
+
+  if [ -n "$autocorrected" ]; then
+    printf 'erb-lint: autocorrected:\n'
+    printf '%s\n' "$autocorrected" | while IFS= read -r f; do
+      printf '  %s\n' "$f"
+      git add -- "$f"
+    done
+  fi
+fi
+
+# Lint pass
 if [ $# -gt 0 ]; then
   if [ -f Gemfile ]; then
     bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"

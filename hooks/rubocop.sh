@@ -15,7 +15,9 @@ if [ $# -eq 0 ] && ! ruby_files -print -quit | grep -q .; then
 fi
 
 RUBOCOP_CONFIG="$(mktemp)"
-trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
+BEFORE_DIFF="$(mktemp)"
+AFTER_DIFF="$(mktemp)"
+trap 'rm -f "$RUBOCOP_CONFIG" "$BEFORE_DIFF" "$AFTER_DIFF"' EXIT
 
 {
   printf '%s\n' 'inherit_from:'
@@ -27,6 +29,37 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
   done
 } > "$RUBOCOP_CONFIG"
 
+# Autocorrect pass — local only, skipped in CI so style drift fails the build
+if [ -z "$CI" ]; then
+  git diff --name-only | sort > "$BEFORE_DIFF"
+
+  if [ $# -gt 0 ]; then
+    if [ -f Gemfile ]; then
+      bundle exec rubocop --autocorrect --config "$RUBOCOP_CONFIG" "$@" || true
+    else
+      rubocop --autocorrect --config "$RUBOCOP_CONFIG" "$@" || true
+    fi
+  else
+    if [ -f Gemfile ]; then
+      ruby_files -print0 | xargs -0 bundle exec rubocop --autocorrect --config "$RUBOCOP_CONFIG" --force-exclusion || true
+    else
+      ruby_files -print0 | xargs -0 rubocop --autocorrect --config "$RUBOCOP_CONFIG" --force-exclusion || true
+    fi
+  fi
+
+  git diff --name-only | sort > "$AFTER_DIFF"
+  autocorrected=$(comm -13 "$BEFORE_DIFF" "$AFTER_DIFF")
+
+  if [ -n "$autocorrected" ]; then
+    printf 'rubocop: autocorrected:\n'
+    printf '%s\n' "$autocorrected" | while IFS= read -r f; do
+      printf '  %s\n' "$f"
+      git add -- "$f"
+    done
+  fi
+fi
+
+# Lint pass
 if [ $# -gt 0 ]; then
   if [ -f Gemfile ]; then
     bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
