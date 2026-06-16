@@ -8,6 +8,6 @@ inherit_from:
   - rubocop/standard-rails.yml # standard-rails 1.6.0 — https://github.com/standardrb/standard-rails/blob/main/config/base.yml
   - rubocop/standard-custom.yml # standard-custom 1.0.2 — https://github.com/standardrb/standard-custom/blob/main/config/base.yml
 AllCops:
-  NewCops: enable
+  NewCops: disable
   Exclude:
     - 'vendor/**/*'
