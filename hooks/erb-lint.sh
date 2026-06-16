@@ -1,15 +1,19 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-has_erb_lint_targets() {
-  find . \
+# When called with file args (pre-commit), use those.
+# Otherwise find all ERB files, explicitly excluding vendor/node_modules.
+if [ $# -gt 0 ]; then
+  ERB_FILES="$*"
+else
+  ERB_FILES=$(find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
     -type f \
     \( -name '*.html.erb' -o -name '*.html+*.erb' \) \
-    -print -quit | grep -q .
-}
+    -print)
+fi
 
-if ! has_erb_lint_targets; then
+if [ -z "$ERB_FILES" ]; then
   printf '%s\n' 'No HTML ERB files found; skipping erb_lint.'
   exit 0
 fi
@@ -49,8 +53,11 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '%s\n' '  Rubocop:'
   printf '    config_file_path: %s\n' "$RUBOCOP_CONFIG"
 } > "$ERB_LINT_CONFIG"
+
 if [ -f Gemfile ]; then
-  bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
+  # shellcheck disable=SC2086
+  bundle exec erb_lint --config "$ERB_LINT_CONFIG" $ERB_FILES
 else
-  erb_lint --config "$ERB_LINT_CONFIG" "$@"
+  # shellcheck disable=SC2086
+  erb_lint --config "$ERB_LINT_CONFIG" $ERB_FILES
 fi
