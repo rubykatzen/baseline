@@ -3,10 +3,10 @@ plugins:
   - rubocop-rails
   - standard-custom
 inherit_from:
-  - rubocop/standard.yml
-  - rubocop/standard-performance.yml
-  - rubocop/standard-rails.yml
-  - rubocop/standard-custom.yml
+  - rubocop/standard.yml # https://github.com/standardrb/standard/blob/main/config/base.yml
+  - rubocop/standard-performance.yml # https://github.com/standardrb/standard-performance/blob/main/config/base.yml
+  - rubocop/standard-rails.yml # https://github.com/standardrb/standard-rails/blob/main/config/base.yml
+  - rubocop/standard-custom.yml # https://github.com/standardrb/standard-custom/blob/main/config/base.yml
 AllCops:
   NewCops: enable
   Exclude:
