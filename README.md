@@ -82,7 +82,7 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 | `lint-shellcheck` | `*.sh` | `configs/shellcheck.rc` |
 | `lint-actionlint` | `.github/workflows/*.yml` | — |
 | `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
-| `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
+| `lint-erb-lint` | `*.erb` | `configs/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
 ## Ruby gem (RuboCop + erb_lint)
@@ -127,7 +127,7 @@ inherit_from:
 ```yaml
 # .erb_lint.yml
 inherit_gem:
-  rubykatzen-baseline: configs/erb-lint.yml
+  rubykatzen-baseline: configs/erb_lint.yml
 inherit_from:
   - .erb_lint_todo.yml
 ```

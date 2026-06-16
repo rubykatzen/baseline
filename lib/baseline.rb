@@ -12,6 +12,6 @@ module Baseline
   end
 
   def self.erb_lint_config_path
-    File.join(gem_root, "configs/erb-lint.yml")
+    File.join(gem_root, "configs/erb_lint.yml")
   end
 end
