@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.8] - 2026-06-16
+
+- setup-ruby: enable bundler cache when Gemfile is present (#24)
+
 ## [v0.4.7] - 2026-06-16
 
 - herb: add lint-herb action (#22)
