@@ -35,8 +35,8 @@ if [ $# -gt 0 ]; then
   fi
 else
   if [ -f Gemfile ]; then
-    ruby_files -print0 | xargs -0 bundle exec rubocop --config "$RUBOCOP_CONFIG"
+    ruby_files -print0 | xargs -0 bundle exec rubocop --config "$RUBOCOP_CONFIG" --force-exclusion
   else
-    ruby_files -print0 | xargs -0 rubocop --config "$RUBOCOP_CONFIG"
+    ruby_files -print0 | xargs -0 rubocop --config "$RUBOCOP_CONFIG" --force-exclusion
   fi
 fi
