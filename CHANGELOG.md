@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.9] - 2026-06-16
+
+- fix: make hooks/herb.sh executable (#27)
+
 ## [v0.4.8] - 2026-06-16
 
 - setup-ruby: enable bundler cache when Gemfile is present (#24)
