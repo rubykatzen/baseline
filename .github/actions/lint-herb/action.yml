@@ -1,0 +1,12 @@
+name: lint-herb
+description: Analyze ERB templates using herb. Requires setup-ruby action. If no Gemfile is present, installs herb automatically.
+runs:
+  using: composite
+  steps:
+    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-herb." >&2; exit 1; }
+      shell: bash
+    - if: hashFiles('Gemfile') == ''
+      run: gem install --no-document herb
+      shell: bash
+    - run: "${{ github.action_path }}/../../../hooks/herb.sh"
+      shell: bash
