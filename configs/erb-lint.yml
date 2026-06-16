@@ -1,5 +1,5 @@
 exclude:
-  - '**/vendor/*/ruby/**/*'
+  - 'vendor/**/*'
 EnableDefaultLinters: true
 linters:
   RequireInputAutocomplete:
