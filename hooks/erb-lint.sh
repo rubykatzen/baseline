@@ -2,7 +2,7 @@
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 uses_baseline_gem_config() {
-  [ -f .erb-lint.yml ] && grep -Eq '^[[:space:]]*baseline:' .erb-lint.yml 2>/dev/null
+  [ -f .erb_lint.yml ] && grep -Eq '^[[:space:]]*baseline:' .erb_lint.yml 2>/dev/null
 }
 
 if uses_baseline_gem_config && [ -f Gemfile ]; then

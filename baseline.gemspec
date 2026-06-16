@@ -24,9 +24,9 @@ Gem::Specification.new do |spec|
   spec.executables = ["baseline-install"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rubocop", "~> 1.88.0"
-  spec.add_dependency "rubocop-performance", "~> 1.26.0"
-  spec.add_dependency "rubocop-rails", "~> 2.35.0"
-  spec.add_dependency "standard-custom", "~> 1.0.0"
-  spec.add_dependency "erb_lint", "~> 0.9.0"
+  spec.add_dependency "rubocop", "~> 1"
+  spec.add_dependency "rubocop-performance", "~> 1"
+  spec.add_dependency "rubocop-rails", "~> 2"
+  spec.add_dependency "standard-custom", "~> 1"
+  spec.add_dependency "erb_lint", "~> 0.9"
 end
