@@ -452,7 +452,7 @@ Lint/Loop:
   Enabled: true
 Lint/MissingCopEnableDirective:
   Enabled: true
-  MaxRangeSize: .inf
+  MaximumRangeSize: .inf
 Lint/MissingSuper:
   Enabled: false
 Lint/MixedCaseRange:
