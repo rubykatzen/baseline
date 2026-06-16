@@ -8,7 +8,7 @@ This repo is the single source of truth for linter configs across all dupmachine
 
 ## Repository Structure
 
-- `configs/` — canonical linter config files
+- `config/` — canonical linter config files
 - `hooks/` — shell script wrappers for pre-commit (`language: script`)
 - `baseline.gemspec` — Ruby gem packaging RuboCop and erb_lint configs for local `bundle exec rubocop`
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
@@ -28,8 +28,8 @@ This repo is the single source of truth for linter configs across all dupmachine
 
 To add a linter for a new file type:
 
-1. Add config to `configs/<linter>.ext`
-2. Add `hooks/<linter>.sh` — shell wrapper that passes the config path via `$(dirname "$0")/../configs/<linter>.ext`
+1. Add config to `config/<linter>.ext`
+2. Add `hooks/<linter>.sh` — shell wrapper that passes the config path via `$(dirname "$0")/../config/<linter>.ext`
 3. Make the script executable: `chmod +x hooks/<linter>.sh`
 4. Add hook entry to `.pre-commit-hooks.yaml`
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`

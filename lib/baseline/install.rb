@@ -5,14 +5,14 @@ module Baseline
     STUBS = {
       ".rubocop.yml" => <<~YAML,
         inherit_gem:
-          rubykatzen-baseline: configs/rubocop.yml
+          rubykatzen-baseline: config/rubocop.yml
 
         inherit_from:
           - .rubocop_todo.yml
       YAML
       ".erb_lint.yml" => <<~YAML
         inherit_gem:
-          rubykatzen-baseline: configs/erb_lint.yml
+          rubykatzen-baseline: config/erb_lint.yml
 
         inherit_from:
           - .erb_lint_todo.yml

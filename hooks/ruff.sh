@@ -13,4 +13,4 @@ if ! has_ruff_targets; then
   exit 0
 fi
 
-exec ruff check --config "$(dirname "$0")/../configs/ruff.toml" "$@"
+exec ruff check --config "$(dirname "$0")/../config/ruff.toml" "$@"

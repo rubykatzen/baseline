@@ -76,13 +76,13 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 
 | Action | Lints | Config |
 |---|---|---|
-| `lint-yamllint` | `*.yml`, `*.yaml` | `configs/yamllint.yml` |
-| `lint-pymarkdown` | `*.md` | `configs/pymarkdown.json` |
-| `lint-ruff` | `*.py` | `configs/ruff.toml` |
-| `lint-shellcheck` | `*.sh` | `configs/shellcheck.rc` |
+| `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
+| `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
+| `lint-ruff` | `*.py` | `config/ruff.toml` |
+| `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
 | `lint-actionlint` | `.github/workflows/*.yml` | — |
-| `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
-| `lint-erb-lint` | `*.erb` | `configs/erb_lint.yml` |
+| `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
+| `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
 ## Ruby gem (RuboCop + erb_lint)
@@ -119,7 +119,7 @@ This creates stub configs when missing:
 ```yaml
 # .rubocop.yml
 inherit_gem:
-  rubykatzen-baseline: configs/rubocop.yml
+  rubykatzen-baseline: config/rubocop.yml
 inherit_from:
   - .rubocop_todo.yml
 ```
@@ -127,7 +127,7 @@ inherit_from:
 ```yaml
 # .erb_lint.yml
 inherit_gem:
-  rubykatzen-baseline: configs/erb_lint.yml
+  rubykatzen-baseline: config/erb_lint.yml
 inherit_from:
   - .erb_lint_todo.yml
 ```

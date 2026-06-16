@@ -8,10 +8,10 @@ module Baseline
   end
 
   def self.rubocop_config_path
-    File.join(gem_root, "configs/rubocop.yml")
+    File.join(gem_root, "config/rubocop.yml")
   end
 
   def self.erb_lint_config_path
-    File.join(gem_root, "configs/erb_lint.yml")
+    File.join(gem_root, "config/erb_lint.yml")
   end
 end

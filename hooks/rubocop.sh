@@ -27,7 +27,7 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
 
 {
   printf '%s\n' 'inherit_from:'
-  printf '  - %s\n' "$BASELINE_DIR/configs/rubocop.yml"
+  printf '  - %s\n' "$BASELINE_DIR/config/rubocop.yml"
 
   for todo in .rubocop_todo*.yml; do
     [ -e "$todo" ] || continue

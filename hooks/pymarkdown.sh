@@ -13,4 +13,4 @@ if ! has_pymarkdown_targets; then
   exit 0
 fi
 
-exec pymarkdown --config "$(dirname "$0")/../configs/pymarkdown.json" scan "$@"
+exec pymarkdown --config "$(dirname "$0")/../config/pymarkdown.json" scan "$@"
