@@ -1,2 +1,12 @@
 Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
+Rails/ActionOrder:
+  Enabled: true
+  ExpectedOrder:
+    - index
+    - show
+    - new
+    - edit
+    - create
+    - update
+    - destroy
