@@ -3,7 +3,7 @@
 require_relative "lib/baseline/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "baseline"
+  spec.name = "rubykatzen-baseline"
   spec.version = Baseline::VERSION
   spec.authors = ["rubykatzen"]
   spec.summary = "Shared RuboCop and erb_lint configs for dupmachine repositories"

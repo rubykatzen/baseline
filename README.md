@@ -87,7 +87,7 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 
 ## Ruby gem (RuboCop + erb_lint)
 
-For Rails and other Ruby projects, install the shared configs through the `baseline`
+For Rails and other Ruby projects, install the shared configs through the `rubykatzen-baseline`
 gem instead of listing RuboCop gems separately. Configs still live in this
 repository and ship inside the gem — consumer repos only add stub files that
 inherit from the gem.
@@ -99,7 +99,7 @@ version to the git tag (for example tag `v0.5.0` → gem `0.5.0`):
 
 ```ruby
 group :development, :test do
-  gem "baseline", "0.5.0", require: false
+  gem "rubykatzen-baseline", "0.5.0", require: false
 end
 ```
 
@@ -119,15 +119,15 @@ This creates stub configs when missing:
 ```yaml
 # .rubocop.yml
 inherit_gem:
-  baseline: configs/rubocop.yml
+  rubykatzen-baseline: configs/rubocop.yml
 inherit_from:
   - .rubocop_todo.yml
 ```
 
 ```yaml
-# .erb-lint.yml
+# .erb_lint.yml
 inherit_gem:
-  baseline: configs/erb-lint.yml
+  rubykatzen-baseline: configs/erb-lint.yml
 inherit_from:
   - .erb_lint_todo.yml
 ```
@@ -149,7 +149,7 @@ shell wrappers that assemble a temporary config from this repository checkout.
 ### Git source before RubyGems
 
 ```ruby
-gem "baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
+gem "rubykatzen-baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
 ```
 
 ## Reusable workflows
