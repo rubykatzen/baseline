@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.6] - 2026-06-16
+
+- erb-lint: use find to collect files, drop --lint-all (#20)
+
 ## [v0.4.5] - 2026-06-16
 
 - erb-lint: exclude vendor from linting (#18)
