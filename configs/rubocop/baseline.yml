@@ -1,0 +1,20 @@
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: true
+Rails/ActionOrder:
+  Enabled: true
+Rails/HasManyOrHasOneDependent:
+  Enabled: true
+Rails/InverseOf:
+  Enabled: true
+Rails/ActionFilter:
+  Enabled: true
+Rails/Delegate:
+  Enabled: true
+Rails/NegateInclude:
+  Enabled: true
+Rails/PluckId:
+  Enabled: true
+Rails/Present:
+  Enabled: true
+Rails/RedundantActiveRecordAllMethod:
+  Enabled: true

@@ -1,13 +1,14 @@
-require:
-  - standard
+plugins:
+  - rubocop-performance
+  - rubocop-rails
   - standard-custom
-  - standard-performance
-  - standard-rails
-inherit_gem:
-  standard: config/base.yml
-  standard-custom: config/base.yml
-  standard-performance: config/base.yml
-  standard-rails: config/base.yml
+inherit_from:
+  - rubocop/standard.yml # standard 1.55.0 — https://github.com/standardrb/standard/blob/main/config/base.yml
+  - rubocop/standard-performance.yml # standard-performance 1.9.0 — https://github.com/standardrb/standard-performance/blob/main/config/base.yml
+  - rubocop/standard-rails.yml # standard-rails 1.6.0 — https://github.com/standardrb/standard-rails/blob/main/config/base.yml
+  - rubocop/standard-custom.yml # standard-custom 1.0.2 — https://github.com/standardrb/standard-custom/blob/main/config/base.yml
+  - rubocop/baseline.yml
 AllCops:
+  NewCops: disable
   Exclude:
     - 'vendor/**/*'

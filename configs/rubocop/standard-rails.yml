@@ -1,0 +1,314 @@
+AllCops:
+  Exclude:
+    - bin/*
+    # Exclude db/schema.rb and db/[CONFIGURATION_NAMESPACE]_schema.rb by default.
+    # See: https://guides.rubyonrails.org/active_record_multiple_databases.html#setting-up-your-application
+    - db/*schema.rb
+    - log/**/*
+    - public/**/*
+    - storage/**/*
+  # Enable checking Active Support extensions.
+  # See: https://docs.rubocop.org/rubocop/configuration.html#enable-checking-active-support-extensions
+  ActiveSupportExtensionsEnabled: true
+  # What version of Rails is the inspected code using?  If a value is specified
+  # for TargetRailsVersion then it is used.  Acceptable values are specified
+  # as a float (i.e. 5.1); the patch version of Rails should not be included.
+  # If TargetRailsVersion is not set, RuboCop will parse the Gemfile.lock or
+  # gems.locked file to find the version of Rails that has been bound to the
+  # application.  If neither of those files exist, RuboCop will use Rails 5.0
+  # as the default.
+  TargetRailsVersion: ~
+Lint/SafeNavigationChain:
+  Enabled: true
+  AllowedMethods:
+    - present?
+    - blank?
+    - presence
+    - presence_in
+    - try
+    - try!
+    - in?
+Lint/UselessAccessModifier:
+  Enabled: false
+Lint/UselessMethodDefinition:
+  Enabled: false
+Rails/ActionControllerFlashBeforeRender:
+  Enabled: false
+Rails/ActionControllerTestCase:
+  Enabled: false
+Rails/ActionFilter:
+  Enabled: false
+Rails/ActionOrder:
+  Enabled: false
+Rails/ActiveRecordAliases:
+  Enabled: true
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+Rails/ActiveRecordOverride:
+  Enabled: true
+Rails/ActiveSupportAliases:
+  Enabled: false
+Rails/ActiveSupportOnLoad:
+  Enabled: true
+Rails/AddColumnIndex:
+  Enabled: true
+Rails/AfterCommitOverride:
+  Enabled: true
+Rails/ApplicationController:
+  Enabled: true
+Rails/ApplicationJob:
+  Enabled: true
+Rails/ApplicationMailer:
+  Enabled: true
+Rails/ApplicationRecord:
+  Enabled: true
+  Exclude:
+    - 'db/migrate/**/*'
+Rails/ArelStar:
+  Enabled: true
+Rails/AssertNot:
+  Enabled: false
+Rails/AttributeDefaultBlockValue:
+  Enabled: true
+Rails/BelongsTo:
+  Enabled: true
+Rails/Blank:
+  Enabled: true
+Rails/BulkChangeTable:
+  Enabled: false
+Rails/CompactBlank:
+  Enabled: true
+Rails/ContentTag:
+  Enabled: true
+Rails/CreateTableWithTimestamps:
+  Enabled: true
+Rails/DangerousColumnNames:
+  Enabled: true
+Rails/Date:
+  Enabled: true
+Rails/DefaultScope:
+  Enabled: false
+Rails/Delegate:
+  Enabled: false
+Rails/DelegateAllowBlank:
+  Enabled: true
+Rails/DeprecatedActiveModelErrorsMethods:
+  Enabled: false
+Rails/DotSeparatedKeys:
+  Enabled: true
+Rails/DuplicateAssociation:
+  Enabled: true
+  AutoCorrect: false
+Rails/DuplicateScope:
+  Enabled: true
+Rails/DurationArithmetic:
+  Enabled: true
+Rails/DynamicFindBy:
+  Enabled: false
+Rails/EagerEvaluationLogMessage:
+  Enabled: true
+Rails/EnumHash:
+  Enabled: true
+Rails/EnumSyntax:
+  Enabled: true
+Rails/EnumUniqueness:
+  Enabled: true
+Rails/Env:
+  Enabled: false
+Rails/EnvLocal:
+  Enabled: true
+Rails/EnvironmentComparison:
+  Enabled: true
+Rails/EnvironmentVariableAccess:
+  Enabled: false
+Rails/Exit:
+  Enabled: true
+Rails/ExpandedDateRange:
+  Enabled: true
+Rails/FilePath:
+  Enabled: true
+Rails/FindBy:
+  Enabled: true
+Rails/FindById:
+  Enabled: true
+Rails/FindByOrAssignmentMemoization:
+  Enabled: false
+Rails/FindEach:
+  Enabled: true
+Rails/FreezeTime:
+  Enabled: false
+Rails/HasAndBelongsToMany:
+  Enabled: true
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+Rails/HelperInstanceVariable:
+  Enabled: false
+Rails/HttpPositionalArguments:
+  Enabled: true
+Rails/HttpStatus:
+  Enabled: false
+Rails/HttpStatusNameConsistency:
+  Enabled: true
+Rails/I18nLazyLookup:
+  Enabled: false
+Rails/I18nLocaleAssignment:
+  Enabled: true
+Rails/I18nLocaleTexts:
+  Enabled: false
+Rails/IgnoredColumnsAssignment:
+  Enabled: true
+Rails/IgnoredSkipActionFilterOption:
+  Enabled: true
+Rails/IndexBy:
+  Enabled: false
+Rails/IndexWith:
+  Enabled: false
+Rails/Inquiry:
+  Enabled: false
+Rails/InverseOf:
+  Enabled: false
+Rails/LexicallyScopedActionFilter:
+  Enabled: true
+Rails/LinkToBlank:
+  Enabled: true
+Rails/MailerName:
+  Enabled: true
+Rails/MatchRoute:
+  Enabled: true
+Rails/MigrationClassName:
+  Enabled: true
+Rails/MultipleRoutePaths:
+  Enabled: true
+Rails/NegateInclude:
+  Enabled: false
+Rails/NotNullColumn:
+  Enabled: false
+Rails/OrderArguments:
+  Enabled: false
+Rails/OrderById:
+  Enabled: false
+Rails/Output:
+  Enabled: true
+Rails/OutputSafety:
+  Enabled: false
+Rails/Pick:
+  Enabled: true
+Rails/Pluck:
+  Enabled: true
+Rails/PluckId:
+  Enabled: false
+Rails/PluckInWhere:
+  Enabled: true
+Rails/PluralizationGrammar:
+  Enabled: false
+Rails/Presence:
+  Enabled: true
+Rails/Present:
+  Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false
+Rails/ReadWriteAttribute:
+  Enabled: true
+Rails/RedirectBackOrTo:
+  Enabled: true
+Rails/RedundantActiveRecordAllMethod:
+  Enabled: false
+Rails/RedundantAllowNil:
+  Enabled: true
+Rails/RedundantForeignKey:
+  Enabled: true
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Enabled: true
+Rails/RedundantReceiverInWithOptions:
+  Enabled: true
+Rails/RedundantTravelBack:
+  Enabled: true
+Rails/ReflectionClassName:
+  Enabled: true
+Rails/RefuteMethods:
+  Enabled: false
+Rails/RelativeDateConstant:
+  Enabled: true
+Rails/RenderInline:
+  Enabled: false
+Rails/RenderPlainText:
+  Enabled: true
+Rails/RequestReferer:
+  Enabled: false
+Rails/RequireDependency:
+  Enabled: false
+Rails/ResponseParsedBody:
+  Enabled: false
+Rails/ReversibleMigration:
+  Enabled: true
+Rails/ReversibleMigrationMethodDefinition:
+  Enabled: true
+Rails/RootJoinChain:
+  Enabled: true
+Rails/RootPathnameMethods:
+  Enabled: true
+Rails/RootPublicPath:
+  Enabled: true
+Rails/SafeNavigation:
+  Enabled: true
+Rails/SafeNavigationWithBlank:
+  Enabled: true
+Rails/SaveBang:
+  Enabled: false
+Rails/SchemaComment:
+  Enabled: false
+Rails/ScopeArgs:
+  Enabled: true
+Rails/SelectMap:
+  Enabled: false
+Rails/ShortI18n:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Enabled: false
+Rails/SquishedSQLHeredocs:
+  Enabled: false
+Rails/StripHeredoc:
+  Enabled: true
+Rails/StrongParametersExpect:
+  Enabled: false
+Rails/TableNameAssignment:
+  Enabled: false
+Rails/ThreeStateBooleanColumn:
+  Enabled: pending
+Rails/TimeZone:
+  Enabled: true
+Rails/TimeZoneAssignment:
+  Enabled: true
+Rails/ToFormattedS:
+  Enabled: true
+  EnforcedStyle: to_fs
+Rails/ToSWithArgument:
+  Enabled: true
+Rails/TopLevelHashWithIndifferentAccess:
+  Enabled: true
+Rails/TransactionExitStatement:
+  Enabled: true
+Rails/UniqBeforePluck:
+  Enabled: true
+Rails/UniqueValidationWithoutIndex:
+  Enabled: true
+Rails/UnknownEnv:
+  Enabled: false
+Rails/UnusedIgnoredColumns:
+  Enabled: false
+Rails/UnusedRenderContent:
+  Enabled: true
+Rails/Validation:
+  Enabled: true
+Rails/WhereEquals:
+  Enabled: true
+Rails/WhereExists:
+  Enabled: false
+Rails/WhereMissing:
+  Enabled: true
+Rails/WhereNot:
+  Enabled: true
+Rails/WhereNotWithMultipleConditions:
+  Enabled: false
+Rails/WhereRange:
+  Enabled: false
