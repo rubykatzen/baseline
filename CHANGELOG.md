@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.4.5] - 2026-06-16
+
+- erb-lint: exclude vendor from linting (#18)
+- Update README to generalize workflow description
+- chore: remove release actions moved to rubykatzen/releaser (#17)
+
 ## [v0.4.4] - 2026-06-15
 
 - docs: replace manual workflow dispatch with releaser CLI in release docs
