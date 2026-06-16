@@ -2,7 +2,7 @@
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 uses_baseline_gem_config() {
-  [ -f .rubocop.yml ] && grep -Eq '^[[:space:]]*baseline:' .rubocop.yml 2>/dev/null
+  [ -f .rubocop.yml ] && grep -Eq 'rubykatzen-baseline:' .rubocop.yml 2>/dev/null
 }
 
 if uses_baseline_gem_config && [ -f Gemfile ]; then

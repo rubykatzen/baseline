@@ -12,7 +12,7 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `hooks/` — shell script wrappers for pre-commit (`language: script`)
 - `baseline.gemspec` — Ruby gem packaging RuboCop and erb_lint configs for local `bundle exec rubocop`
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
-- `exe/baseline-install` — writes project `.rubocop.yml` and `.erb-lint.yml` stubs
+- `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — composite actions, one per linter
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`

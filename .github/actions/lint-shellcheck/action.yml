@@ -11,4 +11,4 @@ runs:
     - shell: bash
       run: |
         mapfile -t sh_files < <(find . -name "*.sh")
-        [ ${#sh_files[@]} -gt 0 ] && shellcheck --rcfile "${{ github.action_path }}/../../../configs/shellcheck.rc" "${sh_files[@]}"
+        [ ${#sh_files[@]} -gt 0 ] && shellcheck --rcfile "${{ github.action_path }}/../../../config/shellcheck.rc" "${sh_files[@]}"
