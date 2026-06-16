@@ -1,6 +1,6 @@
 # Baseline
 
-Shared linter configs, composite GitHub Actions, and reusable workflows.
+Shared linter configs and composite GitHub Actions.
 
 ## Quick setup
 
@@ -39,7 +39,8 @@ not in PATH.
 
 ### 2. Dependabot
 
-Add `.github/dependabot.yml` to keep the version pin current automatically:
+Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
+current automatically:
 
 ```yaml
 version: 2
@@ -50,25 +51,16 @@ updates:
       interval: daily
       time: "22:00"
       timezone: "Europe/Berlin"
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: daily
+      time: "22:00"
+      timezone: "Europe/Berlin"
 ```
 
-### 3. Pre-commit autoupdate (optional)
-
-Create `.github/workflows/pre-commit-autoupdate.yml`:
-
-```yaml
-name: Pre-commit Autoupdate
-on:
-  schedule:
-    - cron: "30 21 * * *"  # 22:30 Europe/Berlin (UTC+1)
-  workflow_dispatch:
-jobs:
-  autoupdate:
-    uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate-shared.yml@VERSION
-    secrets: inherit
-```
-
-Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
+Dependabot opens pull requests for version bumps. Pair with
+`dependabot-automerge` if you want patch/minor updates merged automatically.
 
 ---
 
@@ -85,6 +77,7 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
+<<<<<<< HEAD
 ## Ruby gem (RuboCop + erb_lint)
 
 For Rails and other Ruby projects, install the shared configs through the `rubykatzen-baseline`
@@ -197,12 +190,6 @@ shell wrappers that assemble a temporary config from this repository checkout.
 ```ruby
 gem "rubykatzen-baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
 ```
-
-## Reusable workflows
-
-| Workflow | Trigger in caller | What it does |
-|---|---|---|
-| `pre-commit-autoupdate-shared.yml` | `schedule` / `workflow_dispatch` | Runs `pre-commit autoupdate` and commits to main |
 
 ## Releases
 

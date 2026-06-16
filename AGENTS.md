@@ -17,8 +17,6 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
-- `.github/workflows/pre-commit-autoupdate-shared.yml` — **reusable**: runs `pre-commit autoupdate` and commits
-- `.github/workflows/pre-commit-autoupdate.yml` — baseline's own caller
 - `.github/workflows/dependabot-automerge.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.github/workflows/telegram-release-notify.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
@@ -36,15 +34,15 @@ To add a linter for a new file type:
 6. Update `.pre-commit-config.yaml.example`
 7. Update `README.md`
 
-## Reusable workflows
-
-`pre-commit-autoupdate-shared.yml` is the only `workflow_call` workflow in this
-repo. Consumer repos call it as:
-`uses: rubykatzen/baseline/.github/workflows/pre-commit-autoupdate-shared.yml@vX`
+## Workflows
 
 `dependabot-automerge.yml` and `telegram-release-notify.yml` are baseline's own
 callers that delegate to `rubykatzen/releaser`; they are not exported for
 external use.
+
+Pre-commit hook pins in `.pre-commit-config.yaml` are updated by Dependabot
+(`package-ecosystem: pre-commit` in `.github/dependabot.yml`), not by a custom
+workflow.
 
 ## Self-linting
 
