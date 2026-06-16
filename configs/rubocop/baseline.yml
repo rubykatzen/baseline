@@ -2,3 +2,7 @@ Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
 Rails/ActionOrder:
   Enabled: true
+Rails/HasManyOrHasOneDependent:
+  Enabled: true
+Rails/InverseOf:
+  Enabled: true
