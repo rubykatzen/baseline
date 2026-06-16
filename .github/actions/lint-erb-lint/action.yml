@@ -8,5 +8,5 @@ runs:
     - if: hashFiles('Gemfile') == ''
       run: gem install --no-document erb_lint rubocop standard standard-custom standard-performance standard-rails
       shell: bash
-    - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh --lint-all"
+    - run: "${{ github.action_path }}/../../../hooks/erb-lint.sh"
       shell: bash

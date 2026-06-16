@@ -1,22 +1,21 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-has_erb_lint_targets() {
+erb_files() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
     -type f \
     \( -name '*.html.erb' -o -name '*.html+*.erb' \) \
-    -print -quit | grep -q .
+    "$@"
 }
 
-if ! has_erb_lint_targets; then
+if [ $# -eq 0 ] && ! erb_files -print -quit | grep -q .; then
   printf '%s\n' 'No HTML ERB files found; skipping erb_lint.'
   exit 0
 fi
 
 RUBOCOP_CONFIG="$(mktemp)"
 ERB_LINT_CONFIG="$(mktemp)"
-
 trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
 
 {
@@ -49,8 +48,17 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '%s\n' '  Rubocop:'
   printf '    config_file_path: %s\n' "$RUBOCOP_CONFIG"
 } > "$ERB_LINT_CONFIG"
-if [ -f Gemfile ]; then
-  bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
+
+if [ $# -gt 0 ]; then
+  if [ -f Gemfile ]; then
+    bundle exec erb_lint --config "$ERB_LINT_CONFIG" "$@"
+  else
+    erb_lint --config "$ERB_LINT_CONFIG" "$@"
+  fi
 else
-  erb_lint --config "$ERB_LINT_CONFIG" "$@"
+  if [ -f Gemfile ]; then
+    erb_files -print0 | xargs -0 bundle exec erb_lint --config "$ERB_LINT_CONFIG"
+  else
+    erb_files -print0 | xargs -0 erb_lint --config "$ERB_LINT_CONFIG"
+  fi
 fi
