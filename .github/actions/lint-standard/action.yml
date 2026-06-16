@@ -1,0 +1,7 @@
+name: lint-standard
+description: Lint JavaScript files using Standard JS. Automatically skips if no JS files are present.
+runs:
+  using: composite
+  steps:
+    - run: "${{ github.action_path }}/../../../hooks/standard.sh"
+      shell: bash
