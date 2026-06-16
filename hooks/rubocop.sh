@@ -1,6 +1,14 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
+uses_baseline_gem_config() {
+  [ -f .rubocop.yml ] && grep -Eq '^[[:space:]]*baseline:' .rubocop.yml 2>/dev/null
+}
+
+if uses_baseline_gem_config && [ -f Gemfile ]; then
+  exec bundle exec rubocop "$@"
+fi
+
 ruby_files() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \

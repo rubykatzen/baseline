@@ -1,6 +1,18 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
+uses_baseline_gem_config() {
+  [ -f .erb-lint.yml ] && grep -Eq '^[[:space:]]*baseline:' .erb-lint.yml 2>/dev/null
+}
+
+if uses_baseline_gem_config && [ -f Gemfile ]; then
+  if [ $# -eq 0 ]; then
+    exec bundle exec erb_lint --lint-all "$@"
+  fi
+
+  exec bundle exec erb_lint "$@"
+fi
+
 erb_files() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \

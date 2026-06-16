@@ -85,6 +85,73 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 | `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
+## Ruby gem (RuboCop + erb_lint)
+
+For Rails and other Ruby projects, install the shared configs through the `baseline`
+gem instead of listing RuboCop gems separately. Configs still live in this
+repository and ship inside the gem — consumer repos only add stub files that
+inherit from the gem.
+
+### 1. Gemfile
+
+Replace individual RuboCop gems with a single baseline pin. Match the gem
+version to the git tag (for example tag `v0.5.0` → gem `0.5.0`):
+
+```ruby
+group :development, :test do
+  gem "baseline", "0.5.0", require: false
+end
+```
+
+The gem pulls in `rubocop`, `rubocop-performance`, `rubocop-rails`,
+`standard-custom`, and `erb_lint` as dependencies.
+
+### 2. Project stubs
+
+Run once from the project root after `bundle install`:
+
+```bash
+bundle exec baseline-install
+```
+
+This creates stub configs when missing:
+
+```yaml
+# .rubocop.yml
+inherit_gem:
+  baseline: configs/rubocop.yml
+inherit_from:
+  - .rubocop_todo.yml
+```
+
+```yaml
+# .erb-lint.yml
+inherit_gem:
+  baseline: configs/erb-lint.yml
+inherit_from:
+  - .erb_lint_todo.yml
+```
+
+Project-specific excludes stay in `.rubocop_todo.yml` and `.erb_lint_todo.yml`.
+
+### 3. Local commands
+
+```bash
+bundle exec rubocop
+bundle exec rubocop -A
+bundle exec erb_lint --lint-all
+```
+
+Pre-commit hooks and GitHub Actions detect these stubs and delegate to the same
+commands when a `Gemfile` is present. Without stubs, hooks fall back to the
+shell wrappers that assemble a temporary config from this repository checkout.
+
+### Git source before RubyGems
+
+```ruby
+gem "baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
+```
+
 ## Reusable workflows
 
 | Workflow | Trigger in caller | What it does |
@@ -172,7 +239,7 @@ so rubocop and erb_lint must be in the project `Gemfile`. If no `Gemfile`
 is present, linter actions install required gems directly.
 
 Add these gems to the caller repo `Gemfile` before enabling Ruby hooks
-(both pre-commit and GitHub Actions):
+(both pre-commit and GitHub Actions) when not using the baseline gem:
 
 ```ruby
 group :development, :test do
@@ -183,6 +250,9 @@ group :development, :test do
   gem "erb_lint", require: false
 end
 ```
+
+Prefer the [baseline gem](#ruby-gem-rubocop--erb_lint) when the project already
+uses Bundler.
 
 The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
 filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook

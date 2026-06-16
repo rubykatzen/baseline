@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- feat: publish baseline Ruby gem with RuboCop and erb_lint configs
+
 ## [v0.4.10] - 2026-06-16
 
 - feat: inline standard rubocop configs, drop standard gem wrappers (#30)
