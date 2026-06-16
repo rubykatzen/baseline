@@ -1,15 +1,16 @@
 #!/bin/sh
 
-has_erb_targets() {
+has_herb_targets() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
     -type f \
-    \( -name '*.html.erb' -o -name '*.html+*.erb' \) \
+    \( -name '*.html.erb' -o -name '*.html+*.erb' -o -name '*.turbo_stream.erb' \
+       -o -name '*.herb' -o -name '*.html.herb' -o -name '*.rhtml' \) \
     -print -quit | grep -q .
 }
 
-if ! has_erb_targets; then
-  printf '%s\n' 'No HTML ERB files found; skipping herb.'
+if ! has_herb_targets; then
+  printf '%s\n' 'No ERB/Herb files found; skipping herb.'
   exit 0
 fi
 

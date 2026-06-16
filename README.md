@@ -83,6 +83,7 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 | `lint-actionlint` | `.github/workflows/*.yml` | — |
 | `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
 | `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
+| `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
 ## Reusable workflows
 
