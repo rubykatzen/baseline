@@ -1,0 +1,8 @@
+name: Merge Dependabot PR
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+jobs:
+  merge:
+    uses: rubykatzen/releaser/.github/workflows/merge-dependabot-pr-shared.yml@main
+    secrets: inherit

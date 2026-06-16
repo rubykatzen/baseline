@@ -1,0 +1,9 @@
+name: Notify Telegram unreleased commits
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+jobs:
+  notify:
+    uses: rubykatzen/releaser/.github/workflows/notify-telegram-unreleased-shared.yml@main
+    secrets: inherit
