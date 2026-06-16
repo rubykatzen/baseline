@@ -8,9 +8,9 @@ has_js_targets() {
     -print -quit | grep -q .
 }
 
-if ! has_js_targets; then
+if [ $# -eq 0 ] && ! has_js_targets; then
   printf '%s\n' 'No JavaScript files found; skipping standard.'
   exit 0
 fi
 
-npx standard
+npx --yes standard@17 "$@"

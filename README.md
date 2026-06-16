@@ -84,6 +84,7 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 | `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
 | `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+| `lint-standard` | `*.js`, `*.jsx`, `*.mjs`, `*.cjs` | — |
 
 ## Reusable workflows
 
