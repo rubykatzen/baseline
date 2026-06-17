@@ -4,6 +4,8 @@
 
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
 - feat: comment out todo inherit_from in install stubs with generation hints
+- fix: skip gem-delegating rubocop and erb_lint hooks when no target files
+- fix: remove stale gem artifacts before RubyGems publish
 - fix: silence RuboCop extension suggestions in shared config
 - fix: generate `.erb_lint.yml` stub instead of deprecated `.erb-lint.yml`
 - fix: pin RuboCop 1.88+ to match standard config parameters

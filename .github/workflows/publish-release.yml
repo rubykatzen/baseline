@@ -27,6 +27,8 @@ jobs:
           ruby-version: "3.2"
       - name: Build and push gem
         run: |
+          # Drop stale artifacts from reused runners before build/push.
+          rm -f rubykatzen-baseline-*.gem
           gem build baseline.gemspec
           gem push rubykatzen-baseline-*.gem
         env:

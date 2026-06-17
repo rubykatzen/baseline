@@ -36,7 +36,7 @@ module Baseline
         end
 
         File.write(target, content)
-        puts "create #{relative_path}"
+        warn "create #{relative_path}"
       end
     end
   end

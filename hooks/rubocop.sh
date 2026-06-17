@@ -2,12 +2,9 @@
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 uses_baseline_gem_config() {
+  # Keep in sync with hooks/erb-lint.sh (separate config filenames).
   [ -f .rubocop.yml ] && grep -Eq 'rubykatzen-baseline:' .rubocop.yml 2>/dev/null
 }
-
-if uses_baseline_gem_config && [ -f Gemfile ]; then
-  exec bundle exec rubocop "$@"
-fi
 
 ruby_files() {
   find . \
@@ -16,6 +13,15 @@ ruby_files() {
     \( -name '*.rb' -o -name '*.rake' -o -name '*.gemspec' -o -name 'Gemfile' -o -name 'Rakefile' -o -name 'config.ru' \) \
     "$@"
 }
+
+if uses_baseline_gem_config && [ -f Gemfile ]; then
+  # Delegate to project stub; skip when pre-commit passes no files (avoid full-project scan).
+  if [ $# -gt 0 ] || ruby_files -print -quit | grep -q .; then
+    exec bundle exec rubocop "$@"
+  fi
+  printf '%s\n' 'No Ruby files found; skipping rubocop.'
+  exit 0
+fi
 
 if [ $# -eq 0 ] && ! ruby_files -print -quit | grep -q .; then
   printf '%s\n' 'No Ruby files found; skipping rubocop.'

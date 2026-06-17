@@ -2,16 +2,9 @@
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 uses_baseline_gem_config() {
+  # Keep in sync with hooks/rubocop.sh (separate config filenames).
   [ -f .erb_lint.yml ] && grep -Eq 'rubykatzen-baseline:' .erb_lint.yml 2>/dev/null
 }
-
-if uses_baseline_gem_config && [ -f Gemfile ]; then
-  if [ $# -eq 0 ]; then
-    exec bundle exec erb_lint --lint-all "$@"
-  fi
-
-  exec bundle exec erb_lint "$@"
-fi
 
 erb_files() {
   find . \
@@ -20,6 +13,18 @@ erb_files() {
     \( -name '*.html.erb' -o -name '*.html+*.erb' \) \
     "$@"
 }
+
+if uses_baseline_gem_config && [ -f Gemfile ]; then
+  # Delegate to project stub; skip when pre-commit passes no files (avoid --lint-all).
+  if [ $# -gt 0 ] || erb_files -print -quit | grep -q .; then
+    if [ $# -eq 0 ]; then
+      exec bundle exec erb_lint --lint-all
+    fi
+    exec bundle exec erb_lint "$@"
+  fi
+  printf '%s\n' 'No HTML ERB files found; skipping erb_lint.'
+  exit 0
+fi
 
 if [ $# -eq 0 ] && ! erb_files -print -quit | grep -q .; then
   printf '%s\n' 'No HTML ERB files found; skipping erb_lint.'

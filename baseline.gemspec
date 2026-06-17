@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rubocop", "~> 1.88"
+  # Unpinned below: Bundler resolves versions compatible with the rubocop floor.
   spec.add_dependency "rubocop-performance"
   spec.add_dependency "rubocop-rails"
   spec.add_dependency "standard-custom"
