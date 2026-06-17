@@ -1,5 +1,7 @@
 Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
+Style/FrozenStringLiteralComment:
+  Enabled: true
 Rails/ActionOrder:
   Enabled: true
 Rails/HasManyOrHasOneDependent:

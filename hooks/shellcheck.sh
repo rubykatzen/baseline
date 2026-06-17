@@ -13,4 +13,4 @@ if [ $# -eq 0 ] && ! has_shellcheck_targets; then
   exit 0
 fi
 
-exec shellcheck --rcfile "$(dirname "$0")/../configs/shellcheck.rc" "$@"
+exec shellcheck --rcfile "$(dirname "$0")/../config/shellcheck.rc" "$@"

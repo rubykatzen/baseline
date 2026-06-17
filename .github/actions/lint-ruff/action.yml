@@ -5,5 +5,5 @@ runs:
   steps:
     - run: pip install ruff
       shell: bash
-    - run: ruff check --config "${{ github.action_path }}/../../../configs/ruff.toml" .
+    - run: ruff check --config "${{ github.action_path }}/../../../config/ruff.toml" .
       shell: bash

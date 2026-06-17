@@ -1,6 +1,11 @@
 #!/bin/sh
 BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
+uses_baseline_gem_config() {
+  # Keep in sync with hooks/erb-lint.sh (separate config filenames).
+  [ -f .rubocop.yml ] && grep -Eq 'rubykatzen-baseline:' .rubocop.yml 2>/dev/null
+}
+
 ruby_files() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
@@ -8,6 +13,15 @@ ruby_files() {
     \( -name '*.rb' -o -name '*.rake' -o -name '*.gemspec' -o -name 'Gemfile' -o -name 'Rakefile' -o -name 'config.ru' \) \
     "$@"
 }
+
+if uses_baseline_gem_config && [ -f Gemfile ]; then
+  # Delegate to project stub; skip when pre-commit passes no files (avoid full-project scan).
+  if [ $# -gt 0 ] || ruby_files -print -quit | grep -q .; then
+    exec bundle exec rubocop "$@"
+  fi
+  printf '%s\n' 'No Ruby files found; skipping rubocop.'
+  exit 0
+fi
 
 if [ $# -eq 0 ] && ! ruby_files -print -quit | grep -q .; then
   printf '%s\n' 'No Ruby files found; skipping rubocop.'
@@ -19,7 +33,7 @@ trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
 
 {
   printf '%s\n' 'inherit_from:'
-  printf '  - %s\n' "$BASELINE_DIR/configs/rubocop.yml"
+  printf '  - %s\n' "$BASELINE_DIR/config/rubocop.yml"
 
   for todo in .rubocop_todo*.yml; do
     [ -e "$todo" ] || continue

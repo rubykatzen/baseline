@@ -5,5 +5,5 @@ runs:
   steps:
     - run: pip install yamllint
       shell: bash
-    - run: yamllint -c "${{ github.action_path }}/../../../configs/yamllint.yml" .
+    - run: yamllint -c "${{ github.action_path }}/../../../config/yamllint.yml" .
       shell: bash

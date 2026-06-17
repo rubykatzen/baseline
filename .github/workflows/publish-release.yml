@@ -14,11 +14,22 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - uses: rubykatzen/releaser/.github/actions/read-release-data@v0.3.1
+      - uses: rubykatzen/releaser/.github/actions/read-release-data@v0.3.3
         id: meta
         with:
           branch: ${{ github.event.pull_request.head.ref }}
-      - uses: rubykatzen/releaser/.github/actions/create-release@v0.3.1
+      - uses: rubykatzen/releaser/.github/actions/create-release@v0.3.3
         with:
           version: ${{ steps.meta.outputs.version }}
           notes: ${{ steps.meta.outputs.notes }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+      - name: Build and push gem
+        run: |
+          # Drop stale artifacts from reused runners before build/push.
+          rm -f rubykatzen-baseline-*.gem
+          gem build baseline.gemspec
+          gem push rubykatzen-baseline-*.gem
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}

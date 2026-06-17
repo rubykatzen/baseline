@@ -13,4 +13,4 @@ if ! has_yamllint_targets; then
   exit 0
 fi
 
-exec yamllint -c "$(dirname "$0")/../configs/yamllint.yml" "$@"
+exec yamllint -c "$(dirname "$0")/../config/yamllint.yml" "$@"

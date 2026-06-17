@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "baseline/install"
+
+root = ARGV.fetch(0, Dir.pwd)
+Baseline::Install.new(root).call

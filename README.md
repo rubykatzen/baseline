@@ -76,14 +76,88 @@ Runs `pre-commit autoupdate` daily and commits the result directly to `main`.
 
 | Action | Lints | Config |
 |---|---|---|
-| `lint-yamllint` | `*.yml`, `*.yaml` | `configs/yamllint.yml` |
-| `lint-pymarkdown` | `*.md` | `configs/pymarkdown.json` |
-| `lint-ruff` | `*.py` | `configs/ruff.toml` |
-| `lint-shellcheck` | `*.sh` | `configs/shellcheck.rc` |
+| `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
+| `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
+| `lint-ruff` | `*.py` | `config/ruff.toml` |
+| `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
 | `lint-actionlint` | `.github/workflows/*.yml` | — |
-| `lint-rubocop` | `*.rb` | `configs/rubocop.yml` |
-| `lint-erb-lint` | `*.erb` | `configs/erb-lint.yml` |
+| `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
+| `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+
+## Ruby gem (RuboCop + erb_lint)
+
+For Rails and other Ruby projects, install the shared configs through the `rubykatzen-baseline`
+gem instead of listing RuboCop gems separately. Configs still live in this
+repository and ship inside the gem — consumer repos only add stub files that
+inherit from the gem.
+
+### 1. Gemfile
+
+Replace individual RuboCop gems with a single baseline pin. Match the gem
+version to the git tag (for example tag `v0.5.0` → gem `0.5.0`):
+
+```ruby
+group :development, :test do
+  gem "rubykatzen-baseline", "0.5.0", require: false
+end
+```
+
+The gem pulls in `rubocop`, `rubocop-performance`, `rubocop-rails`,
+`standard-custom`, and `erb_lint` as dependencies.
+
+### 2. Project stubs
+
+Run once from the project root after `bundle install`:
+
+```bash
+bundle exec baseline-install
+```
+
+This creates stub configs when missing:
+
+```yaml
+# .rubocop.yml
+inherit_gem:
+  rubykatzen-baseline: config/rubocop.yml
+
+# Generate project-specific excludes, then uncomment inherit_from below:
+#   bundle exec rubocop --auto-gen-config --auto-gen-only-exclude --exclude-limit 10000
+# inherit_from:
+#   - .rubocop_todo.yml
+```
+
+```yaml
+# .erb_lint.yml
+inherit_gem:
+  rubykatzen-baseline: config/erb_lint.yml
+
+# Generate .erb_lint_todo.yml, then uncomment inherit_from below:
+#   bundle exec erb_lint --enable-all-linters --lint-all
+# inherit_from:
+#   - .erb_lint_todo.yml
+```
+
+Stubs work out of the box with shared baseline cops only. Uncomment
+`inherit_from` after generating todo files for project-specific excludes.
+
+### 3. Local commands
+
+```bash
+bundle exec rubocop
+bundle exec rubocop -A
+bundle exec erb_lint --lint-all
+```
+
+Pre-commit hooks and GitHub Actions detect these stubs and delegate to the same
+commands when a `Gemfile` is present. Without stubs, hooks fall back to the
+shell wrappers that assemble a temporary config from this repository checkout.
+
+### Git source before RubyGems
+
+```ruby
+gem "rubykatzen-baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
+```
 
 ## Reusable workflows
 
@@ -172,7 +246,7 @@ so rubocop and erb_lint must be in the project `Gemfile`. If no `Gemfile`
 is present, linter actions install required gems directly.
 
 Add these gems to the caller repo `Gemfile` before enabling Ruby hooks
-(both pre-commit and GitHub Actions):
+(both pre-commit and GitHub Actions) when not using the baseline gem:
 
 ```ruby
 group :development, :test do
@@ -183,6 +257,9 @@ group :development, :test do
   gem "erb_lint", require: false
 end
 ```
+
+Prefer the [baseline gem](#ruby-gem-rubocop--erb_lint) when the project already
+uses Bundler.
 
 The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
 filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
