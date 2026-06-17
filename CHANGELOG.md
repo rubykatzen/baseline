@@ -1,5 +1,28 @@
 # Changelog
 
+## [v0.5.0] - 2026-06-17
+
+- chore: bump releaser to v0.3.4
+- fix: remove trailing comma after last hash item in Install::STUBS
+- fix: address PR review for gem hooks, gemspec, and publish
+- feat: comment todo inherit_from in install stubs with hints
+- fix: address PR review blockers for rubykatzen-baseline gem
+- feat: enable Style/FrozenStringLiteralComment
+- rename configs/ to config/ to follow Ruby gem conventions
+- rename configs/erb-lint.yml to configs/erb_lint.yml for consistency
+- feat: publish rubykatzen-baseline gem on release
+- rename gem to rubykatzen-baseline
+- chore: bump releaser to v0.3.3, add bump-ruby-gem-version to release flow
+- fix: drop erb_lint version pin — it depends on rubocop >= 1 internally
+- fix: drop version pins for rubocop-* and standard-custom
+- fix: tighten gem pins to minor version constraints
+- fix: check .erb_lint.yml (not deprecated .erb-lint.yml), loosen gem pins
+- docs: note RuboCop version pins in changelog
+- fix: pin RuboCop 1.88+ and rubocop-rails 2.35+ in baseline gem
+- fix: silence RuboCop extension tips in shared config
+- fix: use MaximumRangeSize in standard rubocop config
+- feat: publish baseline Ruby gem for RuboCop and erb_lint configs
+
 ## [Unreleased]
 
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
