@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.5.1] - 2026-06-17
+
+- refactor: move bump-pre-commit-rev into local composite action
+- feat: bump pre-commit rev in prepare-release, drop Dependabot pre-commit ecosystem
+- chore(deps): bump https://github.com/rubykatzen/baseline
+- fix: remove stale conflict marker from README
+- Replace pre-commit autoupdate workflow with Dependabot.
+- docs: add erb_lint todo file format and creation instructions
+- fix: inherit baseline rubocop config inside erb_lint rubocop_config
+- fix: pin transitive gem dependencies to minor versions in gemspec
+- fix: use HTTPS URLs in pre-commit configs for Dependabot compatibility
+
 ## [v0.5.0] - 2026-06-17
 
 - chore: bump releaser to v0.3.4
