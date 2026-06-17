@@ -139,9 +139,48 @@ inherit_gem:
 ```
 
 Stubs work out of the box with shared baseline cops only. Uncomment
-`inherit_from` after generating todo files for project-specific excludes.
+`inherit_from` after creating todo files for project-specific excludes.
 
-### 3. Local commands
+### 3. erb_lint todo file
+
+erb_lint has no `--auto-gen-config`. To suppress existing violations while
+keeping new ones visible, create `.erb_lint_todo.yml` manually:
+
+1. Run erb_lint and collect the cop names that appear:
+
+   ```bash
+   bundle exec erb_lint --lint-all
+   ```
+
+2. Create `.erb_lint_todo.yml` in the project root. Use the erb_lint config
+   format — cop names go inside `linters.Rubocop.rubocop_config`, not at the
+   top level:
+
+   ```yaml
+   # .erb_lint_todo.yml
+   # Remove cops from this list as you fix templates.
+   linters:
+     Rubocop:
+       rubocop_config:
+         Layout/ArgumentAlignment:
+           Enabled: false
+         Style/FrozenStringLiteralComment:
+           Enabled: false
+   ```
+
+3. Uncomment `inherit_from` in `.erb_lint.yml`:
+
+   ```yaml
+   inherit_gem:
+     rubykatzen-baseline: config/erb_lint.yml
+
+   inherit_from:
+     - .erb_lint_todo.yml
+   ```
+
+Remove cops from the todo file as you fix the templates.
+
+### 4. Local commands
 
 ```bash
 bundle exec rubocop
