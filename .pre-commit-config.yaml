@@ -1,9 +1,29 @@
 repos:
-  - repo: https://github.com/rubykatzen/baseline
-    rev: v0.5.0
+  - repo: local
     hooks:
       - id: yamllint
+        name: yamllint
+        language: script
+        entry: hooks/yamllint.sh
+        types: [yaml]
       - id: pymarkdown
+        name: pymarkdown
+        language: script
+        entry: hooks/pymarkdown.sh
+        types: [markdown]
       - id: ruff
+        name: ruff
+        language: script
+        entry: hooks/ruff.sh
+        types: [python]
       - id: shellcheck
+        name: shellcheck
+        language: script
+        entry: hooks/shellcheck.sh
+        types: [shell]
       - id: actionlint
+        name: actionlint
+        language: script
+        entry: hooks/actionlint.sh
+        files: ^\.github/workflows/.*\.ya?ml$
+        pass_filenames: false
