@@ -77,7 +77,6 @@ Dependabot opens pull requests for version bumps. Pair with
 | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
-<<<<<<< HEAD
 ## Ruby gem (RuboCop + erb_lint)
 
 For Rails and other Ruby projects, install the shared configs through the `rubykatzen-baseline`
