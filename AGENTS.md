@@ -40,9 +40,11 @@ To add a linter for a new file type:
 callers that delegate to `rubykatzen/releaser`; they are not exported for
 external use.
 
-Pre-commit hook pins in `.pre-commit-config.yaml` are updated by Dependabot
-(`package-ecosystem: pre-commit` in `.github/dependabot.yml`), not by a custom
-workflow.
+`.pre-commit-config.yaml` uses `rev: main` so it always points at the latest
+hooks without a pinned version. pre-commit caches the repo at install time —
+after pushing hook changes to `main`, run `pre-commit autoupdate` locally to
+refresh the cache. Dependabot does not manage this entry (no `pre-commit`
+ecosystem in `.github/dependabot.yml`) because baseline is its own hook repo.
 
 ## Self-linting
 
