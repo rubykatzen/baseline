@@ -7,12 +7,19 @@ module Baseline
         inherit_gem:
           rubykatzen-baseline: config/rubocop.yml
 
-        inherit_from:
-          - .rubocop_todo*.yml
+        # Generate project-specific excludes, then uncomment inherit_from below:
+        #   bundle exec rubocop --auto-gen-config --auto-gen-only-exclude --exclude-limit 10000
+        # inherit_from:
+        #   - .rubocop_todo.yml
       YAML
-      ".erb_lint.yml" => <<~YAML
+      ".erb_lint.yml" => <<~YAML,
         inherit_gem:
           rubykatzen-baseline: config/erb_lint.yml
+
+        # Generate .erb_lint_todo.yml, then uncomment inherit_from below:
+        #   bundle exec erb_lint --enable-all-linters --lint-all
+        # inherit_from:
+        #   - .erb_lint_todo.yml
       YAML
     }.freeze
 

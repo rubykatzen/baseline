@@ -120,26 +120,26 @@ This creates stub configs when missing:
 # .rubocop.yml
 inherit_gem:
   rubykatzen-baseline: config/rubocop.yml
-inherit_from:
-  - .rubocop_todo*.yml
+
+# Generate project-specific excludes, then uncomment inherit_from below:
+#   bundle exec rubocop --auto-gen-config --auto-gen-only-exclude --exclude-limit 10000
+# inherit_from:
+#   - .rubocop_todo.yml
 ```
 
 ```yaml
 # .erb_lint.yml
 inherit_gem:
   rubykatzen-baseline: config/erb_lint.yml
+
+# Generate .erb_lint_todo.yml, then uncomment inherit_from below:
+#   bundle exec erb_lint --enable-all-linters --lint-all
+# inherit_from:
+#   - .erb_lint_todo.yml
 ```
 
-The RuboCop stub uses a glob so `bundle exec rubocop` works before any todo
-file exists. After `rubocop --auto-gen-config`, add project-specific erb_lint
-excludes to `.erb_lint_todo.yml` and reference it from `.erb_lint.yml`:
-
-```yaml
-inherit_from:
-  - .erb_lint_todo.yml
-```
-
-Project-specific RuboCop excludes stay in `.rubocop_todo.yml`.
+Stubs work out of the box with shared baseline cops only. Uncomment
+`inherit_from` after generating todo files for project-specific excludes.
 
 ### 3. Local commands
 
