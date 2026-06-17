@@ -15,10 +15,11 @@ erb_files() {
 }
 
 if uses_baseline_gem_config && [ -f Gemfile ]; then
-  # Delegate to project stub; skip when pre-commit passes no files (avoid --lint-all).
+  # Delegate to project stub while keeping the hook's file discovery exclusions.
   if [ $# -gt 0 ] || erb_files -print -quit | grep -q .; then
     if [ $# -eq 0 ]; then
-      exec bundle exec erb_lint --lint-all
+      erb_files -print0 | xargs -0 bundle exec erb_lint
+      exit $?
     fi
     exec bundle exec erb_lint "$@"
   fi
