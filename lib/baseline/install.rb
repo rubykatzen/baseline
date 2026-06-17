@@ -12,7 +12,7 @@ module Baseline
         # inherit_from:
         #   - .rubocop_todo.yml
       YAML
-      ".erb_lint.yml" => <<~YAML,
+      ".erb_lint.yml" => <<~YAML
         inherit_gem:
           rubykatzen-baseline: config/erb_lint.yml
 
