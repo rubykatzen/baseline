@@ -15,3 +15,5 @@ linters:
         Enabled: false
       Lint/UselessAssignment:
         Enabled: false
+      Style/FrozenStringLiteralComment:
+        Enabled: false

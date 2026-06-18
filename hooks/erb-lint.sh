@@ -55,6 +55,8 @@ trap 'rm -f "$RUBOCOP_CONFIG" "$ERB_LINT_CONFIG"' EXIT
   printf '%s\n' '  Enabled: false'
   printf '%s\n' 'Lint/UselessAssignment:'
   printf '%s\n' '  Enabled: false'
+  printf '%s\n' 'Style/FrozenStringLiteralComment:'
+  printf '%s\n' '  Enabled: false'
 } > "$RUBOCOP_CONFIG"
 
 {

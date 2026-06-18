@@ -234,6 +234,7 @@ If the workflow or job name changes, update branch protection at the same time.
 | pymarkdown | MD034 no-bare-urls | enabled | disabled | Internal URLs referenced inline without link syntax |
 | pymarkdown | MD024 no-duplicate-heading | strict | `allow_different_nesting: true` | Repeated subheadings under each section |
 | ruff | E501 line-length | enabled (max 88) | disabled | Long error messages and inline expressions |
+| erb_lint/RuboCop | `Style/FrozenStringLiteralComment` | enabled | disabled | ERB comments do not act as Ruby magic comments in generated template code |
 | shellcheck | SC1090/SC1091 | enabled | disabled | Dynamic `source` of `lib.sh` and `.env` |
 | shellcheck | SC2029 | enabled | disabled | Variables in SSH commands expand client-side intentionally |
 | shellcheck | SC2088 | enabled | disabled | Tilde in remote paths passed as-is to remote shell |
