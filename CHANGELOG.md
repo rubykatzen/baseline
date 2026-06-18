@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.2] - 2026-06-18
+
+- lint: allow markdown fragments without h1 (#49)
+- chore(deps): bump actions/checkout from 6 to 7
+- fix: disable frozen string comments for erb lint (#46)
+- docs: add portable agent message prefix
+
 ## [v0.5.1] - 2026-06-17
 
 - refactor: move bump-pre-commit-rev into local composite action
