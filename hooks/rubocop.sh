@@ -1,5 +1,4 @@
 #!/bin/sh
-BASELINE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 uses_baseline_gem_config() {
   # Keep in sync with hooks/erb-lint.sh (separate config filenames).
@@ -14,43 +13,19 @@ ruby_files() {
     "$@"
 }
 
-if uses_baseline_gem_config && [ -f Gemfile ]; then
-  # Delegate to project stub; skip when pre-commit passes no files (avoid full-project scan).
-  if [ $# -gt 0 ] || ruby_files -print -quit | grep -q .; then
-    exec bundle exec rubocop "$@"
-  fi
-  printf '%s\n' 'No Ruby files found; skipping rubocop.'
-  exit 0
-fi
-
 if [ $# -eq 0 ] && ! ruby_files -print -quit | grep -q .; then
   printf '%s\n' 'No Ruby files found; skipping rubocop.'
   exit 0
 fi
 
-RUBOCOP_CONFIG="$(mktemp)"
-trap 'rm -f "$RUBOCOP_CONFIG"' EXIT
-
-{
-  printf '%s\n' 'inherit_from:'
-  printf '  - %s\n' "$BASELINE_DIR/config/rubocop.yml"
-
-  for todo in .rubocop_todo*.yml; do
-    [ -e "$todo" ] || continue
-    printf '  - %s\n' "$PWD/$todo"
-  done
-} > "$RUBOCOP_CONFIG"
-
-if [ $# -gt 0 ]; then
-  if [ -f Gemfile ]; then
-    bundle exec rubocop --config "$RUBOCOP_CONFIG" "$@"
-  else
-    rubocop --config "$RUBOCOP_CONFIG" "$@"
-  fi
-else
-  if [ -f Gemfile ]; then
-    ruby_files -print0 | xargs -0 bundle exec rubocop --config "$RUBOCOP_CONFIG" --force-exclusion
-  else
-    ruby_files -print0 | xargs -0 rubocop --config "$RUBOCOP_CONFIG" --force-exclusion
-  fi
+if [ ! -f Gemfile ]; then
+  printf '%s\n' 'Gemfile not found. Add rubykatzen-baseline to the project Gemfile before running rubocop.' >&2
+  exit 1
 fi
+
+if ! uses_baseline_gem_config; then
+  printf '%s\n' '.rubocop.yml must inherit rubykatzen-baseline: config/rubocop.yml before running rubocop.' >&2
+  exit 1
+fi
+
+exec bundle exec rubocop "$@"

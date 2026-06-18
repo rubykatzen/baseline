@@ -33,9 +33,9 @@ jobs:
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
-Each action installs its own tool — no setup step needed. Ruby linter actions
-require `setup-ruby` to run first; they will fail with a clear error if Ruby is
-not in PATH.
+Non-Ruby actions install their own tools. Ruby linter actions require
+`setup-ruby` first plus the `rubykatzen-baseline` gem and generated project
+stubs described below.
 
 ### 2. Dependabot
 
@@ -180,9 +180,10 @@ bundle exec rubocop -A
 bundle exec erb_lint --lint-all
 ```
 
-Pre-commit hooks and GitHub Actions detect these stubs and delegate to the same
-commands when a `Gemfile` is present. Without stubs, hooks fall back to the
-shell wrappers that assemble a temporary config from this repository checkout.
+The `rubocop` and `erb-lint` pre-commit hooks and GitHub Actions require the
+baseline gem in the project `Gemfile` plus the generated stubs above. They
+delegate to the same `bundle exec` commands so local and CI linting use one
+Bundler-resolved toolchain.
 
 ### Git source before RubyGems
 
@@ -270,24 +271,9 @@ brew install shellcheck actionlint
 
 Ruby GitHub Actions install Ruby automatically. If a `Gemfile` is present,
 `setup-ruby` runs `bundle install` and linter actions use `bundle exec` —
-so rubocop and erb_lint must be in the project `Gemfile`. If no `Gemfile`
-is present, linter actions install required gems directly.
-
-Add these gems to the caller repo `Gemfile` before enabling Ruby hooks
-(both pre-commit and GitHub Actions) when not using the baseline gem:
-
-```ruby
-group :development, :test do
-  gem "rubocop", require: false
-  gem "rubocop-performance", require: false
-  gem "rubocop-rails", require: false
-  gem "standard-custom", require: false
-  gem "erb_lint", require: false
-end
-```
-
-Prefer the [baseline gem](#ruby-gem-rubocop--erb_lint) when the project already
-uses Bundler.
+so `rubocop` and `erb_lint` must be available through the
+[`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem. Ruby hooks fail fast
+when `Gemfile`, `.rubocop.yml`, or `.erb_lint.yml` stubs are missing.
 
 The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
 filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
