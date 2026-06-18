@@ -232,6 +232,7 @@ If the workflow or job name changes, update branch protection at the same time.
 | pymarkdown | MD013 line-length | enabled | disabled | Tables and inline code in README files break when wrapped |
 | pymarkdown | MD026 trailing-punctuation | enabled | disabled | `Setup:`, `Usage:` headings by convention |
 | pymarkdown | MD034 no-bare-urls | enabled | disabled | Internal URLs referenced inline without link syntax |
+| pymarkdown | MD041 first-line-h1 | enabled | disabled | Markdown fragments are often embedded under an existing document heading |
 | pymarkdown | MD024 no-duplicate-heading | strict | `allow_different_nesting: true` | Repeated subheadings under each section |
 | ruff | E501 line-length | enabled (max 88) | disabled | Long error messages and inline expressions |
 | erb_lint/RuboCop | `Style/FrozenStringLiteralComment` | enabled | disabled | ERB comments do not act as Ruby magic comments in generated template code |
