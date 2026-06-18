@@ -25,6 +25,11 @@ status updates, and any other written communication.
 
 This repo is the single source of truth for linter configs across all dupmachine repositories. The goal is identical linting everywhere — configs live here and nowhere else.
 
+Baseline owns linter configuration, not runtime or tool installation. Consuming
+repositories must install the runtimes and linter binaries they choose to run;
+baseline hooks and actions should only pass canonical configs to already
+installed tools.
+
 ## Repository Structure
 
 - `config/` — canonical linter config files
@@ -32,7 +37,7 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `baseline.gemspec` — Ruby gem packaging RuboCop and erb_lint configs for local `bundle exec rubocop`
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
-- `.github/actions/lint-*/` — composite actions, one per linter
+- `.github/actions/lint-*/` — thin composite actions that run installed linters with baseline configs
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
@@ -54,6 +59,10 @@ To add a linter for a new file type:
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Update `.pre-commit-config.yaml.example`
 7. Update `README.md`
+
+Do not make baseline install the linter runtime or binary. Document the required
+tool and keep installation in the consuming repository's workflow or developer
+environment.
 
 ## Workflows
 

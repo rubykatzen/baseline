@@ -1,9 +1,7 @@
 name: pymarkdown
-description: Lint Markdown files using the canonical pymarkdown config from baseline.
+description: Lint Markdown files using installed pymarkdown and the canonical baseline config.
 runs:
   using: composite
   steps:
-    - run: pip install pymarkdownlnt
-      shell: bash
     - run: pymarkdown --config "${{ github.action_path }}/../../../config/pymarkdown.json" scan .
       shell: bash

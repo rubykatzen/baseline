@@ -1,9 +1,7 @@
 name: yamllint
-description: Lint YAML files using the canonical yamllint config from baseline.
+description: Lint YAML files using installed yamllint and the canonical baseline config.
 runs:
   using: composite
   steps:
-    - run: pip install yamllint
-      shell: bash
     - run: yamllint -c "${{ github.action_path }}/../../../config/yamllint.yml" .
       shell: bash

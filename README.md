@@ -1,6 +1,10 @@
 # Baseline
 
-Shared linter configs and composite GitHub Actions.
+Shared linter configs and thin wrappers.
+
+Baseline is responsible for canonical configuration only. Consuming
+repositories are responsible for installing runtimes and linter binaries before
+running baseline hooks or actions.
 
 ## Quick setup
 
@@ -23,19 +27,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - run: python -m pip install yamllint pymarkdownlnt ruff
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - run: |
+          bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          sudo install actionlint /usr/local/bin/actionlint
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "YOUR_RUBY_VERSION"
+          bundler-cache: true
       - uses: rubykatzen/baseline/.github/actions/lint-yamllint@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
-      - uses: rubykatzen/baseline/.github/actions/setup-ruby@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
 ```
 
-Non-Ruby actions install their own tools. Ruby linter actions require
-`setup-ruby` first plus the `rubykatzen-baseline` gem and generated project
-stubs described below.
+Install the runtime and binary for each linter before calling the corresponding
+baseline action. The actions apply baseline configs; they do not install Python,
+Ruby, shellcheck, actionlint, RuboCop, erb_lint, or other tools.
 
 ### 2. Dependabot
 
@@ -76,6 +91,9 @@ Dependabot opens pull requests for version bumps. Pair with
 | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
 | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+
+These actions expect the matching linter binary to already be available on
+`PATH`. They are config runners, not tool installers.
 
 ## Ruby gem (RuboCop + erb_lint)
 
@@ -269,11 +287,11 @@ python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
 ```
 
-Ruby GitHub Actions install Ruby automatically. If a `Gemfile` is present,
-`setup-ruby` runs `bundle install` and linter actions use `bundle exec` —
-so `rubocop` and `erb_lint` must be available through the
-[`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem. Ruby hooks fail fast
-when `Gemfile`, `.rubocop.yml`, or `.erb_lint.yml` stubs are missing.
+Ruby hooks and actions use `bundle exec`; install Ruby and run `bundle install`
+in the consuming repository first. `rubocop` and `erb_lint` must be available
+through the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem. Ruby
+hooks fail fast when `Gemfile`, `.rubocop.yml`, or `.erb_lint.yml` stubs are
+missing.
 
 The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
 filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook

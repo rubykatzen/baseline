@@ -1,9 +1,9 @@
 name: lint-rubocop
-description: Lint Ruby files using rubocop with the rubykatzen-baseline gem. Requires setup-ruby action and project stubs.
+description: Lint Ruby files using installed Ruby gems and rubykatzen-baseline project stubs.
 runs:
   using: composite
   steps:
-    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Add setup-ruby action before lint-rubocop." >&2; exit 1; }
+    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Install Ruby before lint-rubocop." >&2; exit 1; }
       shell: bash
     - run: "${{ github.action_path }}/../../../hooks/rubocop.sh"
       shell: bash
