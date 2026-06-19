@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.5.3] - 2026-06-19
+
+- lint: disable pymarkdown pragma suppressions (#51)
+- erb-lint: skip vendor with project config (#45)
+
 ## [v0.5.2] - 2026-06-18
 
 - lint: allow markdown fragments without h1 (#49)
