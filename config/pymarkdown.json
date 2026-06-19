@@ -2,6 +2,9 @@
   "extensions": {
     "front-matter": {
       "enabled": true
+    },
+    "linter-pragmas": {
+      "enabled": false
     }
   },
   "plugins": {
