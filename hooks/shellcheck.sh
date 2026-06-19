@@ -15,7 +15,8 @@ if [ $# -eq 0 ]; then
     printf '%s\n' 'No shell files found; skipping shellcheck.'
     exit 0
   fi
-  exec shell_files -exec shellcheck --rcfile "$config" {} +
+  shell_files -exec shellcheck --rcfile "$config" {} +
+  exit $?
 fi
 
 exec shellcheck --rcfile "$config" "$@"
