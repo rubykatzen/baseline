@@ -36,8 +36,10 @@ This repo is the single source of truth for linter configs across all dupmachine
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
-- `.github/workflows/dependabot-automerge.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
-- `.github/workflows/telegram-release-notify.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
+- `.github/workflows/pre-commit-autoupdate-shared.yml` — **reusable**: runs `pre-commit autoupdate` and commits
+- `.github/workflows/pre-commit-autoupdate.yml` — baseline's own caller
+- `.github/workflows/merge-dependabot-pr.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
+- `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos
 
@@ -55,7 +57,7 @@ To add a linter for a new file type:
 
 ## Workflows
 
-`dependabot-automerge.yml` and `telegram-release-notify.yml` are baseline's own
+`merge-dependabot-pr.yml` and `notify-telegram-unreleased.yml` are baseline's own
 callers that delegate to `rubykatzen/releaser`; they are not exported for
 external use.
 
