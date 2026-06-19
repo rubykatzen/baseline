@@ -11,4 +11,6 @@ rules:
     check-keys: false
   comments:
     min-spaces-from-content: 1
-  document-start: forbid
+  document-start:
+    level: error
+    present: false
