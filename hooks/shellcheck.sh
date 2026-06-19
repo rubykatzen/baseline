@@ -1,16 +1,21 @@
 #!/bin/sh
 
-has_shellcheck_targets() {
+config="$(dirname "$0")/../config/shellcheck.rc"
+
+shell_files() {
   find . \
     \( -path ./.git -o -path ./vendor -o -path ./node_modules \) -prune -o \
     -type f \
     -name '*.sh' \
-    -print -quit | grep -q .
+    "$@"
 }
 
-if [ $# -eq 0 ] && ! has_shellcheck_targets; then
-  printf '%s\n' 'No shell files found; skipping shellcheck.'
-  exit 0
+if [ $# -eq 0 ]; then
+  if ! shell_files -print -quit | grep -q .; then
+    printf '%s\n' 'No shell files found; skipping shellcheck.'
+    exit 0
+  fi
+  exec shell_files -exec shellcheck --rcfile "$config" {} +
 fi
 
-exec shellcheck --rcfile "$(dirname "$0")/../config/shellcheck.rc" "$@"
+exec shellcheck --rcfile "$config" "$@"
