@@ -38,6 +38,7 @@ installed tools.
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — thin composite actions that run installed linters with baseline configs
+- `.github/actions/setup-runtimes/` — baseline self-lint only: installs runtimes and gems before lint actions
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
@@ -77,9 +78,9 @@ workflow.
 ## Self-linting
 
 Baseline lints itself through `.github/workflows/lint.yml` using local composite
-actions (`./.github/actions/lint-*`). Do not point the baseline self-lint
-workflow at `rubykatzen/baseline@vX`; it must validate the actions and
-configs from the current commit.
+actions (`./.github/actions/setup-runtimes`, then `./.github/actions/lint-*`).
+Do not point the baseline self-lint workflow at `rubykatzen/baseline@vX`; it
+must validate the actions and configs from the current commit.
 
 `main` branch protection requires the GitHub Actions status check named `lint`.
 That name comes from the `lint` job in `.github/workflows/lint.yml`; if the job

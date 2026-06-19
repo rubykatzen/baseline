@@ -8,18 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-      - run: python -m pip install yamllint pymarkdownlnt ruff
-      - run: sudo apt-get update && sudo apt-get install -y shellcheck
-      - run: |
-          bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          sudo install actionlint /usr/local/bin/actionlint
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "4.0.5"
-          bundler-cache: true
+      - uses: ./.github/actions/setup-runtimes
       - uses: ./.github/actions/lint-yamllint
       - uses: ./.github/actions/lint-pymarkdown
       - uses: ./.github/actions/lint-ruff

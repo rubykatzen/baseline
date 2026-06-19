@@ -3,7 +3,5 @@ description: Lint Ruby files using installed Ruby gems and rubykatzen-baseline p
 runs:
   using: composite
   steps:
-    - run: ruby --version > /dev/null 2>&1 || { echo "Ruby not found. Install Ruby before lint-rubocop." >&2; exit 1; }
-      shell: bash
     - run: "${{ github.action_path }}/../../../hooks/rubocop.sh"
       shell: bash
