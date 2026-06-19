@@ -29,7 +29,8 @@ if ! uses_baseline_gem_config; then
 fi
 
 if [ $# -eq 0 ]; then
-  exec bundle exec erb_lint --lint-all
+  erb_files -print0 | xargs -0 bundle exec erb_lint
+  exit $?
 fi
 
 exec bundle exec erb_lint "$@"
