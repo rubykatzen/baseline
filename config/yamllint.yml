@@ -2,6 +2,7 @@ extends: default
 ignore: |
   vendor/
   node_modules/
+  .bundle/
 rules:
   empty-lines:
     max: 0
