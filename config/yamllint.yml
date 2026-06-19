@@ -1,4 +1,7 @@
 extends: default
+ignore: |
+  vendor/
+  node_modules/
 rules:
   empty-lines:
     max: 0

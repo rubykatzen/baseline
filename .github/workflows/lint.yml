@@ -19,10 +19,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "4.0.5"
-      - run: bundle install
-        shell: bash
-        env:
-          BUNDLE_PATH: .bundle
+          bundler-cache: true
       - uses: ./.github/actions/lint-yamllint
       - uses: ./.github/actions/lint-pymarkdown
       - uses: ./.github/actions/lint-ruff
