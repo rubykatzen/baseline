@@ -4,7 +4,6 @@
 
 ## [v0.5.4] - 2026-06-19
 
-
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
 - feat: comment out todo inherit_from in install stubs with generation hints
 - fix: skip gem-delegating rubocop and erb_lint hooks when no target files
