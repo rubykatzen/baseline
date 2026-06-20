@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v0.6.1] - 2026-06-20
+
+- chore: bump releaser to v0.4.5
+- chore: bump releaser to v0.4.4, drop manual Gemfile.lock step
+- fix: update Gemfile.lock when bumping gem version on release branch
+
 ## [v0.6.0] - 2026-06-20
 
 - refactor: require baseline gem for ruby linting (#47)
