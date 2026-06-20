@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.6.2] - 2026-06-20
+
+- fix: disable MD022 (blanks-around-headings)
+
 ## [v0.6.1] - 2026-06-20
 
 - chore: bump releaser to v0.4.5
