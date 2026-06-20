@@ -25,26 +25,26 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: false
-      - uses: rubykatzen/releaser/.github/actions/verify-release@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/verify-release@v0.4.5
         with:
           base_sha: ${{ inputs.base_sha }}
-      - uses: rubykatzen/releaser/.github/actions/generate-notes@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/generate-notes@v0.4.5
         id: notes
         with:
           version: ${{ inputs.version }}
-      - uses: rubykatzen/releaser/.github/actions/prepare-release-branch@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/prepare-release-branch@v0.4.5
         with:
           version: ${{ inputs.version }}
-      - uses: rubykatzen/releaser/.github/actions/update-changelog@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/update-changelog@v0.4.5
         with:
           version: ${{ inputs.version }}
           notes: ${{ steps.notes.outputs.notes }}
-      - uses: rubykatzen/releaser/.github/actions/bump-ruby-gem-version@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/bump-ruby-gem-version@v0.4.5
         with:
           version: ${{ inputs.version }}
       - uses: ./.github/actions/bump-pre-commit-rev
         with:
           version: ${{ inputs.version }}
-      - uses: rubykatzen/releaser/.github/actions/push-release-branch@v0.4.4
+      - uses: rubykatzen/releaser/.github/actions/push-release-branch@v0.4.5
         with:
           version: ${{ inputs.version }}
