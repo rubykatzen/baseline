@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.6.0] - 2026-06-20
+
+- refactor: require baseline gem for ruby linting (#47)
+
 ## [v0.5.4] - 2026-06-19
 
 - feat: publish baseline Ruby gem with RuboCop and erb_lint configs
