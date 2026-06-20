@@ -1,9 +1,7 @@
 name: ruff
-description: Lint Python files using the canonical ruff config from baseline.
+description: Lint Python files using installed ruff and the canonical baseline config.
 runs:
   using: composite
   steps:
-    - run: pip install ruff
-      shell: bash
     - run: ruff check --config "${{ github.action_path }}/../../../config/ruff.toml" .
       shell: bash

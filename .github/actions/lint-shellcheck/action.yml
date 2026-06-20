@@ -1,14 +1,7 @@
 name: shellcheck
-description: Lint shell scripts using the canonical shellcheck config from baseline.
+description: Lint shell scripts using installed shellcheck and the canonical baseline config.
 runs:
   using: composite
   steps:
-    - run: |
-        curl -fsSL https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz \
-          | tar -xJf - shellcheck-stable/shellcheck
-        sudo install shellcheck-stable/shellcheck /usr/local/bin/shellcheck
+    - run: "${{ github.action_path }}/../../../hooks/shellcheck.sh"
       shell: bash
-    - shell: bash
-      run: |
-        mapfile -t sh_files < <(find . -name "*.sh")
-        [ ${#sh_files[@]} -gt 0 ] && shellcheck --rcfile "${{ github.action_path }}/../../../config/shellcheck.rc" "${sh_files[@]}"
