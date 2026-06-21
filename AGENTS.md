@@ -42,8 +42,6 @@ installed tools.
 - `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
-- `.github/workflows/pre-commit-autoupdate-shared.yml` — **reusable**: runs `pre-commit autoupdate` and commits
-- `.github/workflows/pre-commit-autoupdate.yml` — baseline's own caller
 - `.github/workflows/merge-dependabot-pr.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
@@ -60,6 +58,7 @@ To add a linter for a new file type:
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Update `.pre-commit-config.yaml.example`
 7. Update `README.md`
+8. If any rules are disabled, add them to `CONFIG-OVERRIDES.md`
 
 Do not make baseline install the linter runtime or binary. Document the required
 tool and keep installation in the consuming repository's workflow or developer
@@ -127,4 +126,4 @@ This avoids introducing new runtimes into repos that don't already use them.
 
 ## Disabled Rules
 
-Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `README.md`.
+Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `CONFIG-OVERRIDES.md`.
