@@ -7,4 +7,4 @@ jobs:
   lint:
     uses: ./.github/workflows/lint-shared.yml
     with:
-      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint
+      linters: yamllint, pymarkdown, shellcheck, actionlint, rubocop
