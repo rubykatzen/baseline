@@ -76,14 +76,15 @@ workflow.
 
 ## Self-linting
 
-Baseline lints itself through `.github/workflows/lint.yml` using local composite
-actions (`./.github/actions/setup-runtimes`, then `./.github/actions/lint-*`).
-Do not point the baseline self-lint workflow at `rubykatzen/baseline@vX`; it
-must validate the actions and configs from the current commit.
+Baseline lints itself through `.github/workflows/lint.yml`, which calls the
+shared reusable workflow `.github/workflows/lint-shared.yml`. Do not point the
+baseline self-lint workflow at `rubykatzen/baseline@vX`; it must validate the
+actions and configs from the current commit.
 
-`main` branch protection requires the GitHub Actions status check named `lint`.
-That name comes from the `lint` job in `.github/workflows/lint.yml`; if the job
-name changes, update branch protection in GitHub at the same time.
+`main` branch protection requires the GitHub Actions status check named `lint / lint`.
+That name comes from the `lint` job in `lint.yml` calling the `lint` job in
+`lint-shared.yml`. If either job name changes, update branch protection in GitHub
+at the same time.
 
 ## Cutting Releases
 
