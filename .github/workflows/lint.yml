@@ -5,14 +5,6 @@ on:
   pull_request:
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-runtimes
-      - uses: ./.github/actions/lint-yamllint
-      - uses: ./.github/actions/lint-pymarkdown
-      - uses: ./.github/actions/lint-ruff
-      - uses: ./.github/actions/lint-shellcheck
-      - uses: ./.github/actions/lint-actionlint
-      - uses: ./.github/actions/lint-rubocop
-      - uses: ./.github/actions/lint-erb-lint
+    uses: ./.github/workflows/lint-shared.yml
+    with:
+      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint

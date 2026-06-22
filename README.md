@@ -26,13 +26,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
       - run: python -m pip install yamllint pymarkdownlnt ruff
-      - run: sudo apt-get update && sudo apt-get install -y shellcheck
       - run: |
+          curl -fsSL https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz \
+            | tar -xJf - shellcheck-stable/shellcheck
+          sudo install shellcheck-stable/shellcheck /usr/local/bin/shellcheck
           bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           sudo install actionlint /usr/local/bin/actionlint
       - uses: ruby/setup-ruby@v1
@@ -245,22 +247,7 @@ If the workflow or job name changes, update branch protection at the same time.
 
 ## Config overrides
 
-| Linter | Rule | Default | Here | Reason |
-|---|---|---|---|---|
-| yamllint | `line-length` | enabled (max 80) | disabled | Traefik labels in docker-compose files routinely exceed 80 chars |
-| pymarkdown | MD013 line-length | enabled | disabled | Tables and inline code in README files break when wrapped |
-| pymarkdown | MD026 trailing-punctuation | enabled | disabled | `Setup:`, `Usage:` headings by convention |
-| pymarkdown | MD034 no-bare-urls | enabled | disabled | Internal URLs referenced inline without link syntax |
-| pymarkdown | MD041 first-line-h1 | enabled | disabled | Markdown fragments are often embedded under an existing document heading |
-| pymarkdown | linter-pragmas extension | enabled | disabled | Inline linter suppressions must not bypass shared Markdown policy |
-| pymarkdown | MD024 no-duplicate-heading | strict | `allow_different_nesting: true` | Repeated subheadings under each section |
-| ruff | E501 line-length | enabled (max 88) | disabled | Long error messages and inline expressions |
-| erb_lint/RuboCop | `Style/FrozenStringLiteralComment` | enabled | disabled | ERB comments do not act as Ruby magic comments in generated template code |
-| shellcheck | SC1090/SC1091 | enabled | disabled | Dynamic `source` of `lib.sh` and `.env` |
-| shellcheck | SC2029 | enabled | disabled | Variables in SSH commands expand client-side intentionally |
-| shellcheck | SC2088 | enabled | disabled | Tilde in remote paths passed as-is to remote shell |
-| shellcheck | SC2153/SC2154 | enabled | disabled | Variables set by `parse_apps` in `lib.sh` not visible to shellcheck |
-| shellcheck | SC2001 | enabled | disabled | `sed` preferred over bash parameter expansion for regex substitution |
+See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
 
 ## Pre-commit hooks
 

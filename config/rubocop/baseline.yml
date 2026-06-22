@@ -1,3 +1,22 @@
+Layout/LineLength:
+  Enabled: true
+  Max: 160
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+Bundler/OrderedGems:
+  Enabled: true
+Gemspec/OrderedDependencies:
+  Enabled: true
+Style/RequireOrder:
+  Enabled: true
+Style/StringConcatenation:
+  Enabled: true
+Style/SafeNavigation:
+  ConvertCodeThatCanStartToReturnNil: true
 Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
 Style/FrozenStringLiteralComment:
@@ -10,11 +29,7 @@ Rails/InverseOf:
   Enabled: true
 Rails/ActionFilter:
   Enabled: true
-Rails/Delegate:
-  Enabled: true
 Rails/NegateInclude:
-  Enabled: true
-Rails/PluckId:
   Enabled: true
 Rails/Present:
   Enabled: true

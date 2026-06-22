@@ -1,21 +1,52 @@
 name: setup-runtimes
-description: Install linter runtimes and project gems for baseline self-lint. Not for external use.
+description: >
+  Install linter runtimes for the requested linters.
+  Accepts a comma-separated list via the `linters` input and installs only
+  the runtimes each linter needs (Python, Ruby, or standalone binaries).
+inputs:
+  linters:
+    description: >
+      Comma-separated linters to prepare runtimes for.
+      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint
+    required: true
 runs:
   using: composite
   steps:
     - uses: actions/setup-python@v6
+      if: >
+        contains(inputs.linters, 'yamllint') ||
+        contains(inputs.linters, 'pymarkdown') ||
+        contains(inputs.linters, 'ruff')
       with:
         python-version: "3.x"
-    - run: python -m pip install yamllint pymarkdownlnt ruff
+    - run: |
+        pkgs=""
+        [[ "$LINTERS" == *yamllint*   ]] && pkgs="$pkgs yamllint"
+        [[ "$LINTERS" == *pymarkdown* ]] && pkgs="$pkgs pymarkdownlnt"
+        [[ "$LINTERS" == *ruff*       ]] && pkgs="$pkgs ruff"
+        pip install $pkgs
       shell: bash
+      if: >
+        contains(inputs.linters, 'yamllint') ||
+        contains(inputs.linters, 'pymarkdown') ||
+        contains(inputs.linters, 'ruff')
+      env:
+        LINTERS: ${{ inputs.linters }}
     - run: |
         curl -fsSL https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz \
           | tar -xJf - shellcheck-stable/shellcheck
         sudo install shellcheck-stable/shellcheck /usr/local/bin/shellcheck
+      shell: bash
+      if: contains(inputs.linters, 'shellcheck')
+    - run: |
         bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
         sudo install actionlint /usr/local/bin/actionlint
       shell: bash
+      if: contains(inputs.linters, 'actionlint')
     - uses: ruby/setup-ruby@v1
+      if: >
+        contains(inputs.linters, 'rubocop') ||
+        contains(inputs.linters, 'erb-lint')
       with:
         bundler-cache: true
       env:
