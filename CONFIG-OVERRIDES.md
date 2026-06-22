@@ -46,9 +46,7 @@ across all repos, not to accommodate a single project.
 | `Rails/HasManyOrHasOneDependent` | disabled | enabled | Associations must declare `dependent:` to prevent orphaned records |
 | `Rails/InverseOf` | disabled | enabled | Associations must declare `inverse_of:` for bidirectional awareness |
 | `Rails/ActionFilter` | disabled | enabled | Prefer `before_action` over deprecated `before_filter` |
-| `Rails/Delegate` | disabled | enabled | Prefer `delegate` over manual wrapper methods |
 | `Rails/NegateInclude` | disabled | enabled | Prefer `exclude?` over `!include?` |
-| `Rails/PluckId` | disabled | enabled | Prefer `ids` over `pluck(:id)` |
 | `Rails/Present` | disabled | enabled | Prefer `present?` over `!blank?` |
 | `Rails/RedundantActiveRecordAllMethod` | disabled | enabled | Prefer `Model.where(...)` over `Model.all.where(...)` |
 

@@ -29,11 +29,7 @@ Rails/InverseOf:
   Enabled: true
 Rails/ActionFilter:
   Enabled: true
-Rails/Delegate:
-  Enabled: true
 Rails/NegateInclude:
-  Enabled: true
-Rails/PluckId:
   Enabled: true
 Rails/Present:
   Enabled: true
