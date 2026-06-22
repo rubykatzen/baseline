@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.7.0] - 2026-06-22
+
+No changes
+
 ## [v0.6.2] - 2026-06-20
 
 - fix: disable MD022 (blanks-around-headings)
