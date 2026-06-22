@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [v0.7.1] - 2026-06-22
+
+- chore: remove ruff and erb-lint, no Python or ERB files in repo
+- chore: run merge-dependabot-pr only for dependabot[bot]
+- fix: use publish-rubygems action from releaser, closes #66
+- chore(deps): bump nokogiri from 1.19.3 to 1.19.4
+- chore: reschedule Telegram notify to 10:00 Berlin (08:00 UTC)
+- chore: bump releaser to v0.5
+
 ## [v0.7.0] - 2026-06-22
 
 No changes
