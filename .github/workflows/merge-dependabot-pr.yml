@@ -4,5 +4,6 @@ on:
     types: [opened, reopened, synchronize]
 jobs:
   merge:
+    if: github.actor == 'dependabot[bot]'
     uses: rubykatzen/releaser/.github/workflows/merge-dependabot-pr-shared.yml@v0.5
     secrets: inherit
