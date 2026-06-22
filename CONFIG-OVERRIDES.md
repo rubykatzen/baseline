@@ -25,13 +25,13 @@ across all repos, not to accommodate a single project.
 
 | Rule | Default | Here | Reason |
 |---|---|---|---|
-| line-length | 88 | 120 | Aligns with RuboCop; long error messages and inline expressions |
+| line-length | 88 | 160 | Aligns with RuboCop; long error messages and inline expressions |
 
 ## RuboCop
 
 | Rule | Default | Here | Reason |
 |---|---|---|---|
-| `Layout/LineLength` | disabled | max 120 | Aligns with Ruff; long lines are an error, not just style |
+| `Layout/LineLength` | disabled | max 160 | Aligns with Ruff; long lines are an error, not just style |
 | `Style/TrailingCommaInArguments` | `no_comma` | `comma` | Aligns with Ruff/Black magic trailing comma: forces multiline to stay multiline, cleaner diffs |
 | `Style/TrailingCommaInArrayLiteral` | `no_comma` | `comma` | Same as above |
 | `Style/TrailingCommaInHashLiteral` | `no_comma` | `comma` | Same as above |
@@ -40,7 +40,17 @@ across all repos, not to accommodate a single project.
 | `Style/RequireOrder` | disabled | enabled | Aligns with Ruff isort: alphabetical `require` ordering |
 | `Style/StringConcatenation` | disabled | enabled | Aligns with Ruff UP032: prefer interpolation over `+` concatenation |
 | `Style/SafeNavigation` | `ConvertCodeThatCanStartToReturnNil: false` | `true` | Ruby-native alternative to collapsing nested nil-guard ifs |
+| `Style/DisableCopsWithinSourceCodeDirective` | disabled | enabled | Inline `# rubocop:disable` comments must not bypass shared policy |
 | `Style/FrozenStringLiteralComment` | disabled | enabled | All Ruby files must declare frozen string literal |
+| `Rails/ActionOrder` | disabled | enabled | Enforces canonical controller action ordering |
+| `Rails/HasManyOrHasOneDependent` | disabled | enabled | Associations must declare `dependent:` to prevent orphaned records |
+| `Rails/InverseOf` | disabled | enabled | Associations must declare `inverse_of:` for bidirectional awareness |
+| `Rails/ActionFilter` | disabled | enabled | Prefer `before_action` over deprecated `before_filter` |
+| `Rails/Delegate` | disabled | enabled | Prefer `delegate` over manual wrapper methods |
+| `Rails/NegateInclude` | disabled | enabled | Prefer `exclude?` over `!include?` |
+| `Rails/PluckId` | disabled | enabled | Prefer `ids` over `pluck(:id)` |
+| `Rails/Present` | disabled | enabled | Prefer `present?` over `!blank?` |
+| `Rails/RedundantActiveRecordAllMethod` | disabled | enabled | Prefer `Model.where(...)` over `Model.all.where(...)` |
 
 ## erb_lint / RuboCop in ERB
 
