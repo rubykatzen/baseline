@@ -28,6 +28,7 @@ jobs:
       - uses: rubykatzen/releaser/.github/actions/verify-release@v0.4.5
         with:
           base_sha: ${{ inputs.base_sha }}
+          ci_workflow: lint / lint
       - uses: rubykatzen/releaser/.github/actions/generate-notes@v0.4.5
         id: notes
         with:
