@@ -1,6 +1,6 @@
 Layout/LineLength:
   Enabled: true
-  Max: 120
+  Max: 160
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 Style/TrailingCommaInArrayLiteral:
