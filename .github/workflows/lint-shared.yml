@@ -13,6 +13,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Check linters match pre-commit config
+        if: hashFiles('.pre-commit-config.yaml') != ''
+        env:
+          WORKFLOW_LINTERS: ${{ inputs.linters }}
+        run: |
+          python3 - <<'EOF'
+          import yaml, sys, os
+
+          with open(".pre-commit-config.yaml") as f:
+              precommit = yaml.safe_load(f)
+
+          baseline_hooks = set()
+          for repo in precommit["repos"]:
+              if "rubykatzen/baseline" in repo["repo"]:
+                  baseline_hooks = {h["id"] for h in repo["hooks"]}
+                  break
+
+          if not baseline_hooks:
+              print("No rubykatzen/baseline hooks in .pre-commit-config.yaml, skipping.")
+              sys.exit(0)
+
+          workflow_linters = set(os.environ["WORKFLOW_LINTERS"].split(","))
+
+          if workflow_linters != baseline_hooks:
+              print("Linter mismatch between workflow and pre-commit config!")
+              print(f"  workflow linters:  {sorted(workflow_linters)}")
+              print(f"  pre-commit config: {sorted(baseline_hooks)}")
+              sys.exit(1)
+
+          print(f"In sync: {sorted(workflow_linters)}")
+          EOF
       - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.7
         with:
           linters: ${{ inputs.linters }}
