@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.7.2] - 2026-06-24
+
+- feat: check linters match pre-commit config in lint-shared (#79)
+
 ## [v0.7.1] - 2026-06-22
 
 - chore: remove ruff and erb-lint, no Python or ERB files in repo
