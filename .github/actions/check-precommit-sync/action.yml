@@ -1,0 +1,13 @@
+name: check-precommit-sync
+description: Verify .pre-commit-config.yaml baseline hooks match the linters workflow input.
+inputs:
+  linters:
+    description: Comma-separated linters (same value passed to lint-shared).
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: python3 "${{ github.action_path }}/../../../hooks/check-precommit-sync.py"
+      shell: bash
+      env:
+        LINTERS: ${{ inputs.linters }}
