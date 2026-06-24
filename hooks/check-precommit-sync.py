@@ -5,16 +5,16 @@ try:
     with open(".pre-commit-config.yaml") as f:
         config = yaml.safe_load(f)
 except FileNotFoundError:
-    print("::notice::No .pre-commit-config.yaml found — skipping sync check.")
-    sys.exit(0)
+    print("::error::.pre-commit-config.yaml not found — required when pre-commit is in linters.")
+    sys.exit(1)
 
 hooks = next(
     ({h["id"] for h in r["hooks"]} for r in config["repos"] if "rubykatzen/baseline" in r["repo"]),
     None,
 )
 if hooks is None:
-    print("::notice::No rubykatzen/baseline entry in .pre-commit-config.yaml — skipping.")
-    sys.exit(0)
+    print("::error::No rubykatzen/baseline entry in .pre-commit-config.yaml.")
+    sys.exit(1)
 
 linters = {x.strip() for x in os.environ["LINTERS"].split(",") if x.strip() not in ("", "pre-commit")}
 
