@@ -217,12 +217,6 @@ Install the CLI:
 brew tap rubykatzen/tap && brew install releaser
 ```
 
-## Repository protection
-
-The `main` branch is protected and requires the GitHub Actions status check
-named `lint`. That check comes from the `lint` job in `.github/workflows/lint.yml`.
-If the workflow or job name changes, update branch protection at the same time.
-
 ## Config overrides
 
 See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
