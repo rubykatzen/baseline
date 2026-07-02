@@ -45,13 +45,13 @@ updates:
     directory: /
     schedule:
       interval: daily
-      time: "22:00"
+      time: "10:00"
       timezone: "Europe/Berlin"
   - package-ecosystem: pre-commit
     directory: /
     schedule:
       interval: daily
-      time: "22:00"
+      time: "10:00"
       timezone: "Europe/Berlin"
 ```
 
