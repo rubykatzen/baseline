@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: yamllint
       - id: pymarkdown
-      - id: rubocop
+      - id: ruff
       - id: shellcheck
       - id: actionlint
+      - id: rubocop
