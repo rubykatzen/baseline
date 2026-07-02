@@ -39,5 +39,5 @@
   name: herb
   language: script
   entry: hooks/herb.sh
-  files: \.(html(\+.*)?\.erb|turbo_stream\.erb|herb|html\.herb|rhtml)$
+  files: \.(html(\+.*)?\.erb|turbo_stream\.erb|herb|rhtml)$
   pass_filenames: false

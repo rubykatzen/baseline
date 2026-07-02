@@ -103,7 +103,7 @@ Pass these keys to `lint-shared.yml` via `linters:`:
 | `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
 | `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
 | `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
-| `herb` | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+| `herb` | `lint-herb` | `*.html.erb`, `*.html+*.erb`, `*.turbo_stream.erb`, `*.herb`, `*.rhtml` | — |
 | `pre-commit` | `check-precommit-sync` | `.pre-commit-config.yaml` | — |
 
 `check-precommit-sync` runs two checks:
