@@ -5,7 +5,7 @@ on:
       linters:
         description: >
           Comma-separated linters to run.
-          Supported: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
+          Supported: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
         type: string
         required: true
 jobs:
@@ -34,3 +34,5 @@ jobs:
         if: contains(inputs.linters, 'rubocop')
       - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@v0.7
         if: contains(inputs.linters, 'erb-lint')
+      - uses: rubykatzen/baseline/.github/actions/lint-herb@v0.7
+        if: contains(inputs.linters, 'herb')

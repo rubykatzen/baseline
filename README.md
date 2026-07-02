@@ -26,7 +26,7 @@ jobs:
   lint:
     uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
     with:
-      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
+      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
 ```
 
 `lint-shared.yml` installs runtimes and runs each linter automatically. Add
@@ -92,8 +92,7 @@ Dependabot opens pull requests for version bumps. Pair with
 
 ## Composite actions (linters)
 
-Pass these keys to `lint-shared.yml` via `linters:`. `lint-herb` is not part of
-`lint-shared.yml` and must be called directly (it has no binary install step).
+Pass these keys to `lint-shared.yml` via `linters:`:
 
 | Key | Action | Lints | Config |
 |---|---|---|---|
@@ -104,8 +103,8 @@ Pass these keys to `lint-shared.yml` via `linters:`. `lint-herb` is not part of
 | `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
 | `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
 | `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
+| `herb` | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 | `pre-commit` | `check-precommit-sync` | `.pre-commit-config.yaml` | — |
-| — | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
 
 `check-precommit-sync` runs two checks:
 

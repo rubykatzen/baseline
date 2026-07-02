@@ -35,3 +35,9 @@
   language: script
   entry: hooks/erb-lint.sh
   files: \.html(\+.*)?\.erb$
+- id: herb
+  name: herb
+  language: script
+  entry: hooks/herb.sh
+  files: \.(html(\+.*)?\.erb|turbo_stream\.erb|herb|html\.herb|rhtml)$
+  pass_filenames: false
