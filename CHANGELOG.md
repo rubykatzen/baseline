@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v0.7.4] - 2026-07-02
+
+- feat: bring lint-herb up to full linter pattern (#85)
+- docs: update README for lint-shared.yml and pre-commit linter (#83)
+- chore: remove merge-dependabot-pr workflow (#84)
+
 ## [v0.7.3] - 2026-07-02
 
 - feat: extend pre-commit check with file-type coverage (#81)
