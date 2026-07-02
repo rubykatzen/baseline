@@ -24,35 +24,14 @@ on:
   pull_request:
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-      - run: python -m pip install yamllint pymarkdownlnt ruff
-      - run: |
-          curl -fsSL https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz \
-            | tar -xJf - shellcheck-stable/shellcheck
-          sudo install shellcheck-stable/shellcheck /usr/local/bin/shellcheck
-          bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          sudo install actionlint /usr/local/bin/actionlint
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "YOUR_RUBY_VERSION"
-          bundler-cache: true
-      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
+    with:
+      linters: yamllint, pymarkdown, shellcheck, actionlint, rubocop, pre-commit
 ```
 
-Install the runtime and binary for each linter before calling the corresponding
-baseline action. The actions apply baseline configs; they do not install Python,
-Ruby, shellcheck, actionlint, RuboCop, erb_lint, or other tools.
+`lint-shared.yml` installs runtimes and runs each linter automatically. Add
+`pre-commit` to `linters` to enforce that `.pre-commit-config.yaml` hooks stay
+in sync with CI — see [Pre-commit hooks](#pre-commit-hooks).
 
 ### 2. Dependabot
 
@@ -83,19 +62,25 @@ Dependabot opens pull requests for version bumps. Pair with
 
 ## Composite actions (linters)
 
-| Action | Lints | Config |
-|---|---|---|
-| `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
-| `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
-| `lint-ruff` | `*.py` | `config/ruff.toml` |
-| `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
-| `lint-actionlint` | `.github/workflows/*.yml` | — |
-| `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
-| `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
-| `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+Pass these keys to `lint-shared.yml` via `linters:`. `lint-herb` is not part of
+`lint-shared.yml` and must be called directly (it has no binary install step).
 
-These actions expect the matching linter binary to already be available on
-`PATH`. They are config runners, not tool installers.
+| Key | Action | Lints | Config |
+|---|---|---|---|
+| `yamllint` | `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
+| `pymarkdown` | `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
+| `ruff` | `lint-ruff` | `*.py` | `config/ruff.toml` |
+| `shellcheck` | `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
+| `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
+| `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
+| `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
+| `pre-commit` | `check-precommit-sync` | `.pre-commit-config.yaml` | — |
+| — | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+
+`check-precommit-sync` runs two checks:
+
+1. **Coverage** — scans repo files and verifies that every baseline hook whose file type is present is configured in `.pre-commit-config.yaml`
+2. **Sync** — verifies that configured hooks match the `linters` input (minus `pre-commit` itself)
 
 ## Ruby gem (RuboCop + erb_lint)
 
@@ -208,7 +193,7 @@ Bundler-resolved toolchain.
 ### Git source before RubyGems
 
 ```ruby
-gem "rubykatzen-baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
+gem "rubykatzen-baseline", git: "https://github.com/rubykatzen/baseline", tag: "v0.5.0", require: false
 ```
 
 ## Releases
@@ -251,26 +236,27 @@ See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations fro
 
 ## Pre-commit hooks
 
-Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config:
+Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
+Include only the hooks relevant to your stack:
 
 ```yaml
 repos:
-  - repo: git@github.com:rubykatzen/baseline.git
+  - repo: https://github.com/rubykatzen/baseline
     rev: VERSION
     hooks:
       - id: yamllint
       - id: pymarkdown
-      - id: ruff
       - id: shellcheck
       - id: actionlint
       - id: rubocop
-      - id: erb-lint
+      # - id: ruff        # Python projects
+      # - id: erb-lint    # Rails projects
 ```
 
 Install the tools before running hooks:
 
 ```bash
-python -m pip install yamllint pymarkdownlnt ruff
+python -m pip install yamllint pymarkdownlnt
 brew install shellcheck actionlint
 ```
 
