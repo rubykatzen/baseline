@@ -58,7 +58,7 @@ To add a linter for a new file type:
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Update `.pre-commit-config.yaml.example`
 7. Update `README.md`
-8. If any rules are disabled, add them to `CONFIG-OVERRIDES.md`
+8. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
 
 Do not make baseline install the linter runtime or binary. Document the required
 tool and keep installation in the consuming repository's workflow or developer
@@ -127,4 +127,4 @@ This avoids introducing new runtimes into repos that don't already use them.
 
 ## Disabled Rules
 
-Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `CONFIG-OVERRIDES.md`.
+Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `LINTERS-DEFAULTS-OVERRIDES.md`.

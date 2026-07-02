@@ -247,6 +247,6 @@ Install the CLI:
 brew tap rubykatzen/tap && brew install releaser
 ```
 
-## Config overrides
+## Linters: defaults & overrides
 
-See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
+See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
