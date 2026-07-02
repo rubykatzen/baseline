@@ -91,12 +91,11 @@ inherit from the gem.
 
 ### 1. Gemfile
 
-Replace individual RuboCop gems with a single baseline pin. Match the gem
-version to the git tag (for example tag `v0.7.3` → gem `0.7.3`):
+Replace individual RuboCop gems with a single baseline pin:
 
 ```ruby
 group :development, :test do
-  gem "rubykatzen-baseline", "VERSION", require: false
+  gem "rubykatzen-baseline", require: false
 end
 ```
 
