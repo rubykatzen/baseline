@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.7.6] - 2026-07-02
+
+- fix: error on hooks configured but no matching files (#90)
+
 ## [v0.7.5] - 2026-07-02
 
 - fix: bump pre-commit rev in example and README during release (#88)
