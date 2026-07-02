@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.7.5] - 2026-07-02
+
+- fix: bump pre-commit rev in example and README during release (#88)
+
 ## [v0.7.4] - 2026-07-02
 
 - feat: bring lint-herb up to full linter pattern (#85)
