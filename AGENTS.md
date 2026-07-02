@@ -23,29 +23,30 @@ status updates, and any other written communication.
 
 ## Purpose
 
-This repo is the single source of truth for linter configs across all dupmachine repositories. The goal is identical linting everywhere — configs live here and nowhere else.
+This repo is the single source of truth for linter configs across all rubykatzen repositories. The goal is identical linting everywhere — configs live here and nowhere else.
 
-Baseline owns linter configuration, not runtime or tool installation. Consuming
-repositories must install the runtimes and linter binaries they choose to run;
-baseline hooks and actions should only pass canonical configs to already
-installed tools.
+Baseline owns linter configuration and runtime installation for CI. Consuming
+repositories call `lint-shared.yml` and get runtimes, configs, and linter
+execution handled automatically. Pre-commit hooks are thin wrappers that expect
+tools to already be installed in the developer environment.
 
 ## Repository Structure
 
 - `config/` — canonical linter config files
-- `hooks/` — shell script wrappers for pre-commit (`language: script`)
+- `hooks/` — shell and Python script wrappers for pre-commit (`language: script`)
 - `baseline.gemspec` — Ruby gem packaging RuboCop and erb_lint configs for local `bundle exec rubocop`
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
-- `.github/actions/lint-*/` — thin composite actions that run installed linters with baseline configs
-- `.github/actions/setup-runtimes/` — baseline self-lint only: installs runtimes and gems before lint actions
-- `.github/workflows/lint.yml` — baseline self-lint (uses local actions, not `@vX`)
+- `.github/actions/lint-*/` — composite actions that run installed linters with baseline configs
+- `.github/actions/check-precommit-sync/` — composite action: checks coverage and CI/pre-commit sync
+- `.github/actions/setup-runtimes/` — installs Python, Ruby, and standalone binaries for requested linters
+- `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
+- `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
-- `.github/workflows/merge-dependabot-pr.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
-- `.pre-commit-config.yaml.example` — example for consuming repos
+- `.pre-commit-config.yaml.example` — example for consuming repos (all hooks, prune as needed)
 
 ## Adding a New Linter
 
@@ -56,19 +57,23 @@ To add a linter for a new file type:
 3. Make the script executable: `chmod +x hooks/<linter>.sh`
 4. Add hook entry to `.pre-commit-hooks.yaml`
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
-6. Update `.pre-commit-config.yaml.example`
-7. Update `README.md`
-8. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
+6. Add runtime installation to `.github/actions/setup-runtimes/action.yml`
+7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(inputs.linters, '<key>')`
+8. Update `.pre-commit-config.yaml.example`
+9. Update `README.md`
+10. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
 
-Do not make baseline install the linter runtime or binary. Document the required
-tool and keep installation in the consuming repository's workflow or developer
-environment.
+Do not make baseline install the linter runtime or binary in pre-commit hooks.
+Pre-commit hooks expect tools to already be on PATH in the developer environment.
+`setup-runtimes` handles installation for CI only (called from `lint-shared.yml`).
 
 ## Workflows
 
-`merge-dependabot-pr.yml` and `notify-telegram-unreleased.yml` are baseline's own
-callers that delegate to `rubykatzen/releaser`; they are not exported for
-external use.
+`notify-telegram-unreleased.yml` is baseline's own caller that delegates to
+`rubykatzen/releaser`; it is not exported for external use.
+
+`lint-shared.yml` is the primary export — consuming repos call it via
+`uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION`.
 
 Pre-commit hook pins in `.pre-commit-config.yaml` are updated by Dependabot
 (`package-ecosystem: pre-commit` in `.github/dependabot.yml`), not by a custom
@@ -77,14 +82,9 @@ workflow.
 ## Self-linting
 
 Baseline lints itself through `.github/workflows/lint.yml`, which calls the
-shared reusable workflow `.github/workflows/lint-shared.yml`. Do not point the
-baseline self-lint workflow at `rubykatzen/baseline@vX`; it must validate the
-actions and configs from the current commit.
-
-`main` branch protection requires the GitHub Actions status check named `lint / lint`.
-That name comes from the `lint` job in `lint.yml` calling the `lint` job in
-`lint-shared.yml`. If either job name changes, update branch protection in GitHub
-at the same time.
+shared reusable workflow `.github/workflows/lint-shared.yml` using a local
+`./` reference. This ensures the current commit's actions and configs are
+validated, not a pinned release.
 
 ## Cutting Releases
 

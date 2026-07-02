@@ -26,7 +26,7 @@ jobs:
   lint:
     uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
     with:
-      linters: yamllint, pymarkdown, shellcheck, actionlint, rubocop, pre-commit
+      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
 ```
 
 `lint-shared.yml` installs runtimes and runs each linter automatically. Add
@@ -45,17 +45,17 @@ repos:
     hooks:
       - id: yamllint
       - id: pymarkdown
+      - id: ruff
       - id: shellcheck
       - id: actionlint
       - id: rubocop
-      # - id: ruff        # Python projects
-      # - id: erb-lint    # Rails projects
+      - id: erb-lint
 ```
 
-Install the tools before running hooks:
+Remove hooks you don't need. Install the tools before running hooks:
 
 ```bash
-python -m pip install yamllint pymarkdownlnt
+python -m pip install yamllint pymarkdownlnt ruff
 brew install shellcheck actionlint
 ```
 
