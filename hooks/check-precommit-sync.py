@@ -82,7 +82,8 @@ if missing:
 
 extra = configured - needed
 if extra:
-    print(f"::notice::Hooks configured but no matching files found: {sorted(extra)}")
+    print(f"::error::Hooks configured but no matching files found: {sorted(extra)}")
+    ok = False
 
 if configured != linters:
     print("::error::Linter mismatch between workflow and .pre-commit-config.yaml")
