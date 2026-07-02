@@ -10,7 +10,7 @@ running baseline hooks or actions.
 
 Replace `VERSION` in all examples with the latest release tag from
 [github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
-After initial setup, [Dependabot](#2-dependabot) keeps the pin current automatically.
+After initial setup, [Dependabot](#3-dependabot) keeps the pin current automatically.
 
 ### 1. Lint workflow
 
@@ -24,37 +24,46 @@ on:
   pull_request:
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
-      - run: python -m pip install yamllint pymarkdownlnt ruff
-      - run: |
-          curl -fsSL https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz \
-            | tar -xJf - shellcheck-stable/shellcheck
-          sudo install shellcheck-stable/shellcheck /usr/local/bin/shellcheck
-          bash <(curl -sL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          sudo install actionlint /usr/local/bin/actionlint
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "YOUR_RUBY_VERSION"
-          bundler-cache: true
-      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-ruff@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@VERSION
-      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@VERSION
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
+    with:
+      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
 ```
 
-Install the runtime and binary for each linter before calling the corresponding
-baseline action. The actions apply baseline configs; they do not install Python,
-Ruby, shellcheck, actionlint, RuboCop, erb_lint, or other tools.
+`lint-shared.yml` installs runtimes and runs each linter automatically. Add
+`pre-commit` to `linters` to enforce that `.pre-commit-config.yaml` hooks stay
+in sync with CI.
 
-### 2. Dependabot
+### 2. Pre-commit hooks
+
+Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
+Include only the hooks relevant to your stack:
+
+```yaml
+repos:
+  - repo: https://github.com/rubykatzen/baseline
+    rev: v0.7.3
+    hooks:
+      - id: yamllint
+      - id: pymarkdown
+      - id: ruff
+      - id: shellcheck
+      - id: actionlint
+      - id: rubocop
+      - id: erb-lint
+```
+
+Remove hooks you don't need. Install the tools before running hooks:
+
+```bash
+python -m pip install yamllint pymarkdownlnt ruff
+brew install shellcheck actionlint
+```
+
+Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
+consuming repository first. `rubocop` and `erb_lint` must be available through
+the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
+
+### 3. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
@@ -66,13 +75,13 @@ updates:
     directory: /
     schedule:
       interval: daily
-      time: "22:00"
+      time: "10:00"
       timezone: "Europe/Berlin"
   - package-ecosystem: pre-commit
     directory: /
     schedule:
       interval: daily
-      time: "22:00"
+      time: "10:00"
       timezone: "Europe/Berlin"
 ```
 
@@ -83,19 +92,25 @@ Dependabot opens pull requests for version bumps. Pair with
 
 ## Composite actions (linters)
 
-| Action | Lints | Config |
-|---|---|---|
-| `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
-| `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
-| `lint-ruff` | `*.py` | `config/ruff.toml` |
-| `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
-| `lint-actionlint` | `.github/workflows/*.yml` | — |
-| `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
-| `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
-| `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+Pass these keys to `lint-shared.yml` via `linters:`. `lint-herb` is not part of
+`lint-shared.yml` and must be called directly (it has no binary install step).
 
-These actions expect the matching linter binary to already be available on
-`PATH`. They are config runners, not tool installers.
+| Key | Action | Lints | Config |
+|---|---|---|---|
+| `yamllint` | `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
+| `pymarkdown` | `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
+| `ruff` | `lint-ruff` | `*.py` | `config/ruff.toml` |
+| `shellcheck` | `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
+| `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
+| `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
+| `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
+| `pre-commit` | `check-precommit-sync` | `.pre-commit-config.yaml` | — |
+| — | `lint-herb` | `*.html.erb`, `*.herb`, `*.turbo_stream.erb` | — |
+
+`check-precommit-sync` runs two checks:
+
+1. **Coverage** — scans repo files and verifies that every baseline hook whose file type is present is configured in `.pre-commit-config.yaml`
+2. **Sync** — verifies that configured hooks match the `linters` input (minus `pre-commit` itself)
 
 ## Ruby gem (RuboCop + erb_lint)
 
@@ -106,12 +121,11 @@ inherit from the gem.
 
 ### 1. Gemfile
 
-Replace individual RuboCop gems with a single baseline pin. Match the gem
-version to the git tag (for example tag `v0.5.0` → gem `0.5.0`):
+Replace individual RuboCop gems with a single baseline pin:
 
 ```ruby
 group :development, :test do
-  gem "rubykatzen-baseline", "0.5.0", require: false
+  gem "rubykatzen-baseline", require: false
 end
 ```
 
@@ -205,12 +219,6 @@ baseline gem in the project `Gemfile` plus the generated stubs above. They
 delegate to the same `bundle exec` commands so local and CI linting use one
 Bundler-resolved toolchain.
 
-### Git source before RubyGems
-
-```ruby
-gem "rubykatzen-baseline", git: "git@github.com:rubykatzen/baseline.git", tag: "v0.5.0", require: false
-```
-
 ## Releases
 
 Baseline releases are cut with the
@@ -239,48 +247,6 @@ Install the CLI:
 brew tap rubykatzen/tap && brew install releaser
 ```
 
-## Repository protection
+## Linters: defaults & overrides
 
-The `main` branch is protected and requires the GitHub Actions status check
-named `lint`. That check comes from the `lint` job in `.github/workflows/lint.yml`.
-If the workflow or job name changes, update branch protection at the same time.
-
-## Config overrides
-
-See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
-
-## Pre-commit hooks
-
-Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config:
-
-```yaml
-repos:
-  - repo: git@github.com:rubykatzen/baseline.git
-    rev: VERSION
-    hooks:
-      - id: yamllint
-      - id: pymarkdown
-      - id: ruff
-      - id: shellcheck
-      - id: actionlint
-      - id: rubocop
-      - id: erb-lint
-```
-
-Install the tools before running hooks:
-
-```bash
-python -m pip install yamllint pymarkdownlnt ruff
-brew install shellcheck actionlint
-```
-
-Ruby hooks and actions use `bundle exec`; install Ruby and run `bundle install`
-in the consuming repository first. `rubocop` and `erb_lint` must be available
-through the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem. Ruby
-hooks fail fast when `Gemfile`, `.rubocop.yml`, or `.erb_lint.yml` stubs are
-missing.
-
-The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
-filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
-matches HTML ERB templates only, mirroring `erb_lint --lint-all`.
-Hooks skip successfully when no matching project files are present.
+See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
