@@ -7,7 +7,7 @@ inputs:
   linters:
     description: >
       Comma-separated linters to prepare runtimes for.
-      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint
+      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
     required: true
 runs:
   using: composite
@@ -16,20 +16,23 @@ runs:
       if: >
         contains(inputs.linters, 'yamllint') ||
         contains(inputs.linters, 'pymarkdown') ||
-        contains(inputs.linters, 'ruff')
+        contains(inputs.linters, 'ruff') ||
+        contains(inputs.linters, 'pre-commit')
       with:
         python-version: "3.x"
     - run: |
         pkgs=""
-        [[ "$LINTERS" == *yamllint*   ]] && pkgs="$pkgs yamllint"
-        [[ "$LINTERS" == *pymarkdown* ]] && pkgs="$pkgs pymarkdownlnt"
-        [[ "$LINTERS" == *ruff*       ]] && pkgs="$pkgs ruff"
+        [[ "$LINTERS" == *yamllint*    ]] && pkgs="$pkgs yamllint"
+        [[ "$LINTERS" == *pymarkdown*  ]] && pkgs="$pkgs pymarkdownlnt"
+        [[ "$LINTERS" == *ruff*        ]] && pkgs="$pkgs ruff"
+        [[ "$LINTERS" == *pre-commit*  ]] && pkgs="$pkgs pyyaml identify"
         pip install $pkgs
       shell: bash
       if: >
         contains(inputs.linters, 'yamllint') ||
         contains(inputs.linters, 'pymarkdown') ||
-        contains(inputs.linters, 'ruff')
+        contains(inputs.linters, 'ruff') ||
+        contains(inputs.linters, 'pre-commit')
       env:
         LINTERS: ${{ inputs.linters }}
     - run: |
