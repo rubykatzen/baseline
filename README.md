@@ -92,11 +92,11 @@ inherit from the gem.
 ### 1. Gemfile
 
 Replace individual RuboCop gems with a single baseline pin. Match the gem
-version to the git tag (for example tag `v0.5.0` → gem `0.5.0`):
+version to the git tag (for example tag `v0.7.3` → gem `0.7.3`):
 
 ```ruby
 group :development, :test do
-  gem "rubykatzen-baseline", "0.5.0", require: false
+  gem "rubykatzen-baseline", "VERSION", require: false
 end
 ```
 
@@ -189,12 +189,6 @@ The `rubocop` and `erb-lint` pre-commit hooks and GitHub Actions require the
 baseline gem in the project `Gemfile` plus the generated stubs above. They
 delegate to the same `bundle exec` commands so local and CI linting use one
 Bundler-resolved toolchain.
-
-### Git source before RubyGems
-
-```ruby
-gem "rubykatzen-baseline", git: "https://github.com/rubykatzen/baseline", tag: "v0.5.0", require: false
-```
 
 ## Releases
 
