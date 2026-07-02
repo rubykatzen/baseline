@@ -23,14 +23,20 @@ def file_tags(path):
         return frozenset()
 
 
+def hook_applies(hook, files):
+    if "types" in hook:
+        required = set(hook["types"])
+        return any(required.issubset(file_tags(f)) for f in files)
+    if "files" in hook:
+        pattern = re.compile(hook["files"])
+        return any(pattern.search(str(f)) for f in files)
+    return False
+
+
 def needed_hooks(files):
     with open(BASELINE_ROOT / ".pre-commit-hooks.yaml") as f:
         hook_defs = yaml.safe_load(f)
-    return {
-        h["id"] for h in hook_defs
-        if ("types" in h and any(set(h["types"]).issubset(file_tags(f)) for f in files))
-        or ("files" in h and any(re.search(h["files"], str(f)) for f in files))
-    }
+    return {h["id"] for h in hook_defs if hook_applies(h, files)}
 
 
 def configured_hooks():
