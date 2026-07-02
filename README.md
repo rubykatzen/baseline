@@ -10,7 +10,7 @@ running baseline hooks or actions.
 
 Replace `VERSION` in all examples with the latest release tag from
 [github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
-After initial setup, [Dependabot](#2-dependabot) keeps the pin current automatically.
+After initial setup, [Dependabot](#3-dependabot) keeps the pin current automatically.
 
 ### 1. Lint workflow
 
@@ -31,9 +31,39 @@ jobs:
 
 `lint-shared.yml` installs runtimes and runs each linter automatically. Add
 `pre-commit` to `linters` to enforce that `.pre-commit-config.yaml` hooks stay
-in sync with CI — see [Pre-commit hooks](#pre-commit-hooks).
+in sync with CI.
 
-### 2. Dependabot
+### 2. Pre-commit hooks
+
+Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
+Include only the hooks relevant to your stack:
+
+```yaml
+repos:
+  - repo: https://github.com/rubykatzen/baseline
+    rev: VERSION
+    hooks:
+      - id: yamllint
+      - id: pymarkdown
+      - id: shellcheck
+      - id: actionlint
+      - id: rubocop
+      # - id: ruff        # Python projects
+      # - id: erb-lint    # Rails projects
+```
+
+Install the tools before running hooks:
+
+```bash
+python -m pip install yamllint pymarkdownlnt
+brew install shellcheck actionlint
+```
+
+Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
+consuming repository first. `rubocop` and `erb_lint` must be available through
+the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
+
+### 3. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
@@ -220,40 +250,3 @@ brew tap rubykatzen/tap && brew install releaser
 ## Config overrides
 
 See [CONFIG-OVERRIDES.md](CONFIG-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
-
-## Pre-commit hooks
-
-Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
-Include only the hooks relevant to your stack:
-
-```yaml
-repos:
-  - repo: https://github.com/rubykatzen/baseline
-    rev: VERSION
-    hooks:
-      - id: yamllint
-      - id: pymarkdown
-      - id: shellcheck
-      - id: actionlint
-      - id: rubocop
-      # - id: ruff        # Python projects
-      # - id: erb-lint    # Rails projects
-```
-
-Install the tools before running hooks:
-
-```bash
-python -m pip install yamllint pymarkdownlnt
-brew install shellcheck actionlint
-```
-
-Ruby hooks and actions use `bundle exec`; install Ruby and run `bundle install`
-in the consuming repository first. `rubocop` and `erb_lint` must be available
-through the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem. Ruby
-hooks fail fast when `Gemfile`, `.rubocop.yml`, or `.erb_lint.yml` stubs are
-missing.
-
-The `rubocop` pre-commit hook passes `--force-exclusion` so explicitly passed
-filenames still respect RuboCop exclusions. The `erb-lint` pre-commit hook
-matches HTML ERB templates only, mirroring `erb_lint --lint-all`.
-Hooks skip successfully when no matching project files are present.
