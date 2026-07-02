@@ -9,3 +9,4 @@ repos:
       - id: actionlint
       - id: rubocop
       - id: erb-lint
+      - id: herb

@@ -7,7 +7,7 @@ inputs:
   linters:
     description: >
       Comma-separated linters to prepare runtimes for.
-      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, pre-commit
+      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
     required: true
 runs:
   using: composite
@@ -49,7 +49,8 @@ runs:
     - uses: ruby/setup-ruby@v1
       if: >
         contains(inputs.linters, 'rubocop') ||
-        contains(inputs.linters, 'erb-lint')
+        contains(inputs.linters, 'erb-lint') ||
+        contains(inputs.linters, 'herb')
       with:
         bundler-cache: true
       env:

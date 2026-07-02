@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "erb_lint", "~> 0.9"
+  spec.add_dependency "herb", "~> 0.10"
   spec.add_dependency "rubocop", "~> 1.88"
   spec.add_dependency "rubocop-performance", "~> 1.26"
   spec.add_dependency "rubocop-rails", "~> 2.35"
