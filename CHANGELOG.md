@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [v0.7.7] - 2026-07-03
+
+- fix: relax yamllint rules for Psych-generated YAML (#94)
+- fix: set dependabot schedule time to 10:00 (#92)
+
 ## [v0.7.6] - 2026-07-02
 
 - fix: error on hooks configured but no matching files (#90)
