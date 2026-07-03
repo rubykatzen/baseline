@@ -15,6 +15,6 @@ rules:
     check-keys: false
   comments:
     min-spaces-from-content: 1
-  document-start:
-    level: error
-    present: false
+  document-start: disable
+  indentation:
+    indent-sequences: consistent

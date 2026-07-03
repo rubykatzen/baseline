@@ -8,6 +8,8 @@ across all repos, not to accommodate a single project.
 | Rule | Default | Here | Reason |
 |---|---|---|---|
 | `line-length` | enabled (max 80) | disabled | Traefik labels in docker-compose files routinely exceed 80 chars |
+| `document-start` | `present: false` | disabled | Ruby's Psych always emits `---`; cannot be suppressed via options |
+| `indentation.indent-sequences` | `true` | `consistent` | Psych outputs sequences at the parent key level; `consistent` allows either style as long as each file is uniform |
 
 ## pymarkdown
 
