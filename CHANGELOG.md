@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.7.8] - 2026-07-08
+
+- fix: relax empty-lines max from 0 to 1 (#97)
+
 ## [v0.7.7] - 2026-07-03
 
 - fix: relax yamllint rules for Psych-generated YAML (#94)
