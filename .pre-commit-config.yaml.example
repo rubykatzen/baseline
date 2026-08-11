@@ -5,6 +5,7 @@ repos:
       - id: yamllint
       - id: pymarkdown
       - id: ruff
+      - id: tombi
       - id: shellcheck
       - id: actionlint
       - id: rubocop

@@ -58,6 +58,7 @@ repos:
       - id: yamllint
       - id: pymarkdown
       - id: ruff
+      - id: tombi
       - id: shellcheck
       - id: actionlint
       - id: rubocop
@@ -68,7 +69,7 @@ Remove hooks that are excluded from the shared workflow or have no matching
 tracked files. Install the tools before running hooks:
 
 ```bash
-python -m pip install yamllint pymarkdownlnt ruff
+python -m pip install yamllint pymarkdownlnt ruff tombi
 brew install shellcheck actionlint
 ```
 
@@ -113,6 +114,7 @@ disable it for a repository:
 | `yamllint` | `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
 | `pymarkdown` | `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
 | `ruff` | `lint-ruff` | `*.py` | `config/ruff.toml` |
+| `tombi` | `lint-tombi` | `*.toml` | consumer config or Tombi defaults |
 | `shellcheck` | `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
 | `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
 | `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
@@ -123,6 +125,10 @@ disable it for a repository:
 The detector scans `git ls-files` and matches each file against the `types` or
 `files` selector in `.pre-commit-hooks.yaml`. It adds `pre-commit` when a
 `.pre-commit-config.yaml` is present, then removes `exclude`.
+
+Tombi discovers a consumer repository's `tombi.toml`, `.tombi.toml`, or
+`[tool.tombi]` configuration. Without one, Tombi's defaults apply. Baseline runs
+both linting and formatting checks offline and treats lint warnings as errors.
 
 `check-precommit` verifies that configured baseline hooks exactly match
 the detected CI linters, minus `pre-commit` itself.

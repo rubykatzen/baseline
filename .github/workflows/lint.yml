@@ -6,3 +6,5 @@ on:
 jobs:
   lint:
     uses: ./.github/workflows/lint-shared.yml
+    with:
+      exclude: '["tombi"]'

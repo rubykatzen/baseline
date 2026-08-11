@@ -13,6 +13,11 @@
   language: script
   entry: hooks/ruff.sh
   types: [python]
+- id: tombi
+  name: tombi
+  language: script
+  entry: hooks/tombi.sh
+  types: [toml]
 - id: shellcheck
   name: shellcheck
   language: script

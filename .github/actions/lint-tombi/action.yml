@@ -1,0 +1,12 @@
+name: tombi
+description: Lint and check formatting of TOML files using installed tombi.
+runs:
+  using: composite
+  steps:
+    - run: |
+        mapfile -d '' files < <(git ls-files -z -- '*.toml')
+        (( ${#files[@]} > 0 )) || exit 0
+
+        tombi lint --offline --error-on-warnings "${files[@]}"
+        tombi format --offline --check "${files[@]}"
+      shell: bash

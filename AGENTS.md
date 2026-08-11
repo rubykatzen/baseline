@@ -128,4 +128,4 @@ This avoids introducing new runtimes into repos that don't already use them.
 
 ## Disabled Rules
 
-Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design. Deviations from defaults are documented in `LINTERS-DEFAULTS-OVERRIDES.md`.
+Rules are disabled only when impractical across all repos, not to accommodate a single repo. Per-repo overrides are not supported by design, except for Tombi, which intentionally discovers the consumer repository's configuration. Deviations from defaults are documented in `LINTERS-DEFAULTS-OVERRIDES.md`.
