@@ -1,0 +1,8 @@
+name: GitHub
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+jobs:
+  github-config-check:
+    uses: ./.github/workflows/github-shared.yml
