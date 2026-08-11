@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import sys
 
@@ -23,7 +24,7 @@ def configured_hooks():
 
 
 def detected_hooks():
-    return {x.strip() for x in os.environ["LINTERS"].split(",") if x.strip() not in ("", "pre-commit")}
+    return set(json.loads(os.environ["LINTERS"])) - {"pre-commit"}
 
 
 configured = configured_hooks()

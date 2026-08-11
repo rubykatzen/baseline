@@ -1,9 +1,11 @@
 import importlib.util
+import json
 import os
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 BASELINE_ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
@@ -62,6 +64,17 @@ class LinterSelectionTest(unittest.TestCase):
         for value in ('"rubocop"', "rubocop", '["rubocop", 1]'):
             with self.subTest(value=value), self.assertRaisesRegex(ValueError, "JSON array of strings"):
                 parse_json_list(value)
+
+    def test_writes_single_json_output(self):
+        output = self.repo / "github-output"
+        with patch.dict(os.environ, {"EXCLUDE": "[]", "GITHUB_OUTPUT": str(output)}):
+            self.assertEqual(DETECT_LINTERS.main(), 0)
+
+        lines = output.read_text().splitlines()
+        self.assertEqual(len(lines), 1)
+        name, value = lines[0].split("=", 1)
+        self.assertEqual(name, "linters")
+        self.assertEqual(json.loads(value), sorted(detect_linters(BASELINE_ROOT)))
 
     def test_ignores_untracked_files(self):
         (self.repo / "script.sh").write_text("#!/bin/sh\n")

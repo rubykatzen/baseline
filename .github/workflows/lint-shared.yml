@@ -11,32 +11,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      # TODO: Switch to a release tag after this action is released.
-      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/auto-detect-linters
+      # TODO: Switch these three actions to a release tag after their JSON interfaces are released.
+      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/update-actions-v0.8
         id: detect
         with:
           exclude: ${{ inputs.exclude }}
-      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.7
+      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@agent/update-actions-v0.8
         with:
           linters: ${{ steps.detect.outputs.linters }}
-      # TODO: Switch to a release tag after the simplified sync check is released.
-      - uses: rubykatzen/baseline/.github/actions/check-precommit@agent/auto-detect-linters
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'pre-commit')
+      - uses: rubykatzen/baseline/.github/actions/check-precommit@agent/update-actions-v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'pre-commit')
         with:
           linters: ${{ steps.detect.outputs.linters }}
-      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'yamllint')
-      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'pymarkdown')
-      - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'ruff')
-      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'shellcheck')
-      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'actionlint')
-      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'rubocop')
-      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'erb-lint')
-      - uses: rubykatzen/baseline/.github/actions/lint-herb@v0.7
-        if: contains(fromJSON(steps.detect.outputs.linters-json), 'herb')
+      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'yamllint')
+      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'pymarkdown')
+      - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'ruff')
+      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'shellcheck')
+      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'actionlint')
+      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'rubocop')
+      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'erb-lint')
+      - uses: rubykatzen/baseline/.github/actions/lint-herb@v0.8
+        if: contains(fromJSON(steps.detect.outputs.linters), 'herb')

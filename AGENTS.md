@@ -59,7 +59,7 @@ To add a linter for a new file type:
 4. Add hook entry to `.pre-commit-hooks.yaml`
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Add runtime installation to `.github/actions/setup-runtimes/action.yml`
-7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(fromJSON(steps.detect.outputs.linters-json), '<key>')`
+7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(fromJSON(steps.detect.outputs.linters), '<key>')`
 8. Update `.pre-commit-config.yaml.example`
 9. Update `README.md`
 10. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`

@@ -85,8 +85,7 @@ def main():
 
     value = json.dumps(linters, separators=(",", ":"))
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-        print(f"linters={','.join(linters)}", file=output)
-        print(f"linters-json={value}", file=output)
+        print(f"linters={value}", file=output)
 
     print(f"Detected linters: {', '.join(linters) or 'none'}")
     print(f"Excluded linters: {', '.join(sorted(excluded)) or 'none'}")
