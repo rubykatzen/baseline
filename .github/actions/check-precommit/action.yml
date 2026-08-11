@@ -2,7 +2,7 @@ name: check-precommit
 description: Verify .pre-commit-config.yaml baseline hooks match the linters workflow input.
 inputs:
   linters:
-    description: Comma-separated linters (same value passed to lint-shared).
+    description: JSON array of detected linters.
     required: true
 runs:
   using: composite

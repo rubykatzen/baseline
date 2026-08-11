@@ -6,11 +6,8 @@ inputs:
     default: "[]"
 outputs:
   linters:
-    description: Comma-separated detected linters.
-    value: ${{ steps.detect.outputs.linters }}
-  linters-json:
     description: JSON array of detected linters.
-    value: ${{ steps.detect.outputs.linters-json }}
+    value: ${{ steps.detect.outputs.linters }}
 runs:
   using: composite
   steps:
