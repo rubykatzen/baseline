@@ -1,8 +1,8 @@
 name: setup-runtimes
 description: >
-  Install linter runtimes for the requested linters.
+  Install tools and non-Python runtimes for the requested linters.
   Accepts a comma-separated list via the `linters` input and installs only
-  the runtimes each linter needs (Python, Ruby, or standalone binaries).
+  the dependencies each linter needs (Python packages, Ruby, or standalone binaries).
 inputs:
   linters:
     description: >
@@ -12,21 +12,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-python@v6
-      if: >
-        contains(inputs.linters, 'yamllint') ||
-        contains(inputs.linters, 'pymarkdown') ||
-        contains(inputs.linters, 'ruff') ||
-        contains(inputs.linters, 'pre-commit')
-      with:
-        python-version: "3.x"
     - run: |
         pkgs=""
         [[ "$LINTERS" == *yamllint*    ]] && pkgs="$pkgs yamllint"
         [[ "$LINTERS" == *pymarkdown*  ]] && pkgs="$pkgs pymarkdownlnt"
         [[ "$LINTERS" == *ruff*        ]] && pkgs="$pkgs ruff"
         [[ "$LINTERS" == *pre-commit*  ]] && pkgs="$pkgs pyyaml identify"
-        pip install $pkgs
+        python3 -m pip install $pkgs
       shell: bash
       if: >
         contains(inputs.linters, 'yamllint') ||

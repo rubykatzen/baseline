@@ -38,8 +38,9 @@ tools to already be installed in the developer environment.
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — composite actions that run installed linters with baseline configs
-- `.github/actions/check-precommit-sync/` — composite action: checks coverage and CI/pre-commit sync
-- `.github/actions/setup-runtimes/` — installs Python, Ruby, and standalone binaries for requested linters
+- `.github/actions/detect-linters/` — composite action that selects applicable linters from tracked files
+- `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
+- `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
@@ -58,7 +59,7 @@ To add a linter for a new file type:
 4. Add hook entry to `.pre-commit-hooks.yaml`
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Add runtime installation to `.github/actions/setup-runtimes/action.yml`
-7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(inputs.linters, '<key>')`
+7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(fromJSON(steps.detect.outputs.linters-json), '<key>')`
 8. Update `.pre-commit-config.yaml.example`
 9. Update `README.md`
 10. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
