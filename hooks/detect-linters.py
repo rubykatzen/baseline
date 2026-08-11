@@ -17,10 +17,10 @@ def parse_json_list(value):
     try:
         items = json.loads(value)
     except json.JSONDecodeError as error:
-        raise ValueError("exclude must be a JSON array of strings") from error
+        raise ValueError("skip must be a JSON array of strings") from error
 
     if not isinstance(items, list) or not all(isinstance(item, str) and item for item in items):
-        raise ValueError("exclude must be a JSON array of strings")
+        raise ValueError("skip must be a JSON array of strings")
 
     return set(items)
 
@@ -58,27 +58,27 @@ def load_hook_definitions(baseline_root):
         return yaml.safe_load(file)
 
 
-def detect_linters(baseline_root, excluded=()):
+def detect_linters(baseline_root, skipped=()):
     hook_definitions = load_hook_definitions(baseline_root)
     supported = {hook["id"] for hook in hook_definitions} | {PRE_COMMIT_LINTER}
-    excluded = set(excluded)
+    skipped = set(skipped)
 
-    if unknown := excluded - supported:
+    if unknown := skipped - supported:
         names = ", ".join(sorted(unknown))
-        raise ValueError(f"Unknown excluded linters: {names}")
+        raise ValueError(f"Unknown skipped linters: {names}")
 
     files = repo_files()
     selected = {hook["id"] for hook in hook_definitions if hook_applies(hook, files)}
     if Path(".pre-commit-config.yaml").is_file():
         selected.add(PRE_COMMIT_LINTER)
 
-    return selected - excluded
+    return selected - skipped
 
 
 def main():
     try:
-        excluded = parse_json_list(os.environ.get("EXCLUDE", "[]"))
-        linters = sorted(detect_linters(BASELINE_ROOT, excluded))
+        skipped = parse_json_list(os.environ.get("SKIP", "[]"))
+        linters = sorted(detect_linters(BASELINE_ROOT, skipped))
     except ValueError as error:
         print(f"::error::{error}")
         return 1
@@ -88,7 +88,7 @@ def main():
         print(f"linters={value}", file=output)
 
     print(f"Detected linters: {', '.join(linters) or 'none'}")
-    print(f"Excluded linters: {', '.join(sorted(excluded)) or 'none'}")
+    print(f"Skipped linters: {', '.join(sorted(skipped)) or 'none'}")
     return 0
 
 

@@ -2,8 +2,8 @@ name: Lint (shared)
 on:
   workflow_call:
     inputs:
-      exclude:
-        description: JSON array of linters to exclude from automatic selection.
+      skip:
+        description: JSON array of linters to skip during automatic selection.
         type: string
         default: "[]"
 jobs:
@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: rubykatzen/baseline/.github/actions/detect-linters@v0.8
+      # TODO: Switch to v0.8 after releasing the renamed detector input.
+      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/rename-lint-exclude-to-skip
         id: detect
         with:
-          exclude: ${{ inputs.exclude }}
+          skip: ${{ inputs.skip }}
       - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.8
         with:
           linters: ${{ steps.detect.outputs.linters }}
