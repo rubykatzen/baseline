@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [v0.8.2] - 2026-08-11
+
+- feat: add Tombi TOML linting (#105)
+- chore: pin JSON actions to v0.8 (#111)
+
 ## [v0.8.1] - 2026-08-11
 
 - refactor: use JSON linter selection contract (#109)
