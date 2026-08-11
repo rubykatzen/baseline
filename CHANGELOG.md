@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.8.1] - 2026-08-11
+
+- refactor: use JSON linter selection contract (#109)
+
 ## [v0.8.0] - 2026-08-11
 
 - feat: auto-detect repository linters (#107)
