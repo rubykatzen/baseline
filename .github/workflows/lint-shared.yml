@@ -11,12 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      # TODO: Switch these three actions to v0.8 after publishing Tombi support.
-      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/add-tombi-linter
+      - uses: rubykatzen/baseline/.github/actions/detect-linters@v0.8
         id: detect
         with:
           exclude: ${{ inputs.exclude }}
-      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@agent/add-tombi-linter
+      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.8
         with:
           linters: ${{ steps.detect.outputs.linters }}
       - uses: rubykatzen/baseline/.github/actions/check-precommit@v0.8
@@ -29,7 +28,7 @@ jobs:
         if: contains(fromJSON(steps.detect.outputs.linters), 'pymarkdown')
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'ruff')
-      - uses: rubykatzen/baseline/.github/actions/lint-tombi@agent/add-tombi-linter
+      - uses: rubykatzen/baseline/.github/actions/lint-tombi@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'tombi')
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'shellcheck')
