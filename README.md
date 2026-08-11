@@ -30,7 +30,7 @@ jobs:
 linter, installs its runtime, and runs it automatically. A tracked
 `.pre-commit-config.yaml` also enables the pre-commit sync check.
 
-Exclude linters explicitly when a repository does not want an otherwise
+Skip linters explicitly when a repository does not want an otherwise
 applicable check:
 
 ```yaml
@@ -38,12 +38,12 @@ jobs:
   lint:
     uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
     with:
-      exclude: '["rubocop", "herb"]'
+      skip: '["rubocop", "herb"]'
 ```
 
-Excluded linters must also be removed from the baseline entry in
+Skipped linters must also be removed from the baseline entry in
 `.pre-commit-config.yaml` so local and CI linting remain identical. Unknown
-exclusion names fail the workflow.
+skip names fail the workflow.
 
 ### 2. Pre-commit hooks
 
@@ -65,7 +65,7 @@ repos:
       - id: erb-lint
 ```
 
-Remove hooks that are excluded from the shared workflow or have no matching
+Remove hooks that are skipped by the shared workflow or have no matching
 tracked files. Install the tools before running hooks:
 
 ```bash
@@ -106,7 +106,7 @@ Dependabot opens pull requests for version bumps. Pair with
 
 ## Automatic linter selection
 
-The shared workflow can select these keys. Put a key in `exclude` to
+The shared workflow can select these keys. Put a key in `skip` to
 disable it for a repository:
 
 | Key | Action | Lints | Config |
@@ -124,7 +124,7 @@ disable it for a repository:
 
 The detector scans `git ls-files` and matches each file against the `types` or
 `files` selector in `.pre-commit-hooks.yaml`. It adds `pre-commit` when a
-`.pre-commit-config.yaml` is present, then removes `exclude`.
+`.pre-commit-config.yaml` is present, then removes the linters listed in `skip`.
 
 Tombi discovers a consumer repository's `tombi.toml`, `.tombi.toml`, or
 `[tool.tombi]` configuration. Without one, Tombi's defaults apply. Baseline runs

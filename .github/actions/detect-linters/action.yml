@@ -1,8 +1,8 @@
 name: detect-linters
 description: Detect applicable baseline linters from tracked repository files.
 inputs:
-  exclude:
-    description: JSON array of linters to exclude from automatic selection.
+  skip:
+    description: JSON array of linters to skip during automatic selection.
     default: "[]"
 outputs:
   linters:
@@ -17,4 +17,4 @@ runs:
       run: python3 "${{ github.action_path }}/../../../hooks/detect-linters.py"
       shell: bash
       env:
-        EXCLUDE: ${{ inputs.exclude }}
+        SKIP: ${{ inputs.skip }}

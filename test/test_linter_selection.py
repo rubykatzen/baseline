@@ -47,27 +47,27 @@ class LinterSelectionTest(unittest.TestCase):
             {"actionlint", "pre-commit", "pymarkdown", "rubocop", "ruff", "yamllint"},
         )
 
-    def test_excludes_detected_linter(self):
+    def test_skips_detected_linter(self):
         self.assertNotIn("rubocop", detect_linters(BASELINE_ROOT, {"rubocop"}))
 
-    def test_allows_excluding_non_applicable_linter(self):
+    def test_allows_skipping_non_applicable_linter(self):
         self.assertEqual(detect_linters(BASELINE_ROOT, {"herb"}), detect_linters(BASELINE_ROOT))
 
-    def test_rejects_unknown_exclusion(self):
-        with self.assertRaisesRegex(ValueError, "Unknown excluded linters: typo"):
+    def test_rejects_unknown_skip(self):
+        with self.assertRaisesRegex(ValueError, "Unknown skipped linters: typo"):
             detect_linters(BASELINE_ROOT, {"typo"})
 
-    def test_parses_json_exclusions(self):
+    def test_parses_json_skips(self):
         self.assertEqual(parse_json_list('["rubocop", "herb"]'), {"rubocop", "herb"})
 
-    def test_rejects_non_array_exclusions(self):
+    def test_rejects_non_array_skips(self):
         for value in ('"rubocop"', "rubocop", '["rubocop", 1]'):
             with self.subTest(value=value), self.assertRaisesRegex(ValueError, "JSON array of strings"):
                 parse_json_list(value)
 
     def test_writes_single_json_output(self):
         output = self.repo / "github-output"
-        with patch.dict(os.environ, {"EXCLUDE": "[]", "GITHUB_OUTPUT": str(output)}):
+        with patch.dict(os.environ, {"SKIP": "[]", "GITHUB_OUTPUT": str(output)}):
             self.assertEqual(DETECT_LINTERS.main(), 0)
 
         lines = output.read_text().splitlines()
