@@ -1,0 +1,17 @@
+name: GitHub (shared)
+on:
+  workflow_call:
+    inputs:
+      skip:
+        description: JSON array of GitHub repository config checks to skip.
+        type: string
+        default: "[]"
+jobs:
+  github-config-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: $/.github/actions/check-github-config
+        with:
+          skip: ${{ inputs.skip }}

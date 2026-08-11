@@ -1,0 +1,4 @@
+checks:
+  hasWikiEnabled: false
+  autoMergeAllowed: true
+  deleteBranchOnMerge: true

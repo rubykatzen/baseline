@@ -45,7 +45,38 @@ Skipped linters must also be removed from the baseline entry in
 `.pre-commit-config.yaml` so local and CI linting remain identical. Unknown
 skip names fail the workflow.
 
-### 2. Pre-commit hooks
+### 2. GitHub repository config
+
+Create `.github/workflows/github.yml`:
+
+```yaml
+name: GitHub
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+jobs:
+  github-config-check:
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@VERSION
+```
+
+The shared workflow checks repository settings against `config/github.yml`.
+The initial policy requires the wiki to be disabled, auto-merge to be enabled,
+and merged branches to be deleted automatically.
+
+Skip checks explicitly when a repository needs an exception:
+
+```yaml
+jobs:
+  github-config-check:
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@VERSION
+    with:
+      skip: '["hasWikiEnabled"]'
+```
+
+The `skip` input must be a JSON array. Unknown check names fail the workflow.
+
+### 3. Pre-commit hooks
 
 Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
 Include only the hooks relevant to your stack:
@@ -77,7 +108,7 @@ Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
 consuming repository first. `rubocop` and `erb_lint` must be available through
 the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
 
-### 3. Dependabot
+### 4. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
