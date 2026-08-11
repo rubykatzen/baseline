@@ -7,7 +7,7 @@ inputs:
   linters:
     description: >
       JSON array of linters to prepare runtimes for.
-      Supported values: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
+      Supported values: yamllint, pymarkdown, ruff, tombi, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
     required: true
 runs:
   using: composite
@@ -21,6 +21,9 @@ runs:
     - run: python3 -m pip install ruff
       shell: bash
       if: contains(fromJSON(inputs.linters), 'ruff')
+    - run: python3 -m pip install tombi
+      shell: bash
+      if: contains(fromJSON(inputs.linters), 'tombi')
     - run: python3 -m pip install pyyaml identify
       shell: bash
       if: contains(fromJSON(inputs.linters), 'pre-commit')

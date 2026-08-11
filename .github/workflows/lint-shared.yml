@@ -28,6 +28,9 @@ jobs:
         if: contains(fromJSON(steps.detect.outputs.linters), 'pymarkdown')
       - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'ruff')
+      # TODO: Switch to a release tag after publishing Tombi support.
+      - uses: rubykatzen/baseline/.github/actions/lint-tombi@agent/add-tombi-linter
+        if: contains(fromJSON(steps.detect.outputs.linters), 'tombi')
       - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'shellcheck')
       - uses: rubykatzen/baseline/.github/actions/lint-actionlint@v0.8

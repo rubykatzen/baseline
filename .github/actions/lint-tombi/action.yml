@@ -1,0 +1,9 @@
+name: tombi
+description: Lint and check formatting of TOML files using installed tombi.
+runs:
+  using: composite
+  steps:
+    - run: |
+        tombi lint --offline --error-on-warnings .
+        tombi format --offline --check .
+      shell: bash
