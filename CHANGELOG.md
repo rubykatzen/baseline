@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.8.5] - 2026-08-11
+
+- feat: add shared GitHub config checks
+
 ## [v0.8.4] - 2026-08-11
 
 - ci: use self-repository action references
