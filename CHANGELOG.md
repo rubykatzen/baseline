@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [v0.8.4] - 2026-08-11
+
+- ci: use self-repository action references
+- refactor: rename lint skip input
+
 ## [v0.8.3] - 2026-08-11
 
 - ci: enable Tombi linting (#113)
