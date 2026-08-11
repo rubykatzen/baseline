@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [v0.8.3] - 2026-08-11
+
+- ci: enable Tombi linting (#113)
+
 ## [v0.8.2] - 2026-08-11
 
 - feat: add Tombi TOML linting (#105)
