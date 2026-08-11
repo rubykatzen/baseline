@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v0.8.0] - 2026-08-11
+
+- feat: auto-detect repository linters (#107)
+- chore: remove intake-issue-clarification.yml push-model caller
+- feat: add intake-issue-clarification workflow (#101)
+
 ## [v0.7.8] - 2026-07-08
 
 - fix: relax empty-lines max from 0 to 1 (#97)
