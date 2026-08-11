@@ -1,0 +1,8 @@
+name: Embedder
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+jobs:
+  embedded-content-check:
+    uses: ./.github/workflows/embedder-shared.yml

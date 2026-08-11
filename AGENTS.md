@@ -21,6 +21,18 @@ Use the emoji to identify the agent:
 This applies to chat replies, PR comments, review comments, issue comments,
 status updates, and any other written communication.
 
+## Embedded Fragment Policy
+
+This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
+verify shared content fragments across repositories.
+
+Do not change a required fragment only in the consuming repository. Change
+the fragment in `config/embedder.yml` in Baseline, release it, and then update
+the Baseline workflow version in consuming repositories.
+
+A repository-specific exception must be declared through the `skip` input of
+`embedder-shared.yml`.
+
 ## Purpose
 
 This repo is the single source of truth for linter configs across all rubykatzen repositories. The goal is identical linting everywhere — configs live here and nowhere else.
@@ -38,10 +50,12 @@ tools to already be installed in the developer environment.
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — composite actions that run installed linters with baseline configs
+- `.github/actions/check-embedder/` — validates required content fragments in consumer files
 - `.github/actions/detect-linters/` — composite action that selects applicable linters from tracked files
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
+- `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`

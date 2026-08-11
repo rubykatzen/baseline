@@ -2,6 +2,12 @@
 
 Shared linter configs and thin wrappers.
 
+## Embedded Fragments
+
+This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
+verify shared content fragments across repositories. Required fragments are
+defined centrally in `config/embedder.yml`.
+
 Baseline owns canonical configuration and runtime installation in CI. Consuming
 repositories install runtimes and linter binaries only for local pre-commit use.
 
@@ -76,7 +82,38 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown check names fail the workflow.
 
-### 3. Pre-commit hooks
+### 3. Embedded content
+
+Create `.github/workflows/embedder.yml`:
+
+```yaml
+name: Embedder
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+jobs:
+  embedded-content-check:
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@VERSION
+```
+
+The shared workflow checks repository files against the required fragments in
+`config/embedder.yml`. Each named fragment has a target path and content that
+must occur in that file. Multiple fragments may target the same file.
+
+Skip fragments explicitly when a repository needs an exception:
+
+```yaml
+jobs:
+  embedded-content-check:
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@VERSION
+    with:
+      skip: '["message-prefix"]'
+```
+
+The `skip` input must be a JSON array. Unknown fragment names fail the workflow.
+
+### 4. Pre-commit hooks
 
 Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
 Include only the hooks relevant to your stack:
@@ -108,7 +145,7 @@ Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
 consuming repository first. `rubocop` and `erb_lint` must be available through
 the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
 
-### 4. Dependabot
+### 5. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
