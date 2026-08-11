@@ -4,6 +4,9 @@ runs:
   using: composite
   steps:
     - run: |
-        tombi lint --offline --error-on-warnings .
-        tombi format --offline --check .
+        mapfile -d '' files < <(git ls-files -z -- '*.toml')
+        (( ${#files[@]} > 0 )) || exit 0
+
+        tombi lint --offline --error-on-warnings "${files[@]}"
+        tombi format --offline --check "${files[@]}"
       shell: bash
