@@ -2,9 +2,8 @@
 
 Shared linter configs and thin wrappers.
 
-Baseline is responsible for canonical configuration only. Consuming
-repositories are responsible for installing runtimes and linter binaries before
-running baseline hooks or actions.
+Baseline owns canonical configuration and runtime installation in CI. Consuming
+repositories install runtimes and linter binaries only for local pre-commit use.
 
 ## Quick setup
 
@@ -14,7 +13,7 @@ After initial setup, [Dependabot](#3-dependabot) keeps the pin current automatic
 
 ### 1. Lint workflow
 
-Create `.github/workflows/lint.yml`. Include only the linters relevant to your stack:
+Create `.github/workflows/lint.yml`:
 
 ```yaml
 name: Lint
@@ -25,13 +24,26 @@ on:
 jobs:
   lint:
     uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
-    with:
-      linters: yamllint, pymarkdown, ruff, shellcheck, actionlint, rubocop, erb-lint, herb, pre-commit
 ```
 
-`lint-shared.yml` installs runtimes and runs each linter automatically. Add
-`pre-commit` to `linters` to enforce that `.pre-commit-config.yaml` hooks stay
-in sync with CI.
+`lint-shared.yml` inspects tracked files, selects every applicable baseline
+linter, installs its runtime, and runs it automatically. A tracked
+`.pre-commit-config.yaml` also enables the pre-commit sync check.
+
+Exclude linters explicitly when a repository does not want an otherwise
+applicable check:
+
+```yaml
+jobs:
+  lint:
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
+    with:
+      exclude: '["rubocop", "herb"]'
+```
+
+Excluded linters must also be removed from the baseline entry in
+`.pre-commit-config.yaml` so local and CI linting remain identical. Unknown
+exclusion names fail the workflow.
 
 ### 2. Pre-commit hooks
 
@@ -52,7 +64,8 @@ repos:
       - id: erb-lint
 ```
 
-Remove hooks you don't need. Install the tools before running hooks:
+Remove hooks that are excluded from the shared workflow or have no matching
+tracked files. Install the tools before running hooks:
 
 ```bash
 python -m pip install yamllint pymarkdownlnt ruff
@@ -90,9 +103,10 @@ Dependabot opens pull requests for version bumps. Pair with
 
 ---
 
-## Composite actions (linters)
+## Automatic linter selection
 
-Pass these keys to `lint-shared.yml` via `linters:`:
+The shared workflow can select these keys. Put a key in `exclude` to
+disable it for a repository:
 
 | Key | Action | Lints | Config |
 |---|---|---|---|
@@ -104,12 +118,14 @@ Pass these keys to `lint-shared.yml` via `linters:`:
 | `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
 | `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
 | `herb` | `lint-herb` | `*.html.erb`, `*.html+*.erb`, `*.turbo_stream.erb`, `*.herb`, `*.rhtml` | — |
-| `pre-commit` | `check-precommit-sync` | `.pre-commit-config.yaml` | — |
+| `pre-commit` | `check-precommit` | `.pre-commit-config.yaml` | — |
 
-`check-precommit-sync` runs two checks:
+The detector scans `git ls-files` and matches each file against the `types` or
+`files` selector in `.pre-commit-hooks.yaml`. It adds `pre-commit` when a
+`.pre-commit-config.yaml` is present, then removes `exclude`.
 
-1. **Coverage** — scans repo files and verifies that every baseline hook whose file type is present is configured in `.pre-commit-config.yaml`
-2. **Sync** — verifies that configured hooks match the `linters` input (minus `pre-commit` itself)
+`check-precommit` verifies that configured baseline hooks exactly match
+the detected CI linters, minus `pre-commit` itself.
 
 ## Ruby gem (RuboCop + erb_lint)
 

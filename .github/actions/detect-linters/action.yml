@@ -1,0 +1,23 @@
+name: detect-linters
+description: Detect applicable baseline linters from tracked repository files.
+inputs:
+  exclude:
+    description: JSON array of linters to exclude from automatic selection.
+    default: "[]"
+outputs:
+  linters:
+    description: Comma-separated detected linters.
+    value: ${{ steps.detect.outputs.linters }}
+  linters-json:
+    description: JSON array of detected linters.
+    value: ${{ steps.detect.outputs.linters-json }}
+runs:
+  using: composite
+  steps:
+    - run: python3 -m pip install pyyaml identify
+      shell: bash
+    - id: detect
+      run: python3 "${{ github.action_path }}/../../../hooks/detect-linters.py"
+      shell: bash
+      env:
+        EXCLUDE: ${{ inputs.exclude }}
