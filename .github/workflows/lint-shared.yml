@@ -11,15 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      # TODO: Switch these three actions to a release tag after their JSON interfaces are released.
-      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/update-actions-v0.8
+      - uses: rubykatzen/baseline/.github/actions/detect-linters@v0.8
         id: detect
         with:
           exclude: ${{ inputs.exclude }}
-      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@agent/update-actions-v0.8
+      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.8
         with:
           linters: ${{ steps.detect.outputs.linters }}
-      - uses: rubykatzen/baseline/.github/actions/check-precommit@agent/update-actions-v0.8
+      - uses: rubykatzen/baseline/.github/actions/check-precommit@v0.8
         if: contains(fromJSON(steps.detect.outputs.linters), 'pre-commit')
         with:
           linters: ${{ steps.detect.outputs.linters }}
