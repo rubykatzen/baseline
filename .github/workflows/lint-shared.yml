@@ -11,33 +11,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      # TODO: Switch to v0.8 after releasing the renamed detector input.
-      - uses: rubykatzen/baseline/.github/actions/detect-linters@agent/rename-lint-exclude-to-skip
+      - uses: $/.github/actions/detect-linters
         id: detect
         with:
           skip: ${{ inputs.skip }}
-      - uses: rubykatzen/baseline/.github/actions/setup-runtimes@v0.8
+      - uses: $/.github/actions/setup-runtimes
         with:
           linters: ${{ steps.detect.outputs.linters }}
-      - uses: rubykatzen/baseline/.github/actions/check-precommit@v0.8
+      - uses: $/.github/actions/check-precommit
         if: contains(fromJSON(steps.detect.outputs.linters), 'pre-commit')
         with:
           linters: ${{ steps.detect.outputs.linters }}
-      - uses: rubykatzen/baseline/.github/actions/lint-yamllint@v0.8
+      - uses: $/.github/actions/lint-yamllint
         if: contains(fromJSON(steps.detect.outputs.linters), 'yamllint')
-      - uses: rubykatzen/baseline/.github/actions/lint-pymarkdown@v0.8
+      - uses: $/.github/actions/lint-pymarkdown
         if: contains(fromJSON(steps.detect.outputs.linters), 'pymarkdown')
-      - uses: rubykatzen/baseline/.github/actions/lint-ruff@v0.8
+      - uses: $/.github/actions/lint-ruff
         if: contains(fromJSON(steps.detect.outputs.linters), 'ruff')
-      - uses: rubykatzen/baseline/.github/actions/lint-tombi@v0.8
+      - uses: $/.github/actions/lint-tombi
         if: contains(fromJSON(steps.detect.outputs.linters), 'tombi')
-      - uses: rubykatzen/baseline/.github/actions/lint-shellcheck@v0.8
+      - uses: $/.github/actions/lint-shellcheck
         if: contains(fromJSON(steps.detect.outputs.linters), 'shellcheck')
-      - uses: rubykatzen/baseline/.github/actions/lint-actionlint@v0.8
+      - uses: $/.github/actions/lint-actionlint
         if: contains(fromJSON(steps.detect.outputs.linters), 'actionlint')
-      - uses: rubykatzen/baseline/.github/actions/lint-rubocop@v0.8
+      - uses: $/.github/actions/lint-rubocop
         if: contains(fromJSON(steps.detect.outputs.linters), 'rubocop')
-      - uses: rubykatzen/baseline/.github/actions/lint-erb-lint@v0.8
+      - uses: $/.github/actions/lint-erb-lint
         if: contains(fromJSON(steps.detect.outputs.linters), 'erb-lint')
-      - uses: rubykatzen/baseline/.github/actions/lint-herb@v0.8
+      - uses: $/.github/actions/lint-herb
         if: contains(fromJSON(steps.detect.outputs.linters), 'herb')
