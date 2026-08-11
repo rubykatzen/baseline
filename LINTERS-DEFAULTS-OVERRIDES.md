@@ -68,3 +68,9 @@ across all repos, not to accommodate a single project.
 | SC2088 | enabled | disabled | Tilde in remote paths passed as-is to remote shell |
 | SC2153/SC2154 | enabled | disabled | Variables set by `parse_apps` in `lib.sh` not visible to shellcheck |
 | SC2001 | enabled | disabled | `sed` preferred over bash parameter expansion for regex substitution |
+
+## actionlint
+
+| Check | Default | Here | Reason |
+|---|---|---|---|
+| `$/` self-repository references | rejected as invalid `uses` syntax | ignored | actionlint 1.7.12 does not yet support GitHub's self-repository syntax ([actionlint#711](https://github.com/rhysd/actionlint/issues/711)) |

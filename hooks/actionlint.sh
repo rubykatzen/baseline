@@ -14,4 +14,9 @@ if ! has_actionlint_targets; then
   exit 0
 fi
 
-exec actionlint "$@"
+# Remove these ignores once actionlint supports GitHub's $/ self-repository syntax:
+# https://github.com/rhysd/actionlint/issues/711
+exec actionlint \
+  -ignore 'specifying action "\$/.+" in invalid format because ref is missing' \
+  -ignore 'reusable workflow call "\$/.+" at "uses" is not following the format' \
+  "$@"
