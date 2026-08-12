@@ -20,6 +20,7 @@ jobs:
         id: release
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
+          skip-labeling: true
 
   publish:
     needs: release
