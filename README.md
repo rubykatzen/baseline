@@ -7,9 +7,10 @@ Connect a workflow and Baseline supplies the policy, configuration, runtimes,
 and implementation. Consumer repositories only declare which capabilities they
 want and, when necessary, explicit exceptions.
 
-Replace `VERSION` in the examples with the latest
-[Baseline release](https://github.com/rubykatzen/baseline/releases). Dependabot
-can keep the version current after the initial setup.
+The examples use the latest
+[Baseline release](https://github.com/rubykatzen/baseline/releases) and are
+updated automatically with every release. Dependabot keeps the pin current in
+consumer repositories.
 
 ## Lint automatically
 
