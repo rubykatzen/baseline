@@ -16,7 +16,7 @@ fragments:
 
       - `🤖` Codex
       - `🧠` Claude Code
-      - `🖊️` Cursor
+      - `🖱️` Cursor
       - `🥽` GitHub Copilot
       - `🧩` unknown or other agent
 
@@ -60,6 +60,9 @@ fragments:
         - package-ecosystem: github-actions
           directory: /
           labels: []
+          commit-message:
+            prefix: chore
+            include: scope
           schedule:
             interval: daily
             time: "10:00"
@@ -67,6 +70,9 @@ fragments:
         - package-ecosystem: pre-commit
           directory: /
           labels: []
+          commit-message:
+            prefix: chore
+            include: scope
           schedule:
             interval: daily
             time: "10:00"
@@ -74,6 +80,9 @@ fragments:
         - package-ecosystem: pip
           directory: /
           labels: []
+          commit-message:
+            prefix: chore
+            include: scope
           schedule:
             interval: daily
             time: "10:00"
@@ -81,6 +90,9 @@ fragments:
         - package-ecosystem: bundler
           directory: /
           labels: []
+          commit-message:
+            prefix: chore
+            include: scope
           schedule:
             interval: daily
             time: "10:00"

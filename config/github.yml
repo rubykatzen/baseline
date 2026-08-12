@@ -2,3 +2,8 @@ config:
   hasWikiEnabled: false
   autoMergeAllowed: true
   deleteBranchOnMerge: true
+  mergeCommitAllowed: false
+  rebaseMergeAllowed: false
+  squashMergeAllowed: true
+  squashMergeCommitTitle: PR_TITLE
+  squashMergeCommitMessage: BLANK

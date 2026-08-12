@@ -16,7 +16,7 @@ Use the emoji to identify the agent:
 
 - `🤖` Codex
 - `🧠` Claude Code
-- `🖊️` Cursor
+- `🖱️` Cursor
 - `🥽` GitHub Copilot
 - `🧩` unknown or other agent
 
@@ -70,7 +70,9 @@ tools to already be installed in the developer environment.
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
+- `.github/workflows/commit-shared.yml` — reusable workflow exported for Conventional Commit pull request titles
 - `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
+- `.github/workflows/commit.yml` — baseline caller for its Conventional Commit pull request title check
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`

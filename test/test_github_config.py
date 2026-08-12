@@ -22,7 +22,19 @@ class GitHubConfigTest(unittest.TestCase):
     def test_loads_repository_config(self):
         checks = CHECK_GITHUB_CONFIG.load_config(BASELINE_ROOT / "config" / "github.yml")
 
-        self.assertEqual(set(checks), {"hasWikiEnabled", "autoMergeAllowed", "deleteBranchOnMerge"})
+        self.assertEqual(
+            set(checks),
+            {
+                "hasWikiEnabled",
+                "autoMergeAllowed",
+                "deleteBranchOnMerge",
+                "mergeCommitAllowed",
+                "rebaseMergeAllowed",
+                "squashMergeAllowed",
+                "squashMergeCommitMessage",
+                "squashMergeCommitTitle",
+            },
+        )
 
     def test_rejects_invalid_repository_config(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
