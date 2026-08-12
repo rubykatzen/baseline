@@ -9,7 +9,7 @@ repositories install runtimes and linter binaries only for local pre-commit use.
 
 Replace `VERSION` in all examples with the latest release tag from
 [github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
-After initial setup, [Dependabot](#3-dependabot) keeps the pin current automatically.
+After initial setup, [Dependabot](#6-dependabot) keeps the pin current automatically.
 
 ### 1. Lint workflow
 
@@ -61,8 +61,9 @@ jobs:
 ```
 
 The shared workflow checks repository settings against `config/github.yml`.
-The initial policy requires the wiki to be disabled, auto-merge to be enabled,
-and merged branches to be deleted automatically.
+The policy requires the wiki to be disabled, auto-merge to be enabled, merged
+branches to be deleted automatically, and pull requests to use squash-only
+merging with the pull request title as the complete resulting commit message.
 
 Skip checks explicitly when a repository needs an exception:
 
@@ -76,7 +77,34 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown check names fail the workflow.
 
-### 3. Embedded content
+### 3. Commit workflow
+
+Create `.github/workflows/commit.yml`:
+
+```yaml
+name: Commit
+on:
+  # Load trusted workflow code from the default branch when validating fork PRs.
+  pull_request_target:
+    types: [opened, reopened, edited, synchronize]
+jobs:
+  pull-request-title:
+    uses: rubykatzen/baseline/.github/workflows/commit-shared.yml@VERSION
+```
+
+The shared workflow requires pull request titles to follow Conventional Commits:
+
+```text
+<type>[optional scope][!]: <description>
+```
+
+Only the pull request title is validated. Intermediate branch commits may use
+any format because the GitHub repository policy squashes the pull request and
+uses only its title for the single commit added to the default branch. Use `!`
+for a breaking change, for example
+`refactor!: remove legacy workflow inputs`.
+
+### 4. Embedded content
 
 Create `.github/workflows/embedder.yml`:
 
@@ -110,7 +138,7 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown fragment names fail the workflow.
 
-### 4. Pre-commit hooks
+### 5. Pre-commit hooks
 
 Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
 Include only the hooks relevant to your stack:
@@ -142,7 +170,7 @@ Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
 consuming repository first. `rubocop` and `erb_lint` must be available through
 the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
 
-### 5. Dependabot
+### 6. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
@@ -153,6 +181,9 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     labels: []
+    commit-message:
+      prefix: chore
+      include: scope
     schedule:
       interval: daily
       time: "10:00"
@@ -160,13 +191,19 @@ updates:
   - package-ecosystem: pre-commit
     directory: /
     labels: []
+    commit-message:
+      prefix: chore
+      include: scope
     schedule:
       interval: daily
       time: "10:00"
       timezone: "Europe/Berlin"
 ```
 
-Dependabot opens pull requests for version bumps. Pair with
+The commit message configuration also prefixes pull request titles with
+`chore(deps):`, so they pass the commit workflow without creating a release by
+default. Rename a release-worthy dependency update to `fix(deps):` to request a
+patch release. Pair Dependabot with
 `dependabot-automerge` if you want patch/minor updates merged automatically.
 
 ---

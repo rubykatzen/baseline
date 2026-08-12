@@ -1,0 +1,9 @@
+name: Commit
+on:
+  # Baseline uses pull_request so changes to the shared workflow validate themselves.
+  # Consumers should use pull_request_target to load trusted workflow code from main.
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+jobs:
+  pull-request-title:
+    uses: ./.github/workflows/commit-shared.yml
