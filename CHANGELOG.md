@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.0](https://github.com/rubykatzen/baseline/compare/v0.9.0...v0.10.0) (2026-08-12)
+
+
+### Features
+
+* add Release Please workflow ([#132](https://github.com/rubykatzen/baseline/issues/132)) ([0f31544](https://github.com/rubykatzen/baseline/commit/0f3154463216b29ede0b5f4e00deb649cdcb03f8))
+* add reusable Telegram notification workflows ([#139](https://github.com/rubykatzen/baseline/issues/139)) ([c3bd9f7](https://github.com/rubykatzen/baseline/commit/c3bd9f7f8af077f45f2db75de6431bfda82721a2))
+
+
+### Bug Fixes
+
+* align changelog with Release Please formatting ([#135](https://github.com/rubykatzen/baseline/issues/135)) ([75ee0fc](https://github.com/rubykatzen/baseline/commit/75ee0fc5812f6dd39d46d15ccc1e30770777339e))
+* disable Bundler lockfile checksums ([#134](https://github.com/rubykatzen/baseline/issues/134)) ([ec76fb1](https://github.com/rubykatzen/baseline/commit/ec76fb1dbcef90a59273a0fe1afa1fdb9aeaa127))
+* disable Release Please labels ([#136](https://github.com/rubykatzen/baseline/issues/136)) ([ebde0f1](https://github.com/rubykatzen/baseline/commit/ebde0f169dade84355842b2bd63dc5ecfae86c5b))
+
 ## [v0.9.0] - 2026-08-12
 
 * chore(deps): bump rubocop-rails from 2.35.4 to 2.36.0 (#122)
