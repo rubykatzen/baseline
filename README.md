@@ -77,34 +77,7 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown check names fail the workflow.
 
-### 3. Commit workflow
-
-Create `.github/workflows/commit.yml`:
-
-```yaml
-name: Commit
-on:
-  # Load trusted workflow code from the default branch when validating fork PRs.
-  pull_request_target:
-    types: [opened, reopened, edited, synchronize]
-jobs:
-  pull-request-title:
-    uses: rubykatzen/baseline/.github/workflows/commit-shared.yml@VERSION
-```
-
-The shared workflow requires pull request titles to follow Conventional Commits:
-
-```text
-<type>[optional scope][!]: <description>
-```
-
-Only the pull request title is validated. Intermediate branch commits may use
-any format because the GitHub repository policy squashes the pull request and
-uses only its title for the single commit added to the default branch. Use `!`
-for a breaking change, for example
-`refactor!: remove legacy workflow inputs`.
-
-### 4. Embedded content
+### 3. Embedded content
 
 Create `.github/workflows/embedder.yml`:
 
@@ -138,7 +111,7 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown fragment names fail the workflow.
 
-### 5. Pre-commit hooks
+### 4. Pre-commit hooks
 
 Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
 Include only the hooks relevant to your stack:
@@ -170,7 +143,7 @@ Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
 consuming repository first. `rubocop` and `erb_lint` must be available through
 the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
 
-### 6. Dependabot
+### 5. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:
