@@ -1,4 +1,4 @@
-checks:
+config:
   hasWikiEnabled: false
   autoMergeAllowed: true
   deleteBranchOnMerge: true

@@ -1,0 +1,17 @@
+name: check-embedder
+description: Check repository files for content required by the baseline embedder configuration.
+inputs:
+  skip:
+    description: JSON array of embedded content fragments to skip.
+    default: "[]"
+runs:
+  using: composite
+  steps:
+    - run: python3 -m pip install pyyaml
+      shell: bash
+    - run: python3 "${{ github.action_path }}/check.py"
+      shell: bash
+      env:
+        CONFIG_PATH: ${{ github.action_path }}/../../../config/embedder.yml
+        REPOSITORY_ROOT: ${{ github.workspace }}
+        SKIP: ${{ inputs.skip }}

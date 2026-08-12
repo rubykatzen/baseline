@@ -41,9 +41,9 @@ def load_config(config_path):
     if not isinstance(config, dict):
         raise ValueError("github repo config must be a mapping")
 
-    checks = config.get("checks")
+    checks = config.get("config")
     if not isinstance(checks, dict) or not checks:
-        raise ValueError("github repo config must contain a non-empty checks mapping")
+        raise ValueError("github repo config must contain a non-empty config mapping")
     for field in checks:
         if not isinstance(field, str) or not FIELD_PATTERN.fullmatch(field):
             raise ValueError("github repo check names must be GraphQL field names")

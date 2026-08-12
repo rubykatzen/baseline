@@ -2,6 +2,7 @@
 
 This file provides guidance to AI coding agents when working with this repository.
 
+<!-- baseline fragment: message-prefix -->
 ## Message Prefix
 
 Prefix every user-visible agent message with the agent emoji followed by the
@@ -16,10 +17,36 @@ Use the emoji to identify the agent:
 - `🤖` Codex
 - `🧠` Claude Code
 - `🖊️` Cursor
+- `🥽` GitHub Copilot
 - `🧩` unknown or other agent
 
 This applies to chat replies, PR comments, review comments, issue comments,
 status updates, and any other written communication.
+<!-- /baseline fragment: message-prefix -->
+
+<!-- baseline fragment: message-suffix -->
+## Message Suffix
+
+End every user-visible agent message with a blank line followed by a final
+line containing exactly three emoji relevant to the message context:
+
+`EMOJI EMOJI EMOJI`
+<!-- /baseline fragment: message-suffix -->
+
+<!-- baseline fragment: embedded-fragments -->
+## Embedded Fragments
+
+This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
+verify shared content fragments across repositories.
+
+Do not change a required fragment only in the consuming repository. Change
+the fragment in `config/embedder.yml` in Baseline and release it. Dependabot
+will then update the Baseline workflow version in consuming repositories and
+CI will show the required fragment diff.
+
+A repository-specific exception must be declared through the `skip` input of
+`embedder-shared.yml`.
+<!-- /baseline fragment: embedded-fragments -->
 
 ## Purpose
 
@@ -38,10 +65,12 @@ tools to already be installed in the developer environment.
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — composite actions that run installed linters with baseline configs
+- `.github/actions/check-embedder/` — validates required content fragments in consumer files
 - `.github/actions/detect-linters/` — composite action that selects applicable linters from tracked files
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
+- `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
 - `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`

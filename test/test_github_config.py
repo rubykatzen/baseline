@@ -26,7 +26,7 @@ class GitHubConfigTest(unittest.TestCase):
 
     def test_rejects_invalid_repository_config(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
-            config.write("checks:\n  invalid-field: false\n")
+            config.write("config:\n  invalid-field: false\n")
             config.flush()
 
             with self.assertRaisesRegex(ValueError, "must be GraphQL field names"):
@@ -34,7 +34,7 @@ class GitHubConfigTest(unittest.TestCase):
 
     def test_rejects_malformed_yaml(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
-            config.write("checks: [\n")
+            config.write("config: [\n")
             config.flush()
 
             with self.assertRaisesRegex(ValueError, "must be valid YAML"):
