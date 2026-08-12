@@ -146,7 +146,7 @@ Include only the hooks relevant to your stack:
 ```yaml
 repos:
   - repo: https://github.com/rubykatzen/baseline
-    rev: v0.9.0
+    rev: v0.9.0 # x-release-please-version
     hooks:
       - id: yamllint
       - id: pymarkdown
@@ -346,31 +346,17 @@ Bundler-resolved toolchain.
 
 ## Releases
 
-Baseline releases are cut with the
-[rubykatzen/releaser](https://github.com/rubykatzen/releaser) CLI. Run from
-inside this repository:
+Release Please maintains a release pull request from Conventional Commits on
+`main`. Review its proposed version, changelog, and file updates, then merge the
+pull request to release. The merge creates the version tag and GitHub Release,
+publishes `rubykatzen-baseline` to RubyGems, and updates the floating major and
+minor tags used by consumers.
 
-```bash
-releaser patch   # or: releaser minor / releaser major
-```
-
-The CLI verifies that CI is green on `origin/main`, calculates the next version,
-dispatches `prepare-release.yml`, watches it run, then opens a `release/vX.Y.Z`
-PR and enables auto-merge. `publish-release.yml` fires automatically once the PR
-merges and creates the tag and GitHub release.
-
-Check release readiness without triggering anything:
-
-```bash
-releaser status
-releaser patch --dry-run
-```
-
-Install the CLI:
-
-```bash
-brew tap rubykatzen/tap && brew install releaser
-```
+The release workflow authenticates as a GitHub App so its pull requests trigger
+required CI. Configure the app ID as the `RELEASE_PLEASE_APP_ID` repository
+variable and its private key as the `RELEASE_PLEASE_APP_PRIVATE_KEY` repository
+secret. The App needs read and write access to contents, issues, and pull
+requests.
 
 ## Linters: defaults & overrides
 
