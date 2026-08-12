@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [v0.8.6] - 2026-08-12
+
+- feat: add GitHub Copilot agent emoji
+- feat: add agent message suffix
+- refactor: merge embedded fragment guidance
+- chore: disable Dependabot labels
+- feat: report embedded fragment diffs
+- feat: mark baseline-owned fragments
+- refactor: rename GitHub config root
+- feat: add embedded content checks
+
 ## [v0.8.5] - 2026-08-11
 
 - feat: add shared GitHub config checks
