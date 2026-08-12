@@ -75,7 +75,6 @@ tools to already be installed in the developer environment.
 - `.github/workflows/commit.yml` — baseline caller for its Conventional Commit pull request title check
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
-- `.github/workflows/prepare-release.yml` and `.github/workflows/publish-release.yml` — legacy release path kept until the first Release Please release is validated
 - `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos (all hooks, prune as needed)
