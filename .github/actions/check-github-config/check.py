@@ -10,6 +10,8 @@ from pathlib import Path
 import yaml
 
 FIELD_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+COLOR_PATTERN = re.compile(r"^[0-9A-Fa-f]{6}$")
+LABELS_CHECK = "labels"
 
 
 @dataclass(frozen=True)
@@ -41,14 +43,42 @@ def load_config(config_path):
     if not isinstance(config, dict):
         raise ValueError("github repo config must be a mapping")
 
-    checks = config.get("config")
-    if not isinstance(checks, dict) or not checks:
+    repository_config = config.get("config")
+    if not isinstance(repository_config, dict) or not repository_config:
         raise ValueError("github repo config must contain a non-empty config mapping")
-    for field in checks:
+    for field in repository_config:
         if not isinstance(field, str) or not FIELD_PATTERN.fullmatch(field):
             raise ValueError("github repo check names must be GraphQL field names")
 
+    labels = config.get("labels")
+    if not isinstance(labels, dict):
+        raise ValueError("github repo config must contain a labels mapping")
+    required = validate_label_group(labels.get("required"), "required")
+    optional = validate_label_group(labels.get("optional", {}), "optional", allow_empty=True)
+    if duplicate := set(required) & set(optional):
+        names = ", ".join(sorted(duplicate))
+        raise ValueError(f"GitHub labels cannot be both required and optional: {names}")
+
+    checks = dict(repository_config)
+    checks[LABELS_CHECK] = {"required": required, "optional": optional}
     return checks
+
+
+def validate_label_group(group, name, allow_empty=False):
+    if not isinstance(group, dict) or (not group and not allow_empty):
+        raise ValueError(f"GitHub {name} labels must be a{' non-empty' if not allow_empty else ''} mapping")
+
+    validated = {}
+    for label, settings in group.items():
+        if not isinstance(label, str) or not label:
+            raise ValueError(f"GitHub {name} label names must be non-empty strings")
+        if not isinstance(settings, dict) or set(settings) != {"color"}:
+            raise ValueError(f"GitHub label {label} must contain only a color")
+        color = settings["color"]
+        if not isinstance(color, str) or not COLOR_PATTERN.fullmatch(color):
+            raise ValueError(f"GitHub label {label} color must be a six-digit hex value")
+        validated[label] = color.lower()
+    return validated
 
 
 def github_request(args):
@@ -87,17 +117,62 @@ def github_repository(repository, fields):
         raise RuntimeError("GitHub returned an invalid repository response") from error
 
 
+def github_labels(repository):
+    repository_name(repository)
+    response = github_request(
+        ["api", "--paginate", "--slurp", f"repos/{repository}/labels?per_page=100"]
+    )
+    try:
+        return [label for page in response for label in page]
+    except TypeError as error:
+        raise RuntimeError("GitHub returned an invalid labels response") from error
+
+
 def format_value(value):
     return json.dumps(value, separators=(",", ":"), sort_keys=True)
 
 
-def evaluate_checks(checks, repository, skipped=(), request=github_repository):
+def evaluate_label_check(policy, repository, request=github_labels):
+    try:
+        labels = request(repository)
+        actual = {label["name"]: label["color"].lower() for label in labels}
+    except (KeyError, TypeError, RuntimeError) as error:
+        return CheckResult(LABELS_CHECK, "failed", f"GitHub request failed: {error}")
+
+    required = policy["required"]
+    optional = policy["optional"]
+    allowed = {**required, **optional}
+    problems = []
+    if missing := set(required) - set(actual):
+        problems.append(f"missing: {', '.join(sorted(missing))}")
+    if unexpected := set(actual) - set(allowed):
+        problems.append(f"unexpected: {', '.join(sorted(unexpected))}")
+    incorrect = [
+        f"{name} expected #{allowed[name]}, got #{actual[name]}"
+        for name in sorted(set(actual) & set(allowed))
+        if actual[name] != allowed[name]
+    ]
+    if incorrect:
+        problems.append(f"incorrect colors: {'; '.join(incorrect)}")
+
+    if problems:
+        return CheckResult(LABELS_CHECK, "failed", "; ".join(problems))
+    return CheckResult(LABELS_CHECK, "passed", f"{len(actual)} labels match policy")
+
+
+def evaluate_checks(
+    checks,
+    repository,
+    skipped=(),
+    request=github_repository,
+    labels_request=github_labels,
+):
     skipped = set(skipped)
     if unknown := skipped - set(checks):
         names = ", ".join(sorted(unknown))
         raise ValueError(f"Unknown skipped GitHub config checks: {names}")
 
-    active_fields = [field for field in checks if field not in skipped]
+    active_fields = [field for field in checks if field != LABELS_CHECK and field not in skipped]
     payload = None
     request_error = None
     if active_fields:
@@ -110,6 +185,10 @@ def evaluate_checks(checks, repository, skipped=(), request=github_repository):
     for field, expected in checks.items():
         if field in skipped:
             results.append(CheckResult(field, "skipped", "skipped by workflow input"))
+            continue
+
+        if field == LABELS_CHECK:
+            results.append(evaluate_label_check(expected, repository, labels_request))
             continue
 
         if request_error:

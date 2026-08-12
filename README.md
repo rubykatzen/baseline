@@ -60,10 +60,12 @@ jobs:
     uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
 ```
 
-The shared workflow checks repository settings against `config/github.yml`.
-The policy requires the wiki to be disabled, auto-merge to be enabled, merged
-branches to be deleted automatically, and pull requests to use squash-only
-merging with the pull request title as the complete resulting commit message.
+The shared workflow checks repository settings and labels against
+`config/github.yml`. The policy requires the wiki to be disabled, auto-merge to
+be enabled, merged branches to be deleted automatically, and pull requests to
+use squash-only merging with the pull request title as the complete resulting
+commit message. Required labels must match the configured names and colors, no
+additional labels are allowed, and Release Please labels are optional.
 
 Skip checks explicitly when a repository needs an exception:
 
@@ -72,7 +74,7 @@ jobs:
   github-config-check:
     uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
     with:
-      skip: '["hasWikiEnabled"]'
+      skip: '["hasWikiEnabled", "labels"]'
 ```
 
 The `skip` input must be a JSON array. Unknown check names fail the workflow.
@@ -207,7 +209,7 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    labels: []
+    labels: [dependencies]
     commit-message:
       prefix: chore
       include: scope
@@ -217,7 +219,7 @@ updates:
       timezone: "Europe/Berlin"
   - package-ecosystem: pre-commit
     directory: /
-    labels: []
+    labels: [dependencies]
     commit-message:
       prefix: chore
       include: scope
