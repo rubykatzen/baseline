@@ -1,17 +1,17 @@
 # Baseline
 
-Shared linter configs and thin wrappers.
+Reusable GitHub workflows for repository hygiene across
+[`rubykatzen`](https://github.com/rubykatzen).
 
-Baseline owns canonical configuration and runtime installation in CI. Consuming
-repositories install runtimes and linter binaries only for local pre-commit use.
+Connect a workflow and Baseline supplies the policy, configuration, runtimes,
+and implementation. Consumer repositories only declare which capabilities they
+want and, when necessary, explicit exceptions.
 
-## Quick setup
+Replace `VERSION` in the examples with the latest
+[Baseline release](https://github.com/rubykatzen/baseline/releases). Dependabot
+can keep the version current after the initial setup.
 
-Replace `VERSION` in all examples with the latest release tag from
-[github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
-After initial setup, [Dependabot](#7-dependabot) keeps the pin current automatically.
-
-### 1. Lint workflow
+## Lint automatically
 
 Create `.github/workflows/lint.yml`:
 
@@ -26,26 +26,15 @@ jobs:
     uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
 ```
 
-`lint-shared.yml` inspects tracked files, selects every applicable baseline
-linter, installs its runtime, and runs it automatically. A tracked
-`.pre-commit-config.yaml` also enables the pre-commit sync check.
+That is enough to get CI linting. Baseline inspects the tracked files, selects
+every applicable linter, installs its runtime, and runs it with the canonical
+configuration. Adding a new supported file type automatically enables its
+linter on the next run.
 
-Skip linters explicitly when a repository does not want an otherwise
-applicable check:
+When the repository contains `.pre-commit-config.yaml`, Baseline also checks
+that its local hooks match the automatically selected CI linters.
 
-```yaml
-jobs:
-  lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
-    with:
-      skip: '["rubocop", "herb"]'
-```
-
-Skipped linters must also be removed from the baseline entry in
-`.pre-commit-config.yaml` so local and CI linting remain identical. Unknown
-skip names fail the workflow.
-
-### 2. GitHub repository config
+## Check GitHub configuration
 
 Create `.github/workflows/github.yml`:
 
@@ -56,30 +45,36 @@ on:
     branches: ["main"]
   pull_request:
 jobs:
-  github-config-check:
+  github:
     uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
 ```
 
-The shared workflow checks repository settings and labels against
-`config/github.yml`. The policy requires the wiki to be disabled, auto-merge to
-be enabled, merged branches to be deleted automatically, and pull requests to
-use squash-only merging with the pull request title as the complete resulting
-commit message. Required labels must match the configured names and colors, no
-additional labels are allowed, and Release Please labels are optional.
+Baseline checks the repository settings and labels against
+[`config/github.yml`](config/github.yml). This includes squash-only merging,
+automatic branch deletion, auto-merge, and the canonical label set and colors.
+Release Please labels are allowed but optional.
 
-Skip checks explicitly when a repository needs an exception:
+## Check shared repository files
+
+Create `.github/workflows/embedder.yml`:
 
 ```yaml
+name: Embedder
+on:
+  push:
+    branches: ["main"]
+  pull_request:
 jobs:
-  github-config-check:
-    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
-    with:
-      skip: '["hasWikiEnabled", "labels"]'
+  embedder:
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
 ```
 
-The `skip` input must be a JSON array. Unknown check names fail the workflow.
+Baseline checks that the repository contains every fragment declared in
+[`config/embedder.yml`](config/embedder.yml), including the shared Dependabot
+configuration and agent instructions. A failure reports all differences, not
+only the first missing fragment.
 
-### 3. Telegram pull request notifications
+## Notify Telegram about pull requests
 
 Create `.github/workflows/notify-telegram-pr.yml`:
 
@@ -99,18 +94,19 @@ jobs:
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 ```
 
-The workflow reports non-draft pull requests when they are opened, reopened,
-or marked ready for review, reports merged pull requests, and sends a daily
-digest of open non-draft pull requests. An empty digest sends no message.
+Baseline sends notifications for opened, reopened, ready, and merged pull
+requests, plus a daily digest of up to ten open non-draft pull requests. Empty
+digests do not send a message.
 
-`pull_request_target` loads trusted workflow code from the default branch so
-Telegram secrets remain available without executing or checking out pull
-request code. Pass the two secrets explicitly; do not use `secrets: inherit`.
+`pull_request_target` keeps Telegram secrets available while loading trusted
+workflow code from the default branch. The shared workflow does not check out
+or execute pull request code. Pass the two secrets explicitly rather than using
+`secrets: inherit`.
 
-### 4. Telegram issue notifications
+## Notify Telegram about closed issues
 
-Issue notifications are optional. A repository that needs them creates
-`.github/workflows/notify-telegram-issue.yml`:
+Issue notifications are optional and can use a different Telegram channel from
+pull request notifications. Create `.github/workflows/notify-telegram-issue.yml`:
 
 ```yaml
 name: Notify Telegram issue
@@ -126,51 +122,43 @@ jobs:
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
 ```
 
-This example reports only issues carrying the `notify` label at close time.
-The caller owns this condition and may replace it or omit it to report every
-closed issue. The shared workflow only formats and sends the notification; it
-does not modify the issue. The message includes up to 500 characters of the
-issue body. PR and issue callers may map `TELEGRAM_CHAT_ID` to different
-repository secrets and therefore different channels.
+The caller decides which closed issues should produce a notification. Change or
+remove the `if` condition to match the repository's policy. Baseline only
+formats and sends the message; it does not modify the issue or its labels.
 
-### 5. Embedded content
+## Explicit exceptions
 
-Create `.github/workflows/embedder.yml`:
-
-```yaml
-name: Embedder
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-jobs:
-  embedded-content-check:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
-```
-
-The shared workflow checks repository files against the required fragments in
-`config/embedder.yml`. Each named fragment has a target path and content that
-must occur in that file. Multiple fragments may target the same file. Ownership
-markers are part of the configured content, so the checker remains independent
-of the target file format. Failures report every fragment and file, followed by
-a unified diff for each missing or outdated fragment.
-
-Skip fragments explicitly when a repository needs an exception:
+Automatic policy is the default. When a repository intentionally differs, pass
+a JSON array through `skip`:
 
 ```yaml
 jobs:
-  embedded-content-check:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
+  lint:
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
     with:
-      skip: '["message-prefix"]'
+      skip: '["rubocop", "herb"]'
 ```
 
-The `skip` input must be a JSON array. Unknown fragment names fail the workflow.
+The GitHub and Embedder workflows use the same convention:
 
-### 6. Pre-commit hooks
+```yaml
+with:
+  skip: '["labels"]'
+```
 
-Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
-Include only the hooks relevant to your stack:
+```yaml
+with:
+  skip: '["message-prefix"]'
+```
+
+Unknown names fail the workflow. A skipped linter must also be absent from the
+Baseline entry in `.pre-commit-config.yaml`, keeping local and CI linting equal.
+
+## Local linting
+
+CI runtime installation is automatic. For local pre-commit use, copy
+`.pre-commit-config.yaml.example` and keep only the hooks relevant to the
+repository:
 
 ```yaml
 repos:
@@ -187,22 +175,40 @@ repos:
       - id: erb-lint
 ```
 
-Remove hooks that are skipped by the shared workflow or have no matching
-tracked files. Install the tools before running hooks:
+Pre-commit hooks are thin wrappers and expect their tools on `PATH`. Install the
+Python and standalone tools used by the repository:
 
 ```bash
 python -m pip install yamllint pymarkdownlnt ruff tombi
 brew install shellcheck actionlint
 ```
 
-Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
-consuming repository first. `rubocop` and `erb_lint` must be available through
-the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
+### Ruby projects
 
-### 7. Dependabot
+Ruby projects get RuboCop and erb_lint, with Baseline's configuration, from one
+gem:
 
-Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
-current automatically:
+```ruby
+group :development, :test do
+  gem "rubykatzen-baseline", require: false
+end
+```
+
+After `bundle install`, create the project config stubs:
+
+```bash
+bundle exec baseline-install
+```
+
+The generated `.rubocop.yml` and `.erb_lint.yml` inherit the configs shipped in
+the gem. Project-specific existing violations can remain in
+`.rubocop_todo.yml` or `.erb_lint_todo.yml`; Baseline continues to catch new
+violations.
+
+## Keep Baseline current
+
+Add GitHub Actions and pre-commit ecosystems to `.github/dependabot.yml` so
+Dependabot updates every Baseline pin:
 
 ```yaml
 version: 2
@@ -229,163 +235,29 @@ updates:
       timezone: "Europe/Berlin"
 ```
 
-The commit message configuration also prefixes pull request titles with
-`chore(deps):`, so they pass the commit workflow without creating a release by
+Dependabot opens `chore(deps):` pull requests, which do not request a release by
 default. Rename a release-worthy dependency update to `fix(deps):` to request a
-patch release. Pair Dependabot with
-`dependabot-automerge` if you want patch/minor updates merged automatically.
+patch release.
 
----
+## Supported linters
 
-## Automatic linter selection
+| Key | Files | Configuration |
+|---|---|---|
+| `yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
+| `pymarkdown` | `*.md` | `config/pymarkdown.json` |
+| `ruff` | `*.py` | `config/ruff.toml` |
+| `tombi` | `*.toml` | consumer config or Tombi defaults |
+| `shellcheck` | `*.sh` | `config/shellcheck.rc` |
+| `actionlint` | `.github/workflows/*.yml` | actionlint defaults |
+| `rubocop` | `*.rb` | `config/rubocop.yml` |
+| `erb-lint` | `*.erb` | `config/erb_lint.yml` |
+| `herb` | HTML and Rails template variants | Herb defaults |
 
-The shared workflow can select these keys. Put a key in `skip` to
-disable it for a repository:
+See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for deliberate
+deviations from upstream linter defaults.
 
-| Key | Action | Lints | Config |
-|---|---|---|---|
-| `yamllint` | `lint-yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
-| `pymarkdown` | `lint-pymarkdown` | `*.md` | `config/pymarkdown.json` |
-| `ruff` | `lint-ruff` | `*.py` | `config/ruff.toml` |
-| `tombi` | `lint-tombi` | `*.toml` | consumer config or Tombi defaults |
-| `shellcheck` | `lint-shellcheck` | `*.sh` | `config/shellcheck.rc` |
-| `actionlint` | `lint-actionlint` | `.github/workflows/*.yml` | — |
-| `rubocop` | `lint-rubocop` | `*.rb` | `config/rubocop.yml` |
-| `erb-lint` | `lint-erb-lint` | `*.erb` | `config/erb_lint.yml` |
-| `herb` | `lint-herb` | `*.html.erb`, `*.html+*.erb`, `*.turbo_stream.erb`, `*.herb`, `*.rhtml` | — |
-| `pre-commit` | `check-precommit` | `.pre-commit-config.yaml` | — |
-
-The detector scans `git ls-files` and matches each file against the `types` or
-`files` selector in `.pre-commit-hooks.yaml`. It adds `pre-commit` when a
-`.pre-commit-config.yaml` is present, then removes the linters listed in `skip`.
-
-Tombi discovers a consumer repository's `tombi.toml`, `.tombi.toml`, or
-`[tool.tombi]` configuration. Without one, Tombi's defaults apply. Baseline runs
-both linting and formatting checks offline and treats lint warnings as errors.
-
-`check-precommit` verifies that configured baseline hooks exactly match
-the detected CI linters, minus `pre-commit` itself.
-
-## Ruby gem (RuboCop + erb_lint)
-
-For Rails and other Ruby projects, install the shared configs through the `rubykatzen-baseline`
-gem instead of listing RuboCop gems separately. Configs still live in this
-repository and ship inside the gem — consumer repos only add stub files that
-inherit from the gem.
-
-### 1. Gemfile
-
-Replace individual RuboCop gems with a single baseline pin:
-
-```ruby
-group :development, :test do
-  gem "rubykatzen-baseline", require: false
-end
-```
-
-The gem pulls in `rubocop`, `rubocop-performance`, `rubocop-rails`,
-`standard-custom`, and `erb_lint` as dependencies.
-
-### 2. Project stubs
-
-Run once from the project root after `bundle install`:
-
-```bash
-bundle exec baseline-install
-```
-
-This creates stub configs when missing:
-
-```yaml
-# .rubocop.yml
-inherit_gem:
-  rubykatzen-baseline: config/rubocop.yml
-
-# Generate project-specific excludes, then uncomment inherit_from below:
-#   bundle exec rubocop --auto-gen-config --auto-gen-only-exclude --exclude-limit 10000
-# inherit_from:
-#   - .rubocop_todo.yml
-```
-
-```yaml
-# .erb_lint.yml
-inherit_gem:
-  rubykatzen-baseline: config/erb_lint.yml
-
-# Generate .erb_lint_todo.yml, then uncomment inherit_from below:
-#   bundle exec erb_lint --enable-all-linters --lint-all
-# inherit_from:
-#   - .erb_lint_todo.yml
-```
-
-Stubs work out of the box with shared baseline cops only. Uncomment
-`inherit_from` after creating todo files for project-specific excludes.
-
-### 3. erb_lint todo file
-
-erb_lint has no `--auto-gen-config`. To suppress existing violations while
-keeping new ones visible, create `.erb_lint_todo.yml` manually:
-
-1. Run erb_lint and collect the cop names that appear:
-
-   ```bash
-   bundle exec erb_lint --lint-all
-   ```
-
-2. Create `.erb_lint_todo.yml` in the project root. Use the erb_lint config
-   format — cop names go inside `linters.Rubocop.rubocop_config`, not at the
-   top level:
-
-   ```yaml
-   # .erb_lint_todo.yml
-   # Remove cops from this list as you fix templates.
-   linters:
-     Rubocop:
-       rubocop_config:
-         Layout/ArgumentAlignment:
-           Enabled: false
-         Style/FrozenStringLiteralComment:
-           Enabled: false
-   ```
-
-3. Uncomment `inherit_from` in `.erb_lint.yml`:
-
-   ```yaml
-   inherit_gem:
-     rubykatzen-baseline: config/erb_lint.yml
-
-   inherit_from:
-     - .erb_lint_todo.yml
-   ```
-
-Remove cops from the todo file as you fix the templates.
-
-### 4. Local commands
-
-```bash
-bundle exec rubocop
-bundle exec rubocop -A
-bundle exec erb_lint --lint-all
-```
-
-The `rubocop` and `erb-lint` pre-commit hooks and GitHub Actions require the
-baseline gem in the project `Gemfile` plus the generated stubs above. They
-delegate to the same `bundle exec` commands so local and CI linting use one
-Bundler-resolved toolchain.
-
-## Releases
+## Releasing Baseline
 
 Release Please maintains a release pull request from Conventional Commits on
-`main`. Review its proposed version, changelog, and file updates, then merge the
-pull request to release. The merge creates the version tag and GitHub Release,
-publishes `rubykatzen-baseline` to RubyGems, and updates the floating major and
-minor tags used by consumers.
-
-The release workflow uses the `RELEASE_TOKEN` repository secret so its
-pull requests trigger required CI. Use a fine-grained personal access token
-limited to this repository with read and write access to contents, issues, and
-pull requests.
-
-## Linters: defaults & overrides
-
-See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for a full list of deviations from each linter's defaults with rationale.
+`main`. Merging it creates the version tag and GitHub Release, publishes the
+Ruby gem, and updates the floating major and minor tags used by consumers.
