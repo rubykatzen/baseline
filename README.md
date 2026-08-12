@@ -352,7 +352,7 @@ pull request to release. The merge creates the version tag and GitHub Release,
 publishes `rubykatzen-baseline` to RubyGems, and updates the floating major and
 minor tags used by consumers.
 
-The release workflow uses the `RELEASE_PLEASE_TOKEN` repository secret so its
+The release workflow uses the `RELEASE_TOKEN` repository secret so its
 pull requests trigger required CI. Use a fine-grained personal access token
 limited to this repository with read and write access to contents, issues, and
 pull requests.

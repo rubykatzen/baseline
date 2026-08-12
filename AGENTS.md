@@ -125,7 +125,7 @@ pull request to release. The workflow creates the version tag and GitHub
 Release, publishes the gem, and updates the floating major and minor tags.
 
 The workflow requires a fine-grained personal access token in the
-`RELEASE_PLEASE_TOKEN` repository secret, limited to this repository with read
+`RELEASE_TOKEN` repository secret, limited to this repository with read
 and write access to contents, issues, and pull requests. The token ensures
 release pull requests trigger required CI.
 
