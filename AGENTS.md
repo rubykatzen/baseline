@@ -2,6 +2,7 @@
 
 This file provides guidance to AI coding agents when working with this repository.
 
+<!-- baseline fragment: message-prefix -->
 ## Message Prefix
 
 Prefix every user-visible agent message with the agent emoji followed by the
@@ -20,7 +21,9 @@ Use the emoji to identify the agent:
 
 This applies to chat replies, PR comments, review comments, issue comments,
 status updates, and any other written communication.
+<!-- /baseline fragment: message-prefix -->
 
+<!-- baseline fragment: embedded-fragment-policy -->
 ## Embedded Fragment Policy
 
 This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
@@ -32,6 +35,7 @@ the Baseline workflow version in consuming repositories.
 
 A repository-specific exception must be declared through the `skip` input of
 `embedder-shared.yml`.
+<!-- /baseline fragment: embedded-fragment-policy -->
 
 ## Purpose
 

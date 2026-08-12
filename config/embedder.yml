@@ -2,6 +2,7 @@ fragments:
   message-prefix:
     path: AGENTS.md
     content: |
+      <!-- baseline fragment: message-prefix -->
       ## Message Prefix
 
       Prefix every user-visible agent message with the agent emoji followed by the
@@ -20,9 +21,11 @@ fragments:
 
       This applies to chat replies, PR comments, review comments, issue comments,
       status updates, and any other written communication.
+      <!-- /baseline fragment: message-prefix -->
   embedded-fragment-policy:
     path: AGENTS.md
     content: |
+      <!-- baseline fragment: embedded-fragment-policy -->
       ## Embedded Fragment Policy
 
       This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
@@ -34,17 +37,21 @@ fragments:
 
       A repository-specific exception must be declared through the `skip` input of
       `embedder-shared.yml`.
+      <!-- /baseline fragment: embedded-fragment-policy -->
   embedded-fragments:
     path: README.md
     content: |
+      <!-- baseline fragment: embedded-fragments -->
       ## Embedded Fragments
 
       This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
       verify shared content fragments across repositories. Required fragments are
       defined centrally in `config/embedder.yml`.
+      <!-- /baseline fragment: embedded-fragments -->
   dependabot:
     path: .github/dependabot.yml
     content: |
+      # baseline fragment: dependabot
       version: 2
       updates:
         - package-ecosystem: github-actions
@@ -71,3 +78,4 @@ fragments:
             interval: daily
             time: "10:00"
             timezone: "Europe/Berlin"
+      # /baseline fragment: dependabot
