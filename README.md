@@ -160,12 +160,14 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    labels: []
     schedule:
       interval: daily
       time: "10:00"
       timezone: "Europe/Berlin"
   - package-ecosystem: pre-commit
     directory: /
+    labels: []
     schedule:
       interval: daily
       time: "10:00"
