@@ -3,6 +3,7 @@
   "release-type": "ruby",
   "include-component-in-tag": false,
   "pull-request-header": "This pull request prepares the next release.",
+  "pull-request-footer": "[Release Please documentation](https://github.com/googleapis/release-please#release-please)",
   "packages": {
     ".": {
       "package-name": "rubykatzen-baseline",
