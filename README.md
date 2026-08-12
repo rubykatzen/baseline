@@ -1,7 +1,9 @@
 # Baseline
 
-Reusable GitHub workflows for repository hygiene across
-[`rubykatzen`](https://github.com/rubykatzen).
+Baseline simplifies managing repositories across multiple organizations and
+programming language stacks. It provides a homogeneous development environment
+for language-agnostic developers and a centrally managed baseline for repository
+owners.
 
 Connect a workflow and Baseline supplies the policy, configuration, runtimes,
 and implementation. Consumer repositories only declare which capabilities they
