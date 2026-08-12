@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [v0.9.0] - 2026-08-12
+
+- chore(deps): bump rubocop-rails from 2.35.4 to 2.36.0 (#122)
+- chore(deps): bump rubocop from 1.88.0 to 1.89.0 (#123)
+- chore(deps): bump herb from 0.10.1 to 0.10.3 (#124)
+- ci: trust pull request title validation (#130)
+- ci: bootstrap trusted pull request validation (#129)
+- feat: validate conventional pull request titles (#128)
+
 ## [v0.8.6] - 2026-08-12
 
 - feat: add GitHub Copilot agent emoji
