@@ -207,7 +207,7 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    labels: []
+    labels: [dependencies]
     commit-message:
       prefix: chore
       include: scope
@@ -217,7 +217,7 @@ updates:
       timezone: "Europe/Berlin"
   - package-ecosystem: pre-commit
     directory: /
-    labels: []
+    labels: [dependencies]
     commit-message:
       prefix: chore
       include: scope
