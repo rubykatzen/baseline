@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "ruby",
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {
+      "package-name": "rubykatzen-baseline",
+      "version-file": "lib/baseline/version.rb",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": ".pre-commit-config.yaml"
+        },
+        {
+          "type": "generic",
+          "path": ".pre-commit-config.yaml.example"
+        },
+        {
+          "type": "generic",
+          "path": "README.md"
+        }
+      ]
+    }
+  }
+}

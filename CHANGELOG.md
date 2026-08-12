@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
 ## [v0.9.0] - 2026-08-12
 
 - chore(deps): bump rubocop-rails from 2.35.4 to 2.36.0 (#122)

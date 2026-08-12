@@ -74,8 +74,7 @@ tools to already be installed in the developer environment.
 - `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
 - `.github/workflows/commit.yml` — baseline caller for its Conventional Commit pull request title check
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
-- `.github/workflows/prepare-release.yml` — dispatch workflow: calls `rubykatzen/releaser` to prepare `release/vX.Y.Z`
-- `.github/workflows/publish-release.yml` — publishes merged `release/*` PRs via `rubykatzen/releaser`
+- `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
 - `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos (all hooks, prune as needed)
@@ -120,34 +119,15 @@ validated, not a pinned release.
 
 ## Cutting Releases
 
-Use the [rubykatzen/releaser](https://github.com/rubykatzen/releaser) CLI.
-Run from inside this repository:
+Release Please maintains a release pull request from Conventional Commits on
+`main`. Review the proposed version, changelog, and file updates, then merge the
+pull request to release. The workflow creates the version tag and GitHub
+Release, publishes the gem, and updates the floating major and minor tags.
 
-```bash
-releaser patch   # or: releaser minor / releaser major
-```
-
-The CLI does the following automatically:
-
-1. Fetches `origin/main` and finds the latest SemVer tag
-2. Verifies CI is green on `origin/main`
-3. Calculates the next version
-4. Dispatches `.github/workflows/prepare-release.yml` with the computed version
-   and `base_sha`
-5. Watches the workflow run
-6. Opens a PR from `release/vX.Y.Z` → `main` and enables auto-merge
-
-`.github/workflows/publish-release.yml` fires automatically once the PR merges
-and creates the annotated tag and GitHub release.
-
-To check readiness without triggering a release:
-
-```bash
-releaser status
-releaser patch --dry-run
-```
-
-If the CLI is not installed: `brew tap rubykatzen/tap && brew install releaser`.
+The workflow requires a fine-grained personal access token in the
+`RELEASE_TOKEN` repository secret, limited to this repository with read
+and write access to contents, issues, and pull requests. The token ensures
+release pull requests trigger required CI.
 
 ## Linter Selection
 
