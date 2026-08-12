@@ -69,12 +69,17 @@ tools to already be installed in the developer environment.
 - `.github/actions/detect-linters/` — composite action that selects applicable linters from tracked files
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
+- `.github/actions/prepare-telegram-pr-message/` — formats pull request and open-PR digest messages
+- `.github/actions/prepare-telegram-issue-message/` — formats closed-issue messages
+- `.github/actions/send-telegram-message/` — sends plain-text messages through the Telegram Bot API
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
 - `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
+- `.github/workflows/notify-telegram-pr-shared.yml` — reusable pull request notifications and open-PR digest
+- `.github/workflows/notify-telegram-issue-shared.yml` — optional reusable issue-closure notifications
 - `.github/workflows/pr.yml` — validates Baseline pull request titles against Conventional Commits
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
-- `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
+- `.github/workflows/notify-telegram-pr.yml` — Baseline's own Telegram pull request notification caller
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 - `.pre-commit-config.yaml.example` — example for consuming repos (all hooks, prune as needed)
 
@@ -99,8 +104,14 @@ Pre-commit hooks expect tools to already be on PATH in the developer environment
 
 ## Workflows
 
-`notify-telegram-unreleased.yml` is baseline's own caller that delegates to
-`rubykatzen/releaser`; it is not exported for external use.
+`notify-telegram-pr-shared.yml` exports pull request notifications and the
+open-pull-request digest. Baseline calls it locally through
+`notify-telegram-pr.yml`.
+
+`notify-telegram-issue-shared.yml` exports optional issue-closure notifications.
+The caller owns any label or other notification condition; the shared workflow
+does not modify issues. Baseline does not call it because this repository does
+not use issue notifications.
 
 `lint-shared.yml` is the primary export — consuming repos call it via
 `uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION`.
