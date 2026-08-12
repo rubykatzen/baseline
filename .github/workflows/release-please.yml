@@ -16,15 +16,10 @@ jobs:
       minor: ${{ steps.release.outputs.minor }}
     steps:
       # GITHUB_TOKEN-created pull requests do not trigger required CI workflows.
-      - uses: actions/create-github-app-token@v3
-        id: app-token
-        with:
-          app-id: ${{ vars.RELEASE_PLEASE_APP_ID }}
-          private-key: ${{ secrets.RELEASE_PLEASE_APP_PRIVATE_KEY }}
       - uses: googleapis/release-please-action@v5
         id: release
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
   publish:
     needs: release

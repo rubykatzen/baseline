@@ -124,10 +124,10 @@ Release Please maintains a release pull request from Conventional Commits on
 pull request to release. The workflow creates the version tag and GitHub
 Release, publishes the gem, and updates the floating major and minor tags.
 
-The workflow requires a GitHub App ID in the `RELEASE_PLEASE_APP_ID` repository
-variable and its private key in the `RELEASE_PLEASE_APP_PRIVATE_KEY` repository
-secret. The App needs read and write access to contents, issues, and pull
-requests. Its token ensures release pull requests trigger required CI.
+The workflow requires a fine-grained personal access token in the
+`RELEASE_PLEASE_TOKEN` repository secret, limited to this repository with read
+and write access to contents, issues, and pull requests. The token ensures
+release pull requests trigger required CI.
 
 ## Linter Selection
 
