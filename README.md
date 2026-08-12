@@ -146,7 +146,7 @@ Include only the hooks relevant to your stack:
 ```yaml
 repos:
   - repo: https://github.com/rubykatzen/baseline
-    rev: v0.8.6
+    rev: v0.9.0
     hooks:
       - id: yamllint
       - id: pymarkdown
