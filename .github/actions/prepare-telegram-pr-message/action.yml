@@ -1,0 +1,19 @@
+name: Prepare Telegram PR message
+description: Prepare a Telegram message for the current pull request event or digest.
+outputs:
+  message:
+    description: Prepared message, or an empty string when no message is needed.
+    value: ${{ steps.prepare.outputs.message }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPOSITORY: ${{ github.repository }}
+        EVENT_NAME: ${{ github.event_name }}
+        EVENT_ACTION: ${{ github.event.action }}
+        NUMBER: ${{ github.event.pull_request.number }}
+        MERGED: ${{ github.event.pull_request.merged }}
+      run: python3 "${{ github.action_path }}/prepare.py"

@@ -1,0 +1,17 @@
+name: Prepare Telegram issue message
+description: Prepare a Telegram message for a closed issue.
+outputs:
+  message:
+    description: Prepared message.
+    value: ${{ steps.prepare.outputs.message }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPOSITORY: ${{ github.repository }}
+        NUMBER: ${{ github.event.issue.number }}
+        ACTOR: ${{ github.actor }}
+      run: python3 "${{ github.action_path }}/prepare.py"

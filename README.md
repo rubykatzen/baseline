@@ -9,7 +9,7 @@ repositories install runtimes and linter binaries only for local pre-commit use.
 
 Replace `VERSION` in all examples with the latest release tag from
 [github.com/rubykatzen/baseline/releases](https://github.com/rubykatzen/baseline/releases).
-After initial setup, [Dependabot](#6-dependabot) keeps the pin current automatically.
+After initial setup, [Dependabot](#7-dependabot) keeps the pin current automatically.
 
 ### 1. Lint workflow
 
@@ -77,7 +77,61 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown check names fail the workflow.
 
-### 3. Embedded content
+### 3. Telegram pull request notifications
+
+Create `.github/workflows/notify-telegram-pr.yml`:
+
+```yaml
+name: Notify Telegram PR
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, reopened, closed]
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+jobs:
+  notify:
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@VERSION
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+```
+
+The workflow reports non-draft pull requests when they are opened, reopened,
+or marked ready for review, reports merged pull requests, and sends a daily
+digest of open non-draft pull requests. An empty digest sends no message.
+
+`pull_request_target` loads trusted workflow code from the default branch so
+Telegram secrets remain available without executing or checking out pull
+request code. Pass the two secrets explicitly; do not use `secrets: inherit`.
+
+### 4. Telegram issue notifications
+
+Issue notifications are optional. A repository that needs them creates
+`.github/workflows/notify-telegram-issue.yml`:
+
+```yaml
+name: Notify Telegram issue
+on:
+  issues:
+    types: [closed]
+jobs:
+  notify:
+    if: contains(github.event.issue.labels.*.name, 'notify')
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@VERSION
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
+```
+
+This example reports only issues carrying the `notify` label at close time.
+The caller owns this condition and may replace it or omit it to report every
+closed issue. The shared workflow only formats and sends the notification; it
+does not modify the issue. The message includes up to 500 characters of the
+issue body. PR and issue callers may map `TELEGRAM_CHAT_ID` to different
+repository secrets and therefore different channels.
+
+### 5. Embedded content
 
 Create `.github/workflows/embedder.yml`:
 
@@ -111,7 +165,7 @@ jobs:
 
 The `skip` input must be a JSON array. Unknown fragment names fail the workflow.
 
-### 4. Pre-commit hooks
+### 6. Pre-commit hooks
 
 Copy `.pre-commit-config.yaml.example` to your repo or add to your existing config.
 Include only the hooks relevant to your stack:
@@ -143,7 +197,7 @@ Ruby hooks use `bundle exec`; install Ruby and run `bundle install` in the
 consuming repository first. `rubocop` and `erb_lint` must be available through
 the [`rubykatzen-baseline`](#ruby-gem-rubocop--erb_lint) gem.
 
-### 5. Dependabot
+### 7. Dependabot
 
 Add `.github/dependabot.yml` to keep GitHub Actions and pre-commit pins
 current automatically:

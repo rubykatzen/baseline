@@ -1,0 +1,31 @@
+name: Send Telegram message
+description: Send a plain-text message to a Telegram chat.
+inputs:
+  message:
+    description: Message text.
+    required: true
+  telegram-bot-token:
+    description: Telegram bot token.
+    required: true
+  telegram-chat-id:
+    description: Telegram chat ID.
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        MESSAGE: ${{ inputs.message }}
+        BOT_TOKEN: ${{ inputs.telegram-bot-token }}
+        CHAT_ID: ${{ inputs.telegram-chat-id }}
+      run: |
+        set -euo pipefail
+        curl -fsSL \
+          --output /dev/null \
+          -X POST \
+          "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+          -H "Content-Type: application/json" \
+          -d "$(jq -n \
+            --arg c "$CHAT_ID" \
+            --arg t "$MESSAGE" \
+            '{chat_id: $c, text: $t, link_preview_options: {is_disabled: true}}')"
