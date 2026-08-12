@@ -33,8 +33,11 @@ class GitHubConfigTest(unittest.TestCase):
                 "squashMergeAllowed",
                 "squashMergeCommitMessage",
                 "squashMergeCommitTitle",
+                "labels",
             },
         )
+        self.assertIn("dependencies", checks["labels"]["required"])
+        self.assertIn("autorelease: pending", checks["labels"]["optional"])
 
     def test_rejects_invalid_repository_config(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
@@ -50,6 +53,17 @@ class GitHubConfigTest(unittest.TestCase):
             config.flush()
 
             with self.assertRaisesRegex(ValueError, "must be valid YAML"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
+    def test_rejects_invalid_label_color(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write(
+                "config:\n  hasWikiEnabled: false\n"
+                "labels:\n  required:\n    dependencies:\n      color: blue\n"
+            )
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "six-digit hex"):
                 CHECK_GITHUB_CONFIG.load_config(config.name)
 
     def test_parses_json_skip(self):
@@ -106,6 +120,65 @@ class GitHubConfigTest(unittest.TestCase):
 
         self.assertEqual([result.status for result in results], ["failed", "failed"])
         self.assertTrue(all("API unavailable" in result.message for result in results))
+
+    def test_label_policy_accepts_required_and_present_optional_labels(self):
+        policy = {
+            "required": {"dependencies": "0366d6"},
+            "optional": {"autorelease: pending": "fbca04"},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_label_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "dependencies", "color": "0366D6"},
+                {"name": "autorelease: pending", "color": "fbca04"},
+            ],
+        )
+
+        self.assertEqual(result.status, "passed")
+
+    def test_label_policy_accepts_absent_optional_labels(self):
+        policy = {
+            "required": {"dependencies": "0366d6"},
+            "optional": {"autorelease: pending": "fbca04"},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_label_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [{"name": "dependencies", "color": "0366d6"}],
+        )
+
+        self.assertEqual(result.status, "passed")
+
+    def test_label_policy_reports_all_differences(self):
+        policy = {
+            "required": {"dependencies": "0366d6", "size: S": "bfd4f2"},
+            "optional": {"autorelease: pending": "fbca04"},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_label_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "dependencies", "color": "ffffff"},
+                {"name": "bug", "color": "d73a4a"},
+            ],
+        )
+
+        self.assertEqual(result.status, "failed")
+        self.assertIn("missing: size: S", result.message)
+        self.assertIn("unexpected: bug", result.message)
+        self.assertIn("dependencies expected #0366d6, got #ffffff", result.message)
+
+    def test_skips_label_policy_without_requesting_labels(self):
+        results = CHECK_GITHUB_CONFIG.evaluate_checks(
+            {"labels": {"required": {}, "optional": {}}},
+            "owner/repo",
+            {"labels"},
+            request=lambda _repository, _fields: {},
+            labels_request=lambda _repository: self.fail("skipped check made an API request"),
+        )
+
+        self.assertEqual(results[0].status, "skipped")
 
     def test_formats_expected_values_as_json(self):
         self.assertEqual(CHECK_GITHUB_CONFIG.format_value(False), "false")

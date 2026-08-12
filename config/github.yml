@@ -7,3 +7,30 @@ config:
   squashMergeAllowed: true
   squashMergeCommitTitle: PR_TITLE
   squashMergeCommitMessage: BLANK
+labels:
+  required:
+    ":triangular_flag_on_post:":
+      color: FFEFEF
+    dependencies:
+      color: 0366d6
+    "priority: P1":
+      color: fef2c0
+    "priority: P2":
+      color: fef2c0
+    "priority: P3":
+      color: fef2c0
+    "size: L":
+      color: bfd4f2
+    "size: M":
+      color: bfd4f2
+    "size: S":
+      color: bfd4f2
+    "size: XL":
+      color: bfd4f2
+    "size: XS":
+      color: bfd4f2
+  optional:
+    "autorelease: pending":
+      color: fbca04
+    "autorelease: tagged":
+      color: fbca04
