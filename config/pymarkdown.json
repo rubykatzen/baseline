@@ -8,9 +8,6 @@
     }
   },
   "plugins": {
-    "md004": {
-      "style": "asterisk"
-    },
     "md012": {
       "maximum": 2
     },
