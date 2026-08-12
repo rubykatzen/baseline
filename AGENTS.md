@@ -23,6 +23,15 @@ This applies to chat replies, PR comments, review comments, issue comments,
 status updates, and any other written communication.
 <!-- /baseline fragment: message-prefix -->
 
+<!-- baseline fragment: message-suffix -->
+## Message Suffix
+
+End every user-visible agent message with a blank line followed by a final
+line containing exactly three emoji relevant to the message context:
+
+`EMOJI EMOJI EMOJI`
+<!-- /baseline fragment: message-suffix -->
+
 <!-- baseline fragment: embedded-fragments -->
 ## Embedded Fragments
 
