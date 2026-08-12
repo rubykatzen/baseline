@@ -23,7 +23,7 @@ on:
   pull_request:
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
 ```
 
 `lint-shared.yml` inspects tracked files, selects every applicable baseline
@@ -36,7 +36,7 @@ applicable check:
 ```yaml
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
     with:
       skip: '["rubocop", "herb"]'
 ```
@@ -57,7 +57,7 @@ on:
   pull_request:
 jobs:
   github-config-check:
-    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
 ```
 
 The shared workflow checks repository settings against `config/github.yml`.
@@ -70,7 +70,7 @@ Skip checks explicitly when a repository needs an exception:
 ```yaml
 jobs:
   github-config-check:
-    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
     with:
       skip: '["hasWikiEnabled"]'
 ```
@@ -91,7 +91,7 @@ on:
   workflow_dispatch:
 jobs:
   notify:
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.12.0 # x-release-please-version
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -118,7 +118,7 @@ on:
 jobs:
   notify:
     if: contains(github.event.issue.labels.*.name, 'notify')
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.12.0 # x-release-please-version
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
@@ -143,7 +143,7 @@ on:
   pull_request:
 jobs:
   embedded-content-check:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
 ```
 
 The shared workflow checks repository files against the required fragments in
@@ -158,7 +158,7 @@ Skip fragments explicitly when a repository needs an exception:
 ```yaml
 jobs:
   embedded-content-check:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@VERSION
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
     with:
       skip: '["message-prefix"]'
 ```
