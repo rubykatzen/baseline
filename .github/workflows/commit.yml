@@ -1,7 +1,0 @@
-name: Commit
-on:
-  pull_request_target:
-    types: [opened, reopened, edited, synchronize]
-jobs:
-  pull-request-title:
-    uses: ./.github/workflows/commit-shared.yml

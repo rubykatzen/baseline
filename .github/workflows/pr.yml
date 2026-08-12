@@ -1,6 +1,7 @@
-name: Commit (shared)
+name: Pull request
 on:
-  workflow_call:
+  pull_request_target:
+    types: [opened, reopened, edited, synchronize]
 jobs:
   pull-request-title:
     runs-on: ubuntu-slim

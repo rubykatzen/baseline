@@ -70,9 +70,8 @@ tools to already be installed in the developer environment.
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
 - `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
-- `.github/workflows/commit-shared.yml` — reusable workflow exported for Conventional Commit pull request titles
 - `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
-- `.github/workflows/commit.yml` — baseline caller for its Conventional Commit pull request title check
+- `.github/workflows/pr.yml` — validates Baseline pull request titles against Conventional Commits
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
 - `.github/workflows/notify-telegram-unreleased.yml` — baseline's own caller (delegates to `rubykatzen/releaser`)
