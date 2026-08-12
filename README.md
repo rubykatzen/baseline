@@ -103,7 +103,8 @@ The shared workflow checks repository files against the required fragments in
 `config/embedder.yml`. Each named fragment has a target path and content that
 must occur in that file. Multiple fragments may target the same file. Ownership
 markers are part of the configured content, so the checker remains independent
-of the target file format.
+of the target file format. Failures report every fragment and file, followed by
+a unified diff for each missing or outdated fragment.
 
 Skip fragments explicitly when a repository needs an exception:
 

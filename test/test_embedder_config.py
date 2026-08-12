@@ -86,6 +86,34 @@ class EmbedderConfigTest(unittest.TestCase):
             [result.name for result in results if result.status == "failed"],
             ["heading", "rule"],
         )
+        self.assertTrue(all(result.diff for result in results))
+
+    def test_diffs_existing_fragment_against_expectation(self):
+        fragment = CHECK_EMBEDDER.Fragment(
+            path="AGENTS.md",
+            content="<!-- baseline fragment: rule -->\nnew\n<!-- /baseline fragment: rule -->\n",
+        )
+        actual = "before\n<!-- baseline fragment: rule -->\nold\n<!-- /baseline fragment: rule -->\nafter\n"
+
+        result = CHECK_EMBEDDER.evaluate_fragments(
+            {"rule": fragment}, ".", read=lambda _root, _path: actual
+        )[0]
+
+        self.assertEqual(result.message, "required fragment differs")
+        self.assertIn("-old", result.diff)
+        self.assertIn("+new", result.diff)
+        self.assertNotIn("before", result.diff)
+        self.assertNotIn("after", result.diff)
+
+    def test_missing_fragment_diff_contains_full_expectation(self):
+        result = CHECK_EMBEDDER.evaluate_fragments(
+            {"heading": self.fragments["heading"]},
+            ".",
+            read=lambda _root, _path: "unrelated\n",
+        )[0]
+
+        self.assertEqual(result.message, "required fragment is missing")
+        self.assertIn("+# Agents", result.diff)
 
     def test_reports_missing_file(self):
         def read(_root, _path):

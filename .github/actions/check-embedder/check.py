@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import difflib
 import json
 import os
 import sys
@@ -20,6 +21,7 @@ class FragmentResult:
     path: str
     status: str
     message: str
+    diff: str = ""
 
 
 def parse_json_list(value):
@@ -84,6 +86,38 @@ def read_repository_file(repository_root, path):
         raise RuntimeError(f"file could not be read: {error}") from error
 
 
+def current_fragment(actual, expected):
+    expected_lines = expected.splitlines(keepends=True)
+    if len(expected_lines) < 2:
+        return None
+
+    opening = expected_lines[0].rstrip("\r\n")
+    closing = expected_lines[-1].rstrip("\r\n")
+    actual_lines = actual.splitlines(keepends=True)
+
+    for start, line in enumerate(actual_lines):
+        if line.rstrip("\r\n") != opening:
+            continue
+        for end in range(start + 1, len(actual_lines)):
+            if actual_lines[end].rstrip("\r\n") == closing:
+                return "".join(actual_lines[start : end + 1])
+        return "".join(actual_lines[start:])
+
+    return None
+
+
+def fragment_diff(name, path, expected, actual):
+    current = current_fragment(actual, expected) or ""
+    lines = difflib.unified_diff(
+        current.splitlines(),
+        expected.splitlines(),
+        fromfile=f"{path} ({name}, actual)",
+        tofile=f"{path} ({name}, expected)",
+        lineterm="",
+    )
+    return "\n".join(lines)
+
+
 def evaluate_fragments(fragments, repository_root, skipped=(), read=read_repository_file):
     skipped = set(skipped)
     if unknown := skipped - set(fragments):
@@ -109,9 +143,13 @@ def evaluate_fragments(fragments, repository_root, skipped=(), read=read_reposit
 
         actual, error = files[fragment.path]
         if error:
-            results.append(FragmentResult(name, fragment.path, "failed", error))
+            diff = fragment_diff(name, fragment.path, fragment.content, "")
+            results.append(FragmentResult(name, fragment.path, "failed", error, diff))
         elif fragment.content not in actual:
-            results.append(FragmentResult(name, fragment.path, "failed", "required content is missing"))
+            current = current_fragment(actual, fragment.content)
+            message = "required fragment is missing" if current is None else "required fragment differs"
+            diff = fragment_diff(name, fragment.path, fragment.content, actual)
+            results.append(FragmentResult(name, fragment.path, "failed", message, diff))
         else:
             results.append(FragmentResult(name, fragment.path, "passed", "required content found"))
 
@@ -120,6 +158,19 @@ def evaluate_fragments(fragments, repository_root, skipped=(), read=read_reposit
 
 def annotation_value(value):
     return str(value).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def print_report(results):
+    print("Embedder expectations:")
+    for result in results:
+        print(f"{result.status.upper()} {result.name} ({result.path}): {result.message}")
+
+    for result in results:
+        if not result.diff:
+            continue
+        print(f"::group::Diff {result.name} ({result.path})")
+        print(result.diff)
+        print("::endgroup::")
 
 
 def main():
@@ -133,13 +184,12 @@ def main():
         return 1
 
     print(f"Embedder config: {len(fragments)} fragments")
+    print_report(results)
     for result in results:
         if result.status == "failed":
             title = annotation_value(f"Embedder fragment: {result.name}")
             message = annotation_value(result.message)
             print(f"::error file={result.path},title={title}::{message}")
-        else:
-            print(f"{result.status.upper()} {result.name} ({result.path}): {result.message}")
 
     failed = sum(result.status == "failed" for result in results)
     passed = sum(result.status == "passed" for result in results)
