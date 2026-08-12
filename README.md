@@ -2,14 +2,6 @@
 
 Shared linter configs and thin wrappers.
 
-<!-- baseline fragment: embedded-fragments -->
-## Embedded Fragments
-
-This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
-verify shared content fragments across repositories. Required fragments are
-defined centrally in `config/embedder.yml`.
-<!-- /baseline fragment: embedded-fragments -->
-
 Baseline owns canonical configuration and runtime installation in CI. Consuming
 repositories install runtimes and linter binaries only for local pre-commit use.
 

@@ -23,10 +23,10 @@ class EmbedderConfigTest(unittest.TestCase):
 
         self.assertEqual(
             set(fragments),
-            {"message-prefix", "embedded-fragment-policy", "embedded-fragments", "dependabot"},
+            {"message-prefix", "embedded-fragments", "dependabot"},
         )
         self.assertEqual(fragments["message-prefix"].path, "AGENTS.md")
-        self.assertEqual(fragments["embedded-fragment-policy"].path, "AGENTS.md")
+        self.assertEqual(fragments["embedded-fragments"].path, "AGENTS.md")
 
     def test_rejects_invalid_config(self):
         invalid_configs = (
