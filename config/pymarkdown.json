@@ -8,6 +8,9 @@
     }
   },
   "plugins": {
+    "md012": {
+      "maximum": 2
+    },
     "md013": {
       "enabled": false
     },
