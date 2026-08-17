@@ -129,6 +129,38 @@ The caller decides which closed issues should produce a notification. Change or
 remove the `if` condition to match the repository's policy. Baseline only
 formats and sends the message; it does not modify the issue or its labels.
 
+## Deploy over Tailscale
+
+Deploy is a thin wrapper around `ansible-playbook`: it joins the caller's
+tailnet, loads an SSH key, and runs a playbook the caller repository already
+owns. Baseline does not ship the playbook or know anything about what it
+deploys — the caller supplies the path, inventory, and extra-vars. Create
+`.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: rubykatzen/baseline/.github/workflows/deploy-shared.yml@v0.12.0 # x-release-please-version
+    with:
+      playbook: ansible/deploy.yml
+      inventory: ${{ vars.DEPLOY_HOST }}
+      extra-vars: ${{ vars.DEPLOY_EXTRA_VARS }}
+      tailscale-oauth-client-id: ${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}
+    secrets:
+      ssh-private-key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      tailscale-oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+```
+
+`inventory` is whatever `ansible-playbook -i` accepts inline, e.g. a
+comma-separated host list. `extra-vars` is a JSON object string passed through
+as `ansible-playbook -e`. The runner joins the tailnet as an ephemeral node
+tagged `tag:ci` by default (override with `tailscale-tags` if the caller's ACL
+policy requires something else), so the target hosts only need to be reachable
+over Tailscale, not exposed publicly.
+
 ## Explicit exceptions
 
 Automatic policy is the default. When a repository intentionally differs, pass
