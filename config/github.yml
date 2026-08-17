@@ -11,26 +11,38 @@ labels:
   required:
     ":triangular_flag_on_post:":
       color: FFEFEF
+      description: Temporary fast-track flag
     dependencies:
       color: 0366d6
+      description: Pull requests that update a dependency file
     "priority: P1":
       color: fef2c0
+      description: Active tier, do this first
     "priority: P2":
       color: fef2c0
+      description: Second-priority candidate
     "priority: P3":
       color: fef2c0
+      description: Low-pressure, review later
     "size: L":
       color: bfd4f2
+      description: One or two days
     "size: M":
       color: bfd4f2
+      description: A few hours of work
     "size: S":
       color: bfd4f2
+      description: Less than an hour
     "size: XL":
       color: bfd4f2
+      description: Multiple days of work
     "size: XS":
       color: bfd4f2
+      description: Minutes of work
   optional:
     "autorelease: pending":
       color: fbca04
+      description: Pending release
     "autorelease: tagged":
       color: fbca04
+      description: Tagged release
