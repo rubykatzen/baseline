@@ -18,6 +18,8 @@ consumer repositories.
 
 Create `.github/workflows/lint.yml`:
 
+<!-- x-release-please-start-version -->
+
 ```yaml
 name: Lint
 on:
@@ -26,8 +28,10 @@ on:
   pull_request:
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0
 ```
+
+<!-- x-release-please-end -->
 
 That is enough to get CI linting. Baseline inspects the tracked files, selects
 every applicable linter, installs its runtime, and runs it with the canonical
@@ -41,6 +45,8 @@ that its local hooks match the automatically selected CI linters.
 
 Create `.github/workflows/github.yml`:
 
+<!-- x-release-please-start-version -->
+
 ```yaml
 name: GitHub
 on:
@@ -49,8 +55,10 @@ on:
   pull_request:
 jobs:
   github:
-    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0
 ```
+
+<!-- x-release-please-end -->
 
 Baseline checks the repository settings and labels against
 [`config/github.yml`](config/github.yml). This includes squash-only merging,
@@ -61,6 +69,8 @@ Release Please labels are allowed but optional.
 
 Create `.github/workflows/embedder.yml`:
 
+<!-- x-release-please-start-version -->
+
 ```yaml
 name: Embedder
 on:
@@ -69,8 +79,10 @@ on:
   pull_request:
 jobs:
   embedder:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0
 ```
+
+<!-- x-release-please-end -->
 
 Baseline checks that the repository contains every fragment declared in
 [`config/embedder.yml`](config/embedder.yml), including the shared Dependabot
@@ -80,6 +92,8 @@ only the first missing fragment.
 ## Notify Telegram about pull requests
 
 Create `.github/workflows/notify-telegram-pr.yml`:
+
+<!-- x-release-please-start-version -->
 
 ```yaml
 name: Notify Telegram PR
@@ -91,11 +105,13 @@ on:
   workflow_dispatch:
 jobs:
   notify:
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.12.0
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 ```
+
+<!-- x-release-please-end -->
 
 Baseline sends notifications for opened, reopened, ready, and merged pull
 requests, plus a daily digest of up to ten open non-draft pull requests. Empty
@@ -111,6 +127,8 @@ or execute pull request code. Pass the two secrets explicitly rather than using
 Issue notifications are optional and can use a different Telegram channel from
 pull request notifications. Create `.github/workflows/notify-telegram-issue.yml`:
 
+<!-- x-release-please-start-version -->
+
 ```yaml
 name: Notify Telegram issue
 on:
@@ -119,11 +137,13 @@ on:
 jobs:
   notify:
     if: contains(github.event.issue.labels.*.name, 'notify')
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.12.0
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
 ```
+
+<!-- x-release-please-end -->
 
 The caller decides which closed issues should produce a notification. Change or
 remove the `if` condition to match the repository's policy. Baseline only
@@ -134,13 +154,17 @@ formats and sends the message; it does not modify the issue or its labels.
 Automatic policy is the default. When a repository intentionally differs, pass
 a JSON array through `skip`:
 
+<!-- x-release-please-start-version -->
+
 ```yaml
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0 # x-release-please-version
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0
     with:
       skip: '["rubocop", "herb"]'
 ```
+
+<!-- x-release-please-end -->
 
 The GitHub and Embedder workflows use the same convention:
 
@@ -159,14 +183,15 @@ Baseline entry in `.pre-commit-config.yaml`, keeping local and CI linting equal.
 
 ## Local linting
 
-CI runtime installation is automatic. For local pre-commit use, copy
-`.pre-commit-config.yaml.example` and keep only the hooks relevant to the
-repository:
+CI runtime installation is automatic. For local pre-commit use, create
+`.pre-commit-config.yaml` and keep only the hooks relevant to the repository:
+
+<!-- x-release-please-start-version -->
 
 ```yaml
 repos:
   - repo: https://github.com/rubykatzen/baseline
-    rev: v0.12.0 # x-release-please-version
+    rev: v0.12.0
     hooks:
       - id: yamllint
       - id: pymarkdown
@@ -176,7 +201,10 @@ repos:
       - id: actionlint
       - id: rubocop
       - id: erb-lint
+      - id: herb
 ```
+
+<!-- x-release-please-end -->
 
 Pre-commit hooks are thin wrappers and expect their tools on `PATH`. Install the
 Python and standalone tools used by the repository:

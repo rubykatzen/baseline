@@ -16,10 +16,6 @@
         },
         {
           "type": "generic",
-          "path": ".pre-commit-config.yaml.example"
-        },
-        {
-          "type": "generic",
           "path": "README.md"
         }
       ]

@@ -81,7 +81,6 @@ tools to already be installed in the developer environment.
 - `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
 - `.github/workflows/notify-telegram-pr.yml` — Baseline's own Telegram pull request notification caller
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
-- `.pre-commit-config.yaml.example` — example for consuming repos (all hooks, prune as needed)
 
 ## Adding a New Linter
 
@@ -94,9 +93,8 @@ To add a linter for a new file type:
 5. Add composite action to `.github/actions/lint-<linter>/action.yml`
 6. Add runtime installation to `.github/actions/setup-runtimes/action.yml`
 7. Add a step to `.github/workflows/lint-shared.yml` gated on `contains(fromJSON(steps.detect.outputs.linters), '<key>')`
-8. Update `.pre-commit-config.yaml.example`
-9. Update `README.md`
-10. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
+8. Update the pre-commit example in `README.md`
+9. If any rules are disabled, add them to `LINTERS-DEFAULTS-OVERRIDES.md`
 
 Do not make baseline install the linter runtime or binary in pre-commit hooks.
 Pre-commit hooks expect tools to already be on PATH in the developer environment.
