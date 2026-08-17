@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.13.0](https://github.com/rubykatzen/baseline/compare/v0.12.0...v0.13.0) (2026-08-17)
+
+
+### Features
+
+* enforce GitHub label descriptions ([#154](https://github.com/rubykatzen/baseline/issues/154)) ([18fe77f](https://github.com/rubykatzen/baseline/commit/18fe77f98e7a728ae5293e462d07ab2280fd4f08))
+* standardize repository labels ([#145](https://github.com/rubykatzen/baseline/issues/145)) ([b4bbfe8](https://github.com/rubykatzen/baseline/commit/b4bbfe8fa00ac2da4d5a466f37bfd9198d0f438b))
+
+
+### Bug Fixes
+
+* keep release markers out of copied examples ([#155](https://github.com/rubykatzen/baseline/issues/155)) ([3c21417](https://github.com/rubykatzen/baseline/commit/3c2141757a27cd653b2b6d08c2781bb9a0e97a4a))
+
 ## [0.12.0](https://github.com/rubykatzen/baseline/compare/v0.11.0...v0.12.0) (2026-08-12)
 
 

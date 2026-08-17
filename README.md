@@ -28,7 +28,7 @@ on:
   pull_request:
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.13.0
 ```
 
 <!-- x-release-please-end -->
@@ -55,7 +55,7 @@ on:
   pull_request:
 jobs:
   github:
-    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.13.0
 ```
 
 <!-- x-release-please-end -->
@@ -79,7 +79,7 @@ on:
   pull_request:
 jobs:
   embedder:
-    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.13.0
 ```
 
 <!-- x-release-please-end -->
@@ -105,7 +105,7 @@ on:
   workflow_dispatch:
 jobs:
   notify:
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.13.0
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -137,7 +137,7 @@ on:
 jobs:
   notify:
     if: contains(github.event.issue.labels.*.name, 'notify')
-    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.13.0
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
@@ -159,7 +159,7 @@ a JSON array through `skip`:
 ```yaml
 jobs:
   lint:
-    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.12.0
+    uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@v0.13.0
     with:
       skip: '["rubocop", "herb"]'
 ```
@@ -191,7 +191,7 @@ CI runtime installation is automatic. For local pre-commit use, create
 ```yaml
 repos:
   - repo: https://github.com/rubykatzen/baseline
-    rev: v0.12.0
+    rev: v0.13.0
     hooks:
       - id: yamllint
       - id: pymarkdown
