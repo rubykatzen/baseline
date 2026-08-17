@@ -72,12 +72,15 @@ def validate_label_group(group, name, allow_empty=False):
     for label, settings in group.items():
         if not isinstance(label, str) or not label:
             raise ValueError(f"GitHub {name} label names must be non-empty strings")
-        if not isinstance(settings, dict) or set(settings) != {"color"}:
-            raise ValueError(f"GitHub label {label} must contain only a color")
+        if not isinstance(settings, dict) or set(settings) != {"color", "description"}:
+            raise ValueError(f"GitHub label {label} must contain only color and description")
         color = settings["color"]
         if not isinstance(color, str) or not COLOR_PATTERN.fullmatch(color):
             raise ValueError(f"GitHub label {label} color must be a six-digit hex value")
-        validated[label] = color.lower()
+        description = settings["description"]
+        if not isinstance(description, str) or not description:
+            raise ValueError(f"GitHub label {label} description must be a non-empty string")
+        validated[label] = {"color": color.lower(), "description": description}
     return validated
 
 
@@ -135,7 +138,13 @@ def format_value(value):
 def evaluate_label_check(policy, repository, request=github_labels):
     try:
         labels = request(repository)
-        actual = {label["name"]: label["color"].lower() for label in labels}
+        actual = {
+            label["name"]: {
+                "color": label["color"].lower(),
+                "description": label.get("description") or "",
+            }
+            for label in labels
+        }
     except (KeyError, TypeError, RuntimeError) as error:
         return CheckResult(LABELS_CHECK, "failed", f"GitHub request failed: {error}")
 
@@ -147,13 +156,21 @@ def evaluate_label_check(policy, repository, request=github_labels):
         problems.append(f"missing: {', '.join(sorted(missing))}")
     if unexpected := set(actual) - set(allowed):
         problems.append(f"unexpected: {', '.join(sorted(unexpected))}")
-    incorrect = [
-        f"{name} expected #{allowed[name]}, got #{actual[name]}"
+    incorrect_colors = [
+        f"{name} expected #{allowed[name]['color']}, got #{actual[name]['color']}"
         for name in sorted(set(actual) & set(allowed))
-        if actual[name] != allowed[name]
+        if actual[name]["color"] != allowed[name]["color"]
     ]
-    if incorrect:
-        problems.append(f"incorrect colors: {'; '.join(incorrect)}")
+    if incorrect_colors:
+        problems.append(f"incorrect colors: {'; '.join(incorrect_colors)}")
+    incorrect_descriptions = [
+        f"{name} expected {format_value(allowed[name]['description'])}, "
+        f"got {format_value(actual[name]['description'])}"
+        for name in sorted(set(actual) & set(allowed))
+        if actual[name]["description"] != allowed[name]["description"]
+    ]
+    if incorrect_descriptions:
+        problems.append(f"incorrect descriptions: {'; '.join(incorrect_descriptions)}")
 
     if problems:
         return CheckResult(LABELS_CHECK, "failed", "; ".join(problems))
