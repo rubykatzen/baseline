@@ -14,9 +14,11 @@ if ! has_actionlint_targets; then
   exit 0
 fi
 
-# Remove these ignores once actionlint supports GitHub's $/ self-repository syntax:
+# Remove these ignores once actionlint supports GitHub's reusable workflow additions:
+# https://github.com/rhysd/actionlint/issues/705
 # https://github.com/rhysd/actionlint/issues/711
 exec actionlint \
+  -ignore 'property "workflow_(repository|sha)" is not defined in object type' \
   -ignore 'specifying action "\$/.+" in invalid format because ref is missing' \
   -ignore 'reusable workflow call "\$/.+" at "uses" is not following the format' \
   "$@"
