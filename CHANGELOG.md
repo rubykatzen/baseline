@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/rubykatzen/baseline/compare/v0.13.0...v0.13.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* ignore unsupported reusable workflow context ([#157](https://github.com/rubykatzen/baseline/issues/157)) ([8727b49](https://github.com/rubykatzen/baseline/commit/8727b49e4abff4f513b2dcf03249ac0d53369239))
+
 ## [0.13.0](https://github.com/rubykatzen/baseline/compare/v0.12.0...v0.13.0) (2026-08-17)
 
 
