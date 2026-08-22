@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/rubykatzen/baseline/compare/v0.14.0...v0.15.0) (2026-08-22)
+
+
+### Features
+
+* compact Telegram PR messages ([#165](https://github.com/rubykatzen/baseline/issues/165)) ([6b88491](https://github.com/rubykatzen/baseline/commit/6b884911d5298bba5d1f898a6c3c0b7d654e4f33))
+
 ## [0.14.0](https://github.com/rubykatzen/baseline/compare/v0.13.1...v0.14.0) (2026-08-22)
 
 
