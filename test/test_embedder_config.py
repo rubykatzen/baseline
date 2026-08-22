@@ -71,8 +71,11 @@ class EmbedderConfigTest(unittest.TestCase):
         self.assertEqual(
             {name for name in fragments if name.startswith("release-please/")},
             {
-                "release-please/config",
+                "release-please/include-component-in-tag",
+                "release-please/pull-request-footer",
+                "release-please/pull-request-header",
                 "release-please/pull-request-title",
+                "release-please/pull-request-title-pattern",
                 "release-please/workflow-action",
             },
         )
