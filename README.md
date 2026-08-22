@@ -313,8 +313,6 @@ patch release.
 See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for deliberate
 deviations from upstream linter defaults.
 
-## Releasing Baseline
+## 📝 License
 
-Release Please maintains a release pull request from Conventional Commits on
-`main`. Merging it creates the version tag and GitHub Release, publishes the
-Ruby gem, and updates the floating major and minor tags available to consumers.
+Baseline is released under the [MIT License](LICENSE).
