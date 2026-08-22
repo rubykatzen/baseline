@@ -74,7 +74,6 @@ class EmbedderConfigTest(unittest.TestCase):
                 "release-please/config",
                 "release-please/pull-request-title",
                 "release-please/workflow-action",
-                "release-please/workflow-policy",
             },
         )
 

@@ -6,16 +6,6 @@ fragments:
         "pull-request-title-pattern": "chore: release ${version}",
         "pull-request-header": "This pull request prepares the next release.",
         "pull-request-footer": "[Release Please documentation](https://github.com/googleapis/release-please#release-please)",
-  workflow-policy:
-    path: .github/workflows/release.yml
-    content: |
-      on:
-        push:
-          branches: [main]
-      permissions:
-        contents: write
-        issues: write
-        pull-requests: write
   workflow-action:
     path: .github/workflows/release.yml
     content: "uses: googleapis/release-please-action"
