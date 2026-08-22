@@ -28,7 +28,7 @@ def escape_link_url(value):
 
 
 def pull_request_link(pull_request):
-    label = escape_markdown(f"PR #{pull_request['number']}")
+    label = escape_markdown(f"PR {pull_request['number']}")
     url = escape_link_url(pull_request["url"])
     return f"[{label}]({url})"
 
@@ -43,14 +43,14 @@ def format_opened(repository, pull_request, event_action):
     }
     event = events.get(event_action, "opened")
     return (
-        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} {event} · "
+        f"*{escape_markdown(repository)}* · {pull_request_link(pull_request)} {event} · "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
 
 def format_merged(repository, pull_request):
     return (
-        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} merged · "
+        f"*{escape_markdown(repository)}* · {pull_request_link(pull_request)} merged · "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
@@ -66,7 +66,7 @@ def format_digest(repository, pull_requests, now=None):
 
     now = now or datetime.now(timezone.utc)
     count = len(pull_requests)
-    header = f"{escape_markdown(repository)} · {count} open {'PR' if count == 1 else 'PRs'}"
+    header = f"*{escape_markdown(repository)}* · {count} open {'PR' if count == 1 else 'PRs'}"
     lines = []
     for pull_request in pull_requests[:DIGEST_PR_LIMIT]:
         age = max(0, (now - parse_github_time(pull_request["createdAt"])).days)

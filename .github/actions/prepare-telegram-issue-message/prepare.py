@@ -58,10 +58,10 @@ def body_excerpt(value, limit=ISSUE_BODY_LIMIT):
 
 
 def format_closed(repository, issue, actor):
-    label = escape_markdown(f"Issue #{issue['number']}")
+    label = escape_markdown(f"issue {issue['number']}")
     link = f"[{label}]({escape_link_url(issue['url'])})"
     parts = [
-        escape_markdown(repository),
+        f"*{escape_markdown(repository)}*",
         f"{link} closed",
         f"*{escape_markdown(issue['title'])}*",
         escape_markdown(actor),
