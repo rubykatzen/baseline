@@ -43,14 +43,14 @@ def format_opened(repository, pull_request, event_action):
     }
     emoji, event = events.get(event_action, ("🆕", "PR opened"))
     return (
-        f"{emoji} {escape_markdown(repository)} — {event} · {pull_request_link(pull_request)} "
+        f"{emoji} {escape_markdown(repository)} · {event} · {pull_request_link(pull_request)} "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
 
 def format_merged(repository, pull_request):
     return (
-        f"🔀 {escape_markdown(repository)} — PR merged · {pull_request_link(pull_request)} "
+        f"🔀 {escape_markdown(repository)} · PR merged · {pull_request_link(pull_request)} "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
@@ -66,7 +66,7 @@ def format_digest(repository, pull_requests, now=None):
 
     now = now or datetime.now(timezone.utc)
     count = len(pull_requests)
-    header = f"🔠 {escape_markdown(repository)} — {count} open {'PR' if count == 1 else 'PRs'}"
+    header = f"🔠 {escape_markdown(repository)} · {count} open {'PR' if count == 1 else 'PRs'}"
     lines = []
     for pull_request in pull_requests[:DIGEST_PR_LIMIT]:
         age = max(0, (now - parse_github_time(pull_request["createdAt"])).days)

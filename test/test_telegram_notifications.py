@@ -38,13 +38,13 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "🆕 owner/repo — PR opened · [\\#42](https://github.com/owner/repo/pull/42) "
+            "🆕 owner/repo · PR opened · [\\#42](https://github.com/owner/repo/pull/42) "
             "*feat: add notifications* · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
-        self.assertIn("🆗 owner/repo — PR ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
-        self.assertIn("🆙 owner/repo — PR reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
+        self.assertIn("🆗 owner/repo · PR ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
+        self.assertIn("🆙 owner/repo · PR reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
 
     def test_skips_draft_pull_request(self):
         self.pull_request["isDraft"] = True
@@ -56,7 +56,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "🔀 owner/repo — PR merged · [\\#42](https://github.com/owner/repo/pull/42) "
+            "🔀 owner/repo · PR merged · [\\#42](https://github.com/owner/repo/pull/42) "
             "*feat: add notifications* · octocat",
         )
 
