@@ -142,7 +142,7 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [Issue 12](https://github.com/owner/repo/issues/12) closed · "
+            "*owner/repo* · [issue 12](https://github.com/owner/repo/issues/12) closed · "
             "*Move notifications* · octocat\nResolution summary\\.",
         )
 
