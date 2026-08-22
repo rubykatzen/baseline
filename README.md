@@ -1,15 +1,11 @@
 # Baseline
 
-Baseline turns a workflow connection into a zero-configuration development
-baseline for repositories across multiple organizations and programming
-language stacks. It gives developers who move between stacks a homogeneous,
-centrally managed development experience.
+Baseline gives developers who move between language stacks a zero-configuration,
+homogeneous development experience across repositories and organizations.
 
-Connect only the workflows a repository needs. Baseline detects applicable
-linters, supplies their CI runtimes and configurations, and verifies selected
-repository policies and shared files. Consumer repositories remain responsible
-for satisfying those policies and declaring explicit exceptions when they
-intentionally differ.
+Connect the workflows a repository needs. Baseline detects applicable linters,
+supplies their CI runtimes and configurations, and verifies shared policies and
+files. Repositories satisfy those policies or declare explicit exceptions.
 
 The examples use the latest
 [Baseline release](https://github.com/rubykatzen/baseline/releases) and are
