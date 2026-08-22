@@ -38,7 +38,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · [PR \\#42](https://github.com/owner/repo/pull/42) opened · "
+            "*owner/repo* · [PR \\#42](https://github.com/owner/repo/pull/42) opened · "
             "*feat: add notifications* · octocat",
         )
 
@@ -56,7 +56,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · [PR \\#42](https://github.com/owner/repo/pull/42) merged · "
+            "*owner/repo* · [PR \\#42](https://github.com/owner/repo/pull/42) merged · "
             "*feat: add notifications* · octocat",
         )
 
@@ -78,7 +78,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         )
 
         self.assertIn("1 open PR", message)
-        self.assertTrue(message.startswith("owner/repo"))
+        self.assertTrue(message.startswith("*owner/repo*"))
         self.assertIn("octocat · 2d", message)
         self.assertNotIn("#41", message)
         self.assertNotIn("more", message)
@@ -142,7 +142,7 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · [Issue \\#12](https://github.com/owner/repo/issues/12) closed · "
+            "*owner/repo* · [Issue \\#12](https://github.com/owner/repo/issues/12) closed · "
             "*Move notifications* · octocat\nResolution summary\\.",
         )
 
