@@ -5,6 +5,7 @@ import subprocess
 import uuid
 
 ISSUE_BODY_LIMIT = 500
+MARKDOWN_V2_SPECIAL_CHARACTERS = frozenset("_*[]()~`>#+-=|{}.!\\")
 
 
 def gh_json(*arguments):
@@ -13,21 +14,32 @@ def gh_json(*arguments):
 
 
 def truncate(value, limit):
-    value = value.strip()
+    value = " ".join(value.split())
     if len(value) <= limit:
         return value
     return value[: limit - 3].rstrip() + "..."
 
 
+def escape_markdown(value):
+    return "".join(f"\\{character}" if character in MARKDOWN_V2_SPECIAL_CHARACTERS else character for character in str(value))
+
+
+def escape_link_url(value):
+    return str(value).replace("\\", "\\\\").replace(")", "\\)")
+
+
 def format_closed(repository, issue, actor):
-    lines = [
-        f"{repository} — issue closed",
-        f"#{issue['number']} {issue['title']}",
+    number = escape_markdown(f"#{issue['number']}")
+    link = f"[{number}]({escape_link_url(issue['url'])})"
+    parts = [
+        escape_markdown(repository),
+        "issue closed",
+        f"{link} *{escape_markdown(issue['title'])}*",
     ]
     if body := truncate(issue.get("body") or "", ISSUE_BODY_LIMIT):
-        lines.append(body)
-    lines.append(f"{actor} · {issue['url']}")
-    return "\n".join(lines)
+        parts.append(escape_markdown(body))
+    parts.append(escape_markdown(actor))
+    return " · ".join(parts)
 
 
 def write_output(message):

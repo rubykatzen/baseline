@@ -140,8 +140,11 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
 
-        self.assertTrue(message.startswith("owner/repo — issue closed\n"))
-        self.assertIn("#12 Move notifications\nResolution summary.\noctocat ·", message)
+        self.assertEqual(
+            message,
+            "owner/repo · issue closed · [\\#12](https://github.com/owner/repo/issues/12) "
+            "*Move notifications* · Resolution summary\\. · octocat",
+        )
 
     def test_closed_issue_truncates_long_body(self):
         issue = {
@@ -152,10 +155,26 @@ class TelegramIssueMessageTest(unittest.TestCase):
         }
 
         message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
-        body = message.splitlines()[2]
+        body = ISSUE_TELEGRAM.truncate(issue["body"], ISSUE_TELEGRAM.ISSUE_BODY_LIMIT)
 
         self.assertEqual(len(body), ISSUE_TELEGRAM.ISSUE_BODY_LIMIT)
         self.assertTrue(body.endswith("..."))
+        self.assertIn(r"\.\.\. · octocat", message)
+
+    def test_closed_issue_normalizes_body_and_escapes_markdown(self):
+        issue = {
+            "number": 12,
+            "title": "Fix [alerts]",
+            "body": "First line.\n\nSecond *line*.",
+            "url": "https://github.com/owner/repo/issues/12",
+        }
+
+        message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "dependabot[bot]")
+
+        self.assertNotIn("\n", message)
+        self.assertIn(r"*Fix \[alerts\]*", message)
+        self.assertIn(r"First line\. Second \*line\*\.", message)
+        self.assertTrue(message.endswith(r"dependabot\[bot\]"))
 
 
 class TelegramWorkflowTest(unittest.TestCase):
@@ -195,6 +214,7 @@ class TelegramWorkflowTest(unittest.TestCase):
                 "$/.github/actions/send-telegram-message",
             ],
         )
+        self.assertEqual(job["steps"][-1]["with"]["parse-mode"], "MarkdownV2")
 
     def test_baseline_caller_passes_only_explicit_telegram_secrets(self):
         path = BASELINE_ROOT / ".github" / "workflows" / "notify-telegram-pr.yml"
