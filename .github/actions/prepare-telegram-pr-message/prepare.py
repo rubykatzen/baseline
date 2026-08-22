@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime, timezone
 
 DIGEST_PR_LIMIT = 10
+MARKDOWN_V2_SPECIAL_CHARACTERS = frozenset("_*[]()~`>#+-=|{}.!\\")
 TELEGRAM_MESSAGE_LIMIT = 4096
 
 
@@ -18,27 +19,39 @@ def author_login(pull_request):
     return (pull_request.get("author") or {}).get("login") or "ghost"
 
 
+def escape_markdown(value):
+    return "".join(f"\\{character}" if character in MARKDOWN_V2_SPECIAL_CHARACTERS else character for character in str(value))
+
+
+def escape_link_url(value):
+    return str(value).replace("\\", "\\\\").replace(")", "\\)")
+
+
+def pull_request_link(pull_request):
+    label = escape_markdown(f"PR #{pull_request['number']}")
+    url = escape_link_url(pull_request["url"])
+    return f"[{label}]({url})"
+
+
 def format_opened(repository, pull_request, event_action):
     if pull_request.get("isDraft"):
         return ""
 
     events = {
-        "ready_for_review": ("🆗", "PR ready for review"),
-        "reopened": ("🆙", "PR reopened"),
+        "ready_for_review": "ready",
+        "reopened": "reopened",
     }
-    emoji, event = events.get(event_action, ("🆕", "PR opened"))
+    event = events.get(event_action, "opened")
     return (
-        f"{emoji} {repository} — {event}\n"
-        f"#{pull_request['number']} {pull_request['title']}\n"
-        f"{author_login(pull_request)} · {pull_request['url']}"
+        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} {event} · "
+        f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
 
 def format_merged(repository, pull_request):
     return (
-        f"🔀 {repository} — PR merged\n"
-        f"#{pull_request['number']} {pull_request['title']}\n"
-        f"{author_login(pull_request)} · {pull_request['url']}"
+        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} merged · "
+        f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
 
@@ -52,16 +65,21 @@ def format_digest(repository, pull_requests, now=None):
         return ""
 
     now = now or datetime.now(timezone.utc)
-    header = f"🔠 {repository} — {len(pull_requests)} open PR(s)"
+    count = len(pull_requests)
+    header = f"{escape_markdown(repository)} · {count} open {'PR' if count == 1 else 'PRs'}"
     lines = []
     for pull_request in pull_requests[:DIGEST_PR_LIMIT]:
         age = max(0, (now - parse_github_time(pull_request["createdAt"])).days)
         line = (
-            f"#{pull_request['number']} {pull_request['title']}\n"
-            f"{author_login(pull_request)} · {age}d · {pull_request['url']}"
+            f"{pull_request_link(pull_request)} *{escape_markdown(pull_request['title'])}* · "
+            f"{escape_markdown(author_login(pull_request))} · {age}d"
         )
         remaining = len(pull_requests) - len(lines) - 1
-        suffix = f"...and {remaining} more · https://github.com/{repository}/pulls" if remaining else ""
+        suffix = (
+            f"[{escape_markdown(f'...and {remaining} more')}](https://github.com/{escape_link_url(repository)}/pulls)"
+            if remaining
+            else ""
+        )
         candidate = "\n".join((header, *lines, line, suffix)).rstrip()
         if len(candidate) > TELEGRAM_MESSAGE_LIMIT:
             break
@@ -69,7 +87,7 @@ def format_digest(repository, pull_requests, now=None):
 
     remaining = len(pull_requests) - len(lines)
     if remaining:
-        lines.append(f"...and {remaining} more · https://github.com/{repository}/pulls")
+        lines.append(f"[{escape_markdown(f'...and {remaining} more')}](https://github.com/{escape_link_url(repository)}/pulls)")
 
     return "\n".join((header, *lines))
 

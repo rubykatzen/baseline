@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import json
 import os
+import re
 import subprocess
 import uuid
 
 ISSUE_BODY_LIMIT = 500
+MARKDOWN_V2_SPECIAL_CHARACTERS = frozenset("_*[]()~`>#+-=|{}.!\\")
 
 
 def gh_json(*arguments):
@@ -19,15 +21,55 @@ def truncate(value, limit):
     return value[: limit - 3].rstrip() + "..."
 
 
+def escape_markdown(value):
+    return "".join(f"\\{character}" if character in MARKDOWN_V2_SPECIAL_CHARACTERS else character for character in str(value))
+
+
+def escape_link_url(value):
+    return str(value).replace("\\", "\\\\").replace(")", "\\)")
+
+
+def body_excerpt(value, limit=ISSUE_BODY_LIMIT):
+    lines = value.strip().splitlines()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if not lines:
+        return ""
+
+    heading = re.fullmatch(r"\s{0,3}#{1,6}\s+(.+?)\s*#*\s*", lines[0])
+    if heading:
+        lines = lines[1:]
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        paragraph = []
+        for line in lines:
+            if not line.strip():
+                break
+            paragraph.append(line.strip())
+        parts = [heading.group(1), " ".join(paragraph)]
+        return truncate("\n".join(part for part in parts if part), limit)
+
+    paragraph = []
+    for line in lines:
+        if not line.strip():
+            break
+        paragraph.append(line.strip())
+    return truncate(" ".join(paragraph), limit)
+
+
 def format_closed(repository, issue, actor):
-    lines = [
-        f"🟢 {repository} — issue closed",
-        f"#{issue['number']} {issue['title']}",
+    label = escape_markdown(f"Issue #{issue['number']}")
+    link = f"[{label}]({escape_link_url(issue['url'])})"
+    parts = [
+        escape_markdown(repository),
+        f"{link} closed",
+        f"*{escape_markdown(issue['title'])}*",
+        escape_markdown(actor),
     ]
-    if body := truncate(issue.get("body") or "", ISSUE_BODY_LIMIT):
-        lines.append(body)
-    lines.append(f"{actor} · {issue['url']}")
-    return "\n".join(lines)
+    message = " · ".join(parts)
+    if excerpt := body_excerpt(issue.get("body") or ""):
+        message += f"\n{escape_markdown(excerpt)}"
+    return message
 
 
 def write_output(message):
