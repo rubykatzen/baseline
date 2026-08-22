@@ -265,8 +265,9 @@ violations.
 ## 🔄 Keep Baseline current
 
 Dependabot keeps workflow references, pre-commit hooks, Python packages, and
-Ruby gems current. Embedder verifies the canonical `.github/dependabot.yml`, so
-consumer repositories do not maintain that configuration independently.
+Ruby gems current. The Embedder workflow verifies the canonical
+`.github/dependabot.yml`, so consumer repositories do not maintain that
+configuration independently.
 
 Dependabot opens `chore(deps):` pull requests, which do not request a release by
 default. Rename a release-worthy dependency update to `fix(deps):` to request a
