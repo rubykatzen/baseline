@@ -196,6 +196,16 @@ with:
   skip: '["message-prefix"]'
 ```
 
+Fragments from an optional Embedder configuration use the
+`<configuration>/<fragment>` namespace and can be skipped independently:
+
+```yaml
+with:
+  extra: '["release-please"]'
+  skip: '["release-please/include-component-in-tag"]'
+```
+
+Omit `release-please` from `extra` instead when none of its policy should apply.
 Unknown names fail the workflow. A skipped linter must also be absent from the
 Baseline entry in `.pre-commit-config.yaml`, keeping local and CI linting equal.
 
