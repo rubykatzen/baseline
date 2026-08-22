@@ -55,12 +55,47 @@ class EmbedderConfigTest(unittest.TestCase):
                 CHECK_EMBEDDER.load_config(config.name)
 
     def test_parses_json_skip(self):
-        self.assertEqual(CHECK_EMBEDDER.parse_json_list('["heading"]'), {"heading"})
+        self.assertEqual(CHECK_EMBEDDER.parse_json_list('["heading"]', "skip"), {"heading"})
 
     def test_rejects_invalid_json_skip(self):
         for value in ('"heading"', "heading", '["heading", 1]'):
             with self.subTest(value=value), self.assertRaisesRegex(ValueError, "JSON array of strings"):
-                CHECK_EMBEDDER.parse_json_list(value)
+                CHECK_EMBEDDER.parse_json_list(value, "skip")
+
+    def test_loads_extra_config_with_namespaced_fragments(self):
+        fragments = CHECK_EMBEDDER.load_configs(
+            BASELINE_ROOT / "config" / "embedder.yml", {"release-please"}
+        )
+
+        self.assertIn("message-prefix", fragments)
+        self.assertEqual(
+            {name for name in fragments if name.startswith("release-please/")},
+            {
+                "release-please/config",
+                "release-please/pull-request-title",
+                "release-please/workflow-action",
+                "release-please/workflow-policy",
+            },
+        )
+
+    def test_baseline_matches_release_please_config(self):
+        fragments = CHECK_EMBEDDER.load_configs(
+            BASELINE_ROOT / "config" / "embedder.yml", {"release-please"}
+        )
+
+        results = CHECK_EMBEDDER.evaluate_fragments(fragments, BASELINE_ROOT)
+
+        self.assertTrue(all(result.status == "passed" for result in results))
+
+    def test_rejects_unknown_extra_config(self):
+        with self.assertRaisesRegex(ValueError, "Unknown extra embedder configs: typo"):
+            CHECK_EMBEDDER.load_configs(BASELINE_ROOT / "config" / "embedder.yml", {"typo"})
+
+    def test_rejects_invalid_extra_config_name(self):
+        with self.assertRaisesRegex(ValueError, "Invalid extra embedder config names"):
+            CHECK_EMBEDDER.load_configs(
+                BASELINE_ROOT / "config" / "embedder.yml", {"../release-please"}
+            )
 
     def test_rejects_unknown_skip(self):
         with self.assertRaisesRegex(ValueError, "Unknown skipped embedder fragments: typo"):

@@ -89,6 +89,24 @@ Baseline checks that the repository contains every fragment declared in
 configuration and agent instructions. A failure reports all differences, not
 only the first missing fragment.
 
+Repositories using an optional shared policy can add its Embedder configuration:
+
+<!-- x-release-please-start-version -->
+
+```yaml
+jobs:
+  embedder:
+    uses: rubykatzen/baseline/.github/workflows/embedder-shared.yml@v0.13.1
+    with:
+      extra: '["release-please"]'
+```
+
+<!-- x-release-please-end -->
+
+Optional configurations live under [`config/embedder/`](config/embedder/). The
+`release-please` configuration checks the common release configuration, workflow,
+and pull request title policy while leaving package-specific publishing local.
+
 ## Notify Telegram about pull requests
 
 Create `.github/workflows/notify-telegram-pr.yml`:

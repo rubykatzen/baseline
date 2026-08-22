@@ -6,3 +6,5 @@ on:
 jobs:
   embedded-content-check:
     uses: ./.github/workflows/embedder-shared.yml
+    with:
+      extra: '["release-please"]'

@@ -1,0 +1,41 @@
+fragments:
+  config:
+    path: release-please-config.json
+    content: |2
+        "include-component-in-tag": false,
+        "pull-request-title-pattern": "chore: release ${version}",
+        "pull-request-header": "This pull request prepares the next release.",
+        "pull-request-footer": "[Release Please documentation](https://github.com/googleapis/release-please#release-please)",
+  workflow-policy:
+    path: .github/workflows/release-please.yml
+    content: |
+      on:
+        push:
+          branches: [main]
+      permissions:
+        contents: write
+        issues: write
+        pull-requests: write
+  workflow-action:
+    path: .github/workflows/release-please.yml
+    content: |2
+            - uses: googleapis/release-please-action@v5
+              id: release
+              with:
+                token: ${{ secrets.RELEASE_TOKEN }}
+  pull-request-title:
+    path: .github/workflows/pr.yml
+    content: |
+      name: Pull request
+      on:
+        pull_request_target:
+          types: [opened, reopened, edited, synchronize]
+      jobs:
+        pull-request-title:
+          runs-on: ubuntu-slim
+          permissions:
+            pull-requests: read
+          steps:
+            - uses: amannn/action-semantic-pull-request@v6
+              env:
+                GITHUB_TOKEN: ${{ github.token }}

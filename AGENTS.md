@@ -40,12 +40,14 @@ This repository uses [Baseline](https://github.com/rubykatzen/baseline) to
 verify shared content fragments across repositories.
 
 Do not change a required fragment only in the consuming repository. Change
-the fragment in `config/embedder.yml` in Baseline and release it. Dependabot
-will then update the Baseline workflow version in consuming repositories and
-CI will show the required fragment diff.
+the fragment in `config/embedder.yml` or the selected extra configuration in
+Baseline and release it. Dependabot will then update the Baseline workflow
+version in consuming repositories and CI will show the required fragment
+diff.
 
 A repository-specific exception must be declared through the `skip` input of
-`embedder-shared.yml`.
+`embedder-shared.yml`. Optional policies are selected through its `extra`
+input.
 <!-- /baseline fragment: embedded-fragments -->
 
 ## Purpose
