@@ -21,7 +21,7 @@ def truncate(value, limit):
 
 def format_closed(repository, issue, actor):
     lines = [
-        f"🟢 {repository} — issue closed",
+        f"{repository} — issue closed",
         f"#{issue['number']} {issue['title']}",
     ]
     if body := truncate(issue.get("body") or "", ISSUE_BODY_LIMIT):

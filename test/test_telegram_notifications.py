@@ -140,6 +140,7 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
 
+        self.assertTrue(message.startswith("owner/repo — issue closed\n"))
         self.assertIn("#12 Move notifications\nResolution summary.\noctocat ·", message)
 
     def test_closed_issue_truncates_long_body(self):
