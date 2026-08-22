@@ -264,33 +264,9 @@ violations.
 
 ## 🔄 Keep Baseline current
 
-Add GitHub Actions and pre-commit ecosystems to `.github/dependabot.yml` so
-Dependabot updates every Baseline pin:
-
-```yaml
-version: 2
-updates:
-  - package-ecosystem: github-actions
-    directory: /
-    labels: [dependencies]
-    commit-message:
-      prefix: chore
-      include: scope
-    schedule:
-      interval: daily
-      time: "10:00"
-      timezone: "Europe/Berlin"
-  - package-ecosystem: pre-commit
-    directory: /
-    labels: [dependencies]
-    commit-message:
-      prefix: chore
-      include: scope
-    schedule:
-      interval: daily
-      time: "10:00"
-      timezone: "Europe/Berlin"
-```
+Dependabot keeps workflow references, pre-commit hooks, Python packages, and
+Ruby gems current. Embedder verifies the canonical `.github/dependabot.yml`, so
+consumer repositories do not maintain that configuration independently.
 
 Dependabot opens `chore(deps):` pull requests, which do not request a release by
 default. Rename a release-worthy dependency update to `fix(deps):` to request a
