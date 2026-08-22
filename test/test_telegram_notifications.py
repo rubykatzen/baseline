@@ -39,7 +39,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         self.assertEqual(
             message,
             '🆕 owner/repo — PR opened · <a href="https://github.com/owner/repo/pull/42">#42</a> '
-            "feat: add notifications · octocat",
+            "<b>feat: add notifications</b> · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
@@ -57,7 +57,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         self.assertEqual(
             message,
             '🔀 owner/repo — PR merged · <a href="https://github.com/owner/repo/pull/42">#42</a> '
-            "feat: add notifications · octocat",
+            "<b>feat: add notifications</b> · octocat",
         )
 
     def test_escapes_pull_request_values_for_telegram_html(self):
@@ -66,7 +66,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         message = PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "opened")
 
-        self.assertIn("fix: escape &lt;markup&gt; &amp; text", message)
+        self.assertIn("<b>fix: escape &lt;markup&gt; &amp; text</b>", message)
         self.assertIn("bot&amp;name", message)
 
     def test_open_pull_request_digest_excludes_drafts_and_reports_age(self):
@@ -100,8 +100,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn('pull/10">#10</a> feat: add notifications', message)
-        self.assertNotIn('pull/11">#11</a> feat: add notifications', message)
+        self.assertIn('pull/10">#10</a> <b>feat: add notifications</b>', message)
+        self.assertNotIn('pull/11">#11</a> <b>feat: add notifications</b>', message)
         self.assertIn('href="https://github.com/owner/repo/pulls">...and 2 more</a>', message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
