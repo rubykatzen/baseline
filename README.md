@@ -1,13 +1,15 @@
 # Baseline
 
-Baseline simplifies managing repositories across multiple organizations and
-programming language stacks. It provides a homogeneous development environment
-for language-agnostic developers and a centrally managed baseline for repository
-owners.
+Baseline turns a workflow connection into a zero-configuration development
+baseline for repositories across multiple organizations and programming
+language stacks. It gives developers who move between stacks a homogeneous,
+centrally managed development experience.
 
-Connect a workflow and Baseline supplies the policy, configuration, runtimes,
-and implementation. Consumer repositories only declare which capabilities they
-want and, when necessary, explicit exceptions.
+Connect only the workflows a repository needs. Baseline detects applicable
+linters, supplies their CI runtimes and configurations, and verifies selected
+repository policies and shared files. Consumer repositories remain responsible
+for satisfying those policies and declaring explicit exceptions when they
+intentionally differ.
 
 The examples use the latest
 [Baseline release](https://github.com/rubykatzen/baseline/releases) and are
@@ -238,14 +240,14 @@ Pre-commit hooks are thin wrappers and expect their tools on `PATH`. Install the
 Python and standalone tools used by the repository:
 
 ```bash
-python -m pip install yamllint pymarkdownlnt ruff tombi
+python -m pip install pre-commit yamllint pymarkdownlnt ruff tombi
 brew install shellcheck actionlint
 ```
 
 ### Ruby projects
 
-Ruby projects get RuboCop and erb_lint, with Baseline's configuration, from one
-gem:
+Ruby projects get RuboCop, erb_lint, and Herb, with Baseline's configuration,
+from one gem:
 
 ```ruby
 group :development, :test do
@@ -303,13 +305,13 @@ patch release.
 | Key | Files | Configuration |
 |---|---|---|
 | `yamllint` | `*.yml`, `*.yaml` | `config/yamllint.yml` |
-| `pymarkdown` | `*.md` | `config/pymarkdown.json` |
-| `ruff` | `*.py` | `config/ruff.toml` |
+| `pymarkdown` | Markdown | `config/pymarkdown.json` |
+| `ruff` | Python source and stubs | `config/ruff.toml` |
 | `tombi` | `*.toml` | consumer config or Tombi defaults |
 | `shellcheck` | `*.sh` | `config/shellcheck.rc` |
-| `actionlint` | `.github/workflows/*.yml` | actionlint defaults |
-| `rubocop` | `*.rb` | `config/rubocop.yml` |
-| `erb-lint` | `*.erb` | `config/erb_lint.yml` |
+| `actionlint` | GitHub Actions workflows | actionlint defaults |
+| `rubocop` | Ruby source, Gemfiles, Rakefiles, and gemspecs | `config/rubocop.yml` |
+| `erb-lint` | HTML ERB templates | `config/erb_lint.yml` |
 | `herb` | HTML and Rails template variants | Herb defaults |
 
 See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for deliberate
@@ -319,4 +321,4 @@ deviations from upstream linter defaults.
 
 Release Please maintains a release pull request from Conventional Commits on
 `main`. Merging it creates the version tag and GitHub Release, publishes the
-Ruby gem, and updates the floating major and minor tags used by consumers.
+Ruby gem, and updates the floating major and minor tags available to consumers.
