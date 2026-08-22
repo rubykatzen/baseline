@@ -1,11 +1,7 @@
 fragments:
   config:
     path: release-please-config.json
-    content: |2
-        "include-component-in-tag": false,
-        "pull-request-title-pattern": "chore: release ${version}",
-        "pull-request-header": "This pull request prepares the next release.",
-        "pull-request-footer": "[Release Please documentation](https://github.com/googleapis/release-please#release-please)",
+    content: '"pull-request-title-pattern": "chore: release ${version}"'
   workflow-action:
     path: .github/workflows/release.yml
     content: "uses: googleapis/release-please-action"
