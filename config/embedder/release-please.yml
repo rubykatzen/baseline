@@ -18,11 +18,7 @@ fragments:
         pull-requests: write
   workflow-action:
     path: .github/workflows/release.yml
-    content: |2
-            - uses: googleapis/release-please-action@v5
-              id: release
-              with:
-                token: ${{ secrets.RELEASE_TOKEN }}
+    content: "uses: googleapis/release-please-action"
   pull-request-title:
     path: .github/workflows/pr.yml
     content: |
