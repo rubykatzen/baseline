@@ -38,8 +38,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            '🆕 owner/repo — PR opened · <a href="https://github.com/owner/repo/pull/42">#42</a> '
-            "<b>feat: add notifications</b> · octocat",
+            "🆕 owner/repo — PR opened · [\\#42](https://github.com/owner/repo/pull/42) "
+            "*feat: add notifications* · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
@@ -56,18 +56,18 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            '🔀 owner/repo — PR merged · <a href="https://github.com/owner/repo/pull/42">#42</a> '
-            "<b>feat: add notifications</b> · octocat",
+            "🔀 owner/repo — PR merged · [\\#42](https://github.com/owner/repo/pull/42) "
+            "*feat: add notifications* · octocat",
         )
 
-    def test_escapes_pull_request_values_for_telegram_html(self):
-        self.pull_request["title"] = "fix: escape <markup> & text"
-        self.pull_request["author"] = {"login": "bot&name"}
+    def test_escapes_pull_request_values_for_telegram_markdown(self):
+        self.pull_request["title"] = "fix: escape [markup] & text!"
+        self.pull_request["author"] = {"login": "dependabot[bot]"}
 
         message = PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "opened")
 
-        self.assertIn("<b>fix: escape &lt;markup&gt; &amp; text</b>", message)
-        self.assertIn("bot&amp;name", message)
+        self.assertIn(r"*fix: escape \[markup\] & text\!*", message)
+        self.assertIn(r"dependabot\[bot\]", message)
 
     def test_open_pull_request_digest_excludes_drafts_and_reports_age(self):
         draft = dict(self.pull_request, number=41, isDraft=True)
@@ -100,9 +100,9 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn('pull/10">#10</a> <b>feat: add notifications</b>', message)
-        self.assertNotIn('pull/11">#11</a> <b>feat: add notifications</b>', message)
-        self.assertIn('href="https://github.com/owner/repo/pulls">...and 2 more</a>', message)
+        self.assertIn(r"[\#10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
+        self.assertNotIn(r"[\#11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
+        self.assertIn(r"[\.\.\.and 2 more](https://github.com/owner/repo/pulls)", message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
         pull_requests = [
@@ -118,7 +118,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertLessEqual(len(message), PR_TELEGRAM.TELEGRAM_MESSAGE_LIMIT)
-        self.assertIn("more</a>", message)
+        self.assertIn("more]", message)
 
     def test_writes_multiline_github_output(self):
         with tempfile.NamedTemporaryFile() as output, patch.dict(os.environ, {"GITHUB_OUTPUT": output.name}):
@@ -178,7 +178,7 @@ class TelegramWorkflowTest(unittest.TestCase):
                 "$/.github/actions/send-telegram-message",
             ],
         )
-        self.assertEqual(steps[-1]["with"]["parse-mode"], "HTML")
+        self.assertEqual(steps[-1]["with"]["parse-mode"], "MarkdownV2")
 
     def test_issue_workflow_only_sends_closed_issue_notification(self):
         workflow = self.load_workflow("notify-telegram-issue-shared.yml")
