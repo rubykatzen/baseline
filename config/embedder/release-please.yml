@@ -21,17 +21,4 @@ fragments:
     content: "uses: googleapis/release-please-action"
   pull-request-title:
     path: .github/workflows/pr.yml
-    content: |
-      name: Pull request
-      on:
-        pull_request_target:
-          types: [opened, reopened, edited, synchronize]
-      jobs:
-        pull-request-title:
-          runs-on: ubuntu-slim
-          permissions:
-            pull-requests: read
-          steps:
-            - uses: amannn/action-semantic-pull-request@v6
-              env:
-                GITHUB_TOKEN: ${{ github.token }}
+    content: "uses: amannn/action-semantic-pull-request"
