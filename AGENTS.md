@@ -80,7 +80,7 @@ tools to already be installed in the developer environment.
 - `.github/workflows/notify-telegram-issue-shared.yml` — optional reusable issue-closure notifications
 - `.github/workflows/pr.yml` — validates Baseline pull request titles against Conventional Commits
 - `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
-- `.github/workflows/release-please.yml` — maintains the release PR and publishes merged releases
+- `.github/workflows/release.yml` — maintains the release PR and publishes merged releases
 - `.github/workflows/notify-telegram-pr.yml` — Baseline's own Telegram pull request notification caller
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 
