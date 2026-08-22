@@ -12,7 +12,7 @@ The examples use the latest
 updated automatically with every release. Dependabot keeps the pin current in
 consumer repositories.
 
-## ⚡ Lint automatically
+## Lint automatically
 
 Create `.github/workflows/lint.yml`:
 
@@ -39,7 +39,7 @@ linter on the next run.
 When the repository contains `.pre-commit-config.yaml`, Baseline also checks
 that its local hooks match the automatically selected CI linters.
 
-## ⚙️ Check GitHub configuration
+## Check GitHub configuration
 
 Create `.github/workflows/github.yml`:
 
@@ -63,7 +63,7 @@ Baseline checks the repository settings and labels against
 automatic branch deletion, auto-merge, and the canonical label set and colors.
 Release Please labels are allowed but optional.
 
-## 📄 Check shared repository files
+## Check shared repository files
 
 Create `.github/workflows/embedder.yml`:
 
@@ -105,7 +105,7 @@ Optional configurations live under [`config/embedder/`](config/embedder/). The
 `release-please` configuration checks the common release configuration, workflow,
 and pull request title policy while leaving package-specific publishing local.
 
-## 🔔 Notify Telegram about pull requests
+## Notify Telegram about pull requests
 
 Create `.github/workflows/notify-telegram-pr.yml`:
 
@@ -138,7 +138,7 @@ workflow code from the default branch. The shared workflow does not check out
 or execute pull request code. Pass the two secrets explicitly rather than using
 `secrets: inherit`.
 
-## 📬 Notify Telegram about closed issues
+## Notify Telegram about closed issues
 
 Issue notifications are optional and can use a different Telegram channel from
 pull request notifications. Create `.github/workflows/notify-telegram-issue.yml`:
@@ -165,7 +165,7 @@ The caller decides which closed issues should produce a notification. Change or
 remove the `if` condition to match the repository's policy. Baseline only
 formats and sends the message; it does not modify the issue or its labels.
 
-## ⏭️ Explicit exceptions
+## Explicit exceptions
 
 Automatic policy is the default. When a repository intentionally differs, pass
 a JSON array through `skip`:
@@ -207,7 +207,7 @@ Omit `release-please` from `extra` instead when none of its policy should apply.
 Unknown names fail the workflow. A skipped linter must also be absent from the
 Baseline entry in `.pre-commit-config.yaml`, keeping local and CI linting equal.
 
-## 💻 Local linting
+## Local linting
 
 CI runtime installation is automatic. For local pre-commit use, create
 `.pre-commit-config.yaml` and keep only the hooks relevant to the repository:
@@ -240,7 +240,7 @@ python -m pip install pre-commit yamllint pymarkdownlnt ruff tombi
 brew install shellcheck actionlint
 ```
 
-### 💎 Ruby projects
+### Ruby projects
 
 Ruby projects get RuboCop, erb_lint, and Herb, with Baseline's configuration,
 from one gem:
@@ -262,7 +262,7 @@ the gem. Project-specific existing violations can remain in
 `.rubocop_todo.yml` or `.erb_lint_todo.yml`; Baseline continues to catch new
 violations.
 
-## 🔄 Keep Baseline current
+## Keep Baseline current
 
 Dependabot keeps workflow references, pre-commit hooks, Python packages, and
 Ruby gems current. The Embedder workflow verifies the canonical
@@ -273,7 +273,7 @@ Dependabot opens `chore(deps):` pull requests, which do not request a release by
 default. Rename a release-worthy dependency update to `fix(deps):` to request a
 patch release.
 
-## 🧰 Supported linters
+## Supported linters
 
 | Key | Files | Configuration |
 |---|---|---|
@@ -290,6 +290,6 @@ patch release.
 See [LINTERS-DEFAULTS-OVERRIDES.md](LINTERS-DEFAULTS-OVERRIDES.md) for deliberate
 deviations from upstream linter defaults.
 
-## 📝 License
+## License
 
 Baseline is released under the [MIT License](LICENSE).
