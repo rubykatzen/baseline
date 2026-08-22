@@ -28,7 +28,7 @@ def escape_link_url(value):
 
 
 def pull_request_link(pull_request):
-    label = escape_markdown(f"PR #{pull_request['number']}")
+    label = escape_markdown(f"PR {pull_request['number']}")
     url = escape_link_url(pull_request["url"])
     return f"[{label}]({url})"
 

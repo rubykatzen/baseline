@@ -38,13 +38,13 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [PR \\#42](https://github.com/owner/repo/pull/42) opened · "
+            "*owner/repo* · [PR 42](https://github.com/owner/repo/pull/42) opened · "
             "*feat: add notifications* · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
-        self.assertIn("[PR \\#42](https://github.com/owner/repo/pull/42) ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
-        self.assertIn("[PR \\#42](https://github.com/owner/repo/pull/42) reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
+        self.assertIn("[PR 42](https://github.com/owner/repo/pull/42) ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
+        self.assertIn("[PR 42](https://github.com/owner/repo/pull/42) reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
 
     def test_skips_draft_pull_request(self):
         self.pull_request["isDraft"] = True
@@ -56,7 +56,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [PR \\#42](https://github.com/owner/repo/pull/42) merged · "
+            "*owner/repo* · [PR 42](https://github.com/owner/repo/pull/42) merged · "
             "*feat: add notifications* · octocat",
         )
 
@@ -100,8 +100,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn(r"[PR \#10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
-        self.assertNotIn(r"[PR \#11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
+        self.assertIn("[PR 10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
+        self.assertNotIn("[PR 11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
         self.assertIn(r"[\.\.\.and 2 more](https://github.com/owner/repo/pulls)", message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
@@ -142,7 +142,7 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [Issue \\#12](https://github.com/owner/repo/issues/12) closed · "
+            "*owner/repo* · [Issue 12](https://github.com/owner/repo/issues/12) closed · "
             "*Move notifications* · octocat\nResolution summary\\.",
         )
 
