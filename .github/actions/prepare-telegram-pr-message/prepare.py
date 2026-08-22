@@ -38,7 +38,7 @@ def format_opened(repository, pull_request, event_action):
         return ""
 
     events = {
-        "ready_for_review": ("🆗", "PR ready for review"),
+        "ready_for_review": ("🆗", "PR ready"),
         "reopened": ("🆙", "PR reopened"),
     }
     emoji, event = events.get(event_action, ("🆕", "PR opened"))
