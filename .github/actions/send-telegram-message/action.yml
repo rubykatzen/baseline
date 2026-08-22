@@ -1,5 +1,5 @@
 name: Send Telegram message
-description: Send a plain-text message to a Telegram chat.
+description: Send a message to a Telegram chat.
 inputs:
   message:
     description: Message text.
@@ -10,6 +10,9 @@ inputs:
   telegram-chat-id:
     description: Telegram chat ID.
     required: true
+  parse-mode:
+    description: Optional Telegram parse mode.
+    default: ""
 runs:
   using: composite
   steps:
@@ -18,6 +21,7 @@ runs:
         MESSAGE: ${{ inputs.message }}
         BOT_TOKEN: ${{ inputs.telegram-bot-token }}
         CHAT_ID: ${{ inputs.telegram-chat-id }}
+        PARSE_MODE: ${{ inputs.parse-mode }}
       run: |
         set -euo pipefail
         curl -fsSL \
@@ -28,4 +32,6 @@ runs:
           -d "$(jq -n \
             --arg c "$CHAT_ID" \
             --arg t "$MESSAGE" \
-            '{chat_id: $c, text: $t, link_preview_options: {is_disabled: true}}')"
+            --arg p "$PARSE_MODE" \
+            '{chat_id: $c, text: $t, link_preview_options: {is_disabled: true}}
+            + if $p == "" then {} else {parse_mode: $p} end')"

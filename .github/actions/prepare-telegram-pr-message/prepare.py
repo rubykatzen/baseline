@@ -4,6 +4,7 @@ import os
 import subprocess
 import uuid
 from datetime import datetime, timezone
+from html import escape
 
 DIGEST_PR_LIMIT = 10
 TELEGRAM_MESSAGE_LIMIT = 4096
@@ -18,6 +19,10 @@ def author_login(pull_request):
     return (pull_request.get("author") or {}).get("login") or "ghost"
 
 
+def pull_request_link(pull_request):
+    return f'<a href="{escape(pull_request["url"], quote=True)}">#{pull_request["number"]}</a>'
+
+
 def format_opened(repository, pull_request, event_action):
     if pull_request.get("isDraft"):
         return ""
@@ -28,17 +33,15 @@ def format_opened(repository, pull_request, event_action):
     }
     emoji, event = events.get(event_action, ("🆕", "PR opened"))
     return (
-        f"{emoji} {repository} — {event}\n"
-        f"#{pull_request['number']} {pull_request['title']}\n"
-        f"{author_login(pull_request)} · {pull_request['url']}"
+        f"{emoji} {escape(repository)} — {event} · {pull_request_link(pull_request)} "
+        f"{escape(pull_request['title'])} · {escape(author_login(pull_request))}"
     )
 
 
 def format_merged(repository, pull_request):
     return (
-        f"🔀 {repository} — PR merged\n"
-        f"#{pull_request['number']} {pull_request['title']}\n"
-        f"{author_login(pull_request)} · {pull_request['url']}"
+        f"🔀 {escape(repository)} — PR merged · {pull_request_link(pull_request)} "
+        f"{escape(pull_request['title'])} · {escape(author_login(pull_request))}"
     )
 
 
@@ -52,16 +55,21 @@ def format_digest(repository, pull_requests, now=None):
         return ""
 
     now = now or datetime.now(timezone.utc)
-    header = f"🔠 {repository} — {len(pull_requests)} open PR(s)"
+    count = len(pull_requests)
+    header = f"🔠 {escape(repository)} — {count} open {'PR' if count == 1 else 'PRs'}"
     lines = []
     for pull_request in pull_requests[:DIGEST_PR_LIMIT]:
         age = max(0, (now - parse_github_time(pull_request["createdAt"])).days)
         line = (
-            f"#{pull_request['number']} {pull_request['title']}\n"
-            f"{author_login(pull_request)} · {age}d · {pull_request['url']}"
+            f"{pull_request_link(pull_request)} {escape(pull_request['title'])} · "
+            f"{escape(author_login(pull_request))} · {age}d"
         )
         remaining = len(pull_requests) - len(lines) - 1
-        suffix = f"...and {remaining} more · https://github.com/{repository}/pulls" if remaining else ""
+        suffix = (
+            f'<a href="https://github.com/{escape(repository, quote=True)}/pulls">...and {remaining} more</a>'
+            if remaining
+            else ""
+        )
         candidate = "\n".join((header, *lines, line, suffix)).rstrip()
         if len(candidate) > TELEGRAM_MESSAGE_LIMIT:
             break
@@ -69,7 +77,7 @@ def format_digest(repository, pull_requests, now=None):
 
     remaining = len(pull_requests) - len(lines)
     if remaining:
-        lines.append(f"...and {remaining} more · https://github.com/{repository}/pulls")
+        lines.append(f'<a href="https://github.com/{escape(repository, quote=True)}/pulls">...and {remaining} more</a>')
 
     return "\n".join((header, *lines))
 

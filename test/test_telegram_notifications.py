@@ -38,9 +38,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "🆕 owner/repo — PR opened\n"
-            "#42 feat: add notifications\n"
-            "octocat · https://github.com/owner/repo/pull/42",
+            '🆕 owner/repo — PR opened · <a href="https://github.com/owner/repo/pull/42">#42</a> '
+            "feat: add notifications · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
@@ -55,8 +54,20 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
     def test_formats_merged_pull_request(self):
         message = PR_TELEGRAM.format_merged("owner/repo", self.pull_request)
 
-        self.assertIn("🔀 owner/repo — PR merged", message)
-        self.assertIn("#42 feat: add notifications", message)
+        self.assertEqual(
+            message,
+            '🔀 owner/repo — PR merged · <a href="https://github.com/owner/repo/pull/42">#42</a> '
+            "feat: add notifications · octocat",
+        )
+
+    def test_escapes_pull_request_values_for_telegram_html(self):
+        self.pull_request["title"] = "fix: escape <markup> & text"
+        self.pull_request["author"] = {"login": "bot&name"}
+
+        message = PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "opened")
+
+        self.assertIn("fix: escape &lt;markup&gt; &amp; text", message)
+        self.assertIn("bot&amp;name", message)
 
     def test_open_pull_request_digest_excludes_drafts_and_reports_age(self):
         draft = dict(self.pull_request, number=41, isDraft=True)
@@ -66,7 +77,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
             now=datetime(2026, 8, 12, 12, tzinfo=timezone.utc),
         )
 
-        self.assertIn("1 open PR(s)", message)
+        self.assertIn("1 open PR", message)
         self.assertTrue(message.startswith("🔠 owner/repo"))
         self.assertIn("octocat · 2d", message)
         self.assertNotIn("#41", message)
@@ -80,6 +91,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
             self.pull_request
             | {
                 "number": number,
+                "url": f"https://github.com/owner/repo/pull/{number}",
                 "createdAt": "2026-08-10T12:00:00Z",
             }
             for number in range(1, 13)
@@ -87,10 +99,10 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
-        self.assertIn("12 open PR(s)", message)
-        self.assertIn("#10 feat: add notifications", message)
-        self.assertNotIn("#11 feat: add notifications", message)
-        self.assertIn("...and 2 more · https://github.com/owner/repo/pulls", message)
+        self.assertIn("12 open PRs", message)
+        self.assertIn('pull/10">#10</a> feat: add notifications', message)
+        self.assertNotIn('pull/11">#11</a> feat: add notifications', message)
+        self.assertIn('href="https://github.com/owner/repo/pulls">...and 2 more</a>', message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
         pull_requests = [
@@ -106,7 +118,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertLessEqual(len(message), PR_TELEGRAM.TELEGRAM_MESSAGE_LIMIT)
-        self.assertIn("more · https://github.com/owner/repo/pulls", message)
+        self.assertIn("more</a>", message)
 
     def test_writes_multiline_github_output(self):
         with tempfile.NamedTemporaryFile() as output, patch.dict(os.environ, {"GITHUB_OUTPUT": output.name}):
@@ -166,6 +178,7 @@ class TelegramWorkflowTest(unittest.TestCase):
                 "$/.github/actions/send-telegram-message",
             ],
         )
+        self.assertEqual(steps[-1]["with"]["parse-mode"], "HTML")
 
     def test_issue_workflow_only_sends_closed_issue_notification(self):
         workflow = self.load_workflow("notify-telegram-issue-shared.yml")
@@ -207,6 +220,8 @@ class TelegramWorkflowTest(unittest.TestCase):
         self.assertNotIn("api.telegram.org", pr_action)
         self.assertNotIn("api.telegram.org", issue_action)
         self.assertIn("inputs:\n  message:", send_action)
+        self.assertIn("parse-mode:", send_action)
+        self.assertIn("parse_mode", send_action)
         self.assertIn("--output /dev/null", send_action)
         self.assertIn("api.telegram.org", send_action)
 
