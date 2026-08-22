@@ -2,6 +2,7 @@
 import difflib
 import json
 import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -24,14 +25,17 @@ class FragmentResult:
     diff: str = ""
 
 
-def parse_json_list(value):
+EXTRA_CONFIG_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+
+
+def parse_json_list(value, input_name):
     try:
         items = json.loads(value)
     except json.JSONDecodeError as error:
-        raise ValueError("skip must be a JSON array of strings") from error
+        raise ValueError(f"{input_name} must be a JSON array of strings") from error
 
     if not isinstance(items, list) or not all(isinstance(item, str) and item for item in items):
-        raise ValueError("skip must be a JSON array of strings")
+        raise ValueError(f"{input_name} must be a JSON array of strings")
 
     return set(items)
 
@@ -73,6 +77,25 @@ def load_config(config_path):
             raise ValueError(f"embedder fragment {name!r} content must be a non-empty string")
         fragments[name] = Fragment(path=path, content=content)
 
+    return fragments
+
+
+def load_configs(config_path, extra=()):
+    config_path = Path(config_path)
+    extra = set(extra)
+    if invalid := {name for name in extra if not EXTRA_CONFIG_NAME.fullmatch(name)}:
+        names = ", ".join(sorted(invalid))
+        raise ValueError(f"Invalid extra embedder config names: {names}")
+
+    extra_paths = {name: config_path.parent / "embedder" / f"{name}.yml" for name in extra}
+    if unknown := {name for name, path in extra_paths.items() if not path.is_file()}:
+        names = ", ".join(sorted(unknown))
+        raise ValueError(f"Unknown extra embedder configs: {names}")
+
+    fragments = load_config(config_path)
+    for config_name in sorted(extra_paths):
+        for fragment_name, fragment in load_config(extra_paths[config_name]).items():
+            fragments[f"{config_name}/{fragment_name}"] = fragment
     return fragments
 
 
@@ -175,14 +198,16 @@ def print_report(results):
 
 def main():
     try:
-        fragments = load_config(Path(os.environ["CONFIG_PATH"]))
-        skipped = parse_json_list(os.environ.get("SKIP", "[]"))
+        extra = parse_json_list(os.environ.get("EXTRA", "[]"), "extra")
+        fragments = load_configs(Path(os.environ["CONFIG_PATH"]), extra)
+        skipped = parse_json_list(os.environ.get("SKIP", "[]"), "skip")
         repository_root = Path(os.environ.get("REPOSITORY_ROOT", "."))
         results = evaluate_fragments(fragments, repository_root, skipped)
     except (KeyError, OSError, ValueError) as error:
         print(f"::error::{annotation_value(error)}")
         return 1
 
+    print(f"Extra embedder configs: {', '.join(sorted(extra)) or 'none'}")
     print(f"Embedder config: {len(fragments)} fragments")
     print_report(results)
     for result in results:

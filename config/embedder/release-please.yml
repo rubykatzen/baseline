@@ -1,0 +1,19 @@
+fragments:
+  include-component-in-tag:
+    path: release-please-config.json
+    content: '"include-component-in-tag": false'
+  pull-request-title-pattern:
+    path: release-please-config.json
+    content: '"pull-request-title-pattern": "chore: release ${version}"'
+  pull-request-header:
+    path: release-please-config.json
+    content: '"pull-request-header": "This pull request prepares the next release."'
+  pull-request-footer:
+    path: release-please-config.json
+    content: '"pull-request-footer": "[Release Please documentation](https://github.com/googleapis/release-please#release-please)"'
+  workflow-action:
+    path: .github/workflows/release.yml
+    content: "uses: googleapis/release-please-action"
+  pull-request-title:
+    path: .github/workflows/pr.yml
+    content: "uses: amannn/action-semantic-pull-request"

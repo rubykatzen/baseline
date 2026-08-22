@@ -2,6 +2,10 @@ name: Embedder (shared)
 on:
   workflow_call:
     inputs:
+      extra:
+        description: JSON array of optional embedder configurations to include.
+        type: string
+        default: "[]"
       skip:
         description: JSON array of embedded content fragments to skip.
         type: string
@@ -15,4 +19,5 @@ jobs:
       - uses: actions/checkout@v7
       - uses: $/.github/actions/check-embedder
         with:
+          extra: ${{ inputs.extra }}
           skip: ${{ inputs.skip }}
