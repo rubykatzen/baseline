@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/rubykatzen/baseline/compare/v0.13.1...v0.14.0) (2026-08-22)
+
+
+### Features
+
+* add optional Embedder configs ([#162](https://github.com/rubykatzen/baseline/issues/162)) ([dfe6799](https://github.com/rubykatzen/baseline/commit/dfe67995562ce859da3252330d6cdb68dcd09951))
+
 ## [0.13.1](https://github.com/rubykatzen/baseline/compare/v0.13.0...v0.13.1) (2026-08-18)
 
 
