@@ -38,13 +38,13 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · PR opened · [\\#42](https://github.com/owner/repo/pull/42) "
+            "owner/repo · [PR \\#42](https://github.com/owner/repo/pull/42) opened · "
             "*feat: add notifications* · octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
-        self.assertIn("owner/repo · PR ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
-        self.assertIn("owner/repo · PR reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
+        self.assertIn("[PR \\#42](https://github.com/owner/repo/pull/42) ready", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "ready_for_review"))
+        self.assertIn("[PR \\#42](https://github.com/owner/repo/pull/42) reopened", PR_TELEGRAM.format_opened("owner/repo", self.pull_request, "reopened"))
 
     def test_skips_draft_pull_request(self):
         self.pull_request["isDraft"] = True
@@ -56,7 +56,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · PR merged · [\\#42](https://github.com/owner/repo/pull/42) "
+            "owner/repo · [PR \\#42](https://github.com/owner/repo/pull/42) merged · "
             "*feat: add notifications* · octocat",
         )
 
@@ -100,8 +100,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn(r"[\#10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
-        self.assertNotIn(r"[\#11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
+        self.assertIn(r"[PR \#10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
+        self.assertNotIn(r"[PR \#11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
         self.assertIn(r"[\.\.\.and 2 more](https://github.com/owner/repo/pulls)", message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
@@ -142,8 +142,8 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "owner/repo · issue closed · [\\#12](https://github.com/owner/repo/issues/12) "
-            "*Move notifications* · Resolution summary\\. · octocat",
+            "owner/repo · [Issue \\#12](https://github.com/owner/repo/issues/12) closed · "
+            "*Move notifications* · octocat\nResolution summary\\.",
         )
 
     def test_closed_issue_truncates_long_body(self):
@@ -159,22 +159,34 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(len(body), ISSUE_TELEGRAM.ISSUE_BODY_LIMIT)
         self.assertTrue(body.endswith("..."))
-        self.assertIn(r"\.\.\. · octocat", message)
+        self.assertTrue(message.endswith(r"\.\.\."))
 
-    def test_closed_issue_normalizes_body_and_escapes_markdown(self):
+    def test_closed_issue_uses_only_first_body_paragraph(self):
         issue = {
             "number": 12,
             "title": "Fix [alerts]",
-            "body": "First line.\n\nSecond *line*.",
+            "body": "First line.\nContinued *line*.\n\nIgnored paragraph.",
             "url": "https://github.com/owner/repo/issues/12",
         }
 
         message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "dependabot[bot]")
 
-        self.assertNotIn("\n", message)
         self.assertIn(r"*Fix \[alerts\]*", message)
-        self.assertIn(r"First line\. Second \*line\*\.", message)
-        self.assertTrue(message.endswith(r"dependabot\[bot\]"))
+        self.assertTrue(message.endswith("dependabot\\[bot\\]\nFirst line\\. Continued \\*line\\*\\."))
+        self.assertNotIn("Ignored", message)
+
+    def test_closed_issue_includes_leading_heading_and_first_paragraph(self):
+        issue = {
+            "number": 12,
+            "title": "Move notifications",
+            "body": "## Resolution\n\nFirst line.\nContinued line.\n\nIgnored paragraph.",
+            "url": "https://github.com/owner/repo/issues/12",
+        }
+
+        message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
+
+        self.assertTrue(message.endswith("\nResolution\nFirst line\\. Continued line\\."))
+        self.assertNotIn("Ignored", message)
 
 
 class TelegramWorkflowTest(unittest.TestCase):

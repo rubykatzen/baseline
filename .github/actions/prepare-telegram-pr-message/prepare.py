@@ -28,9 +28,9 @@ def escape_link_url(value):
 
 
 def pull_request_link(pull_request):
-    number = escape_markdown(f"#{pull_request['number']}")
+    label = escape_markdown(f"PR #{pull_request['number']}")
     url = escape_link_url(pull_request["url"])
-    return f"[{number}]({url})"
+    return f"[{label}]({url})"
 
 
 def format_opened(repository, pull_request, event_action):
@@ -38,19 +38,19 @@ def format_opened(repository, pull_request, event_action):
         return ""
 
     events = {
-        "ready_for_review": "PR ready",
-        "reopened": "PR reopened",
+        "ready_for_review": "ready",
+        "reopened": "reopened",
     }
-    event = events.get(event_action, "PR opened")
+    event = events.get(event_action, "opened")
     return (
-        f"{escape_markdown(repository)} · {event} · {pull_request_link(pull_request)} "
+        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} {event} · "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
 
 def format_merged(repository, pull_request):
     return (
-        f"{escape_markdown(repository)} · PR merged · {pull_request_link(pull_request)} "
+        f"{escape_markdown(repository)} · {pull_request_link(pull_request)} merged · "
         f"*{escape_markdown(pull_request['title'])}* · {escape_markdown(author_login(pull_request))}"
     )
 
