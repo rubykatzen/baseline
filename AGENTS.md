@@ -52,36 +52,38 @@ input.
 
 ## Purpose
 
-This repo is the single source of truth for linter configs across all rubykatzen repositories. The goal is identical linting everywhere — configs live here and nowhere else.
+Baseline is the centrally managed source of development policy for repositories
+across organizations and programming language stacks. Its goal is a
+zero-configuration, homogeneous development experience for developers who move
+between stacks.
 
-Baseline owns linter configuration and runtime installation for CI. Consuming
-repositories call `lint-shared.yml` and get runtimes, configs, and linter
-execution handled automatically. Pre-commit hooks are thin wrappers that expect
-tools to already be installed in the developer environment.
+Baseline owns linter configuration and CI runtime installation, GitHub repository
+policy, required content fragments, and reusable notification workflows.
+Consumers connect only the workflows they need. Checks verify policy but do not
+mutate consumer repositories; intentional differences use explicit `skip`
+inputs. Pre-commit hooks are thin wrappers that expect tools to already be
+installed in the developer environment.
 
 ## Repository Structure
 
-- `config/` — canonical linter config files
+- `config/` — canonical linter, GitHub policy, and Embedder configuration
 - `hooks/` — shell and Python script wrappers for pre-commit (`language: script`)
-- `baseline.gemspec` — Ruby gem packaging RuboCop and erb_lint configs for local `bundle exec rubocop`
+- `baseline.gemspec` — Ruby gem packaging RuboCop, erb_lint, and Herb tooling
 - `lib/` — gem code (`Baseline::VERSION`, install stubs)
 - `exe/baseline-install` — writes project `.rubocop.yml` and `.erb_lint.yml` stubs
 - `.github/actions/lint-*/` — composite actions that run installed linters with baseline configs
-- `.github/actions/check-embedder/` — validates required content fragments in consumer files
+- `.github/actions/check-embedder/` — validates base and named extra content fragments
+- `.github/actions/check-github-config/` — validates repository settings and labels
 - `.github/actions/detect-linters/` — composite action that selects applicable linters from tracked files
 - `.github/actions/check-precommit/` — composite action: verifies pre-commit hooks match detected CI linters
 - `.github/actions/setup-runtimes/` — installs Python packages, Ruby, and standalone binaries for requested linters; Python is provided by the runner
-- `.github/actions/prepare-telegram-pr-message/` — formats pull request and open-PR digest messages
-- `.github/actions/prepare-telegram-issue-message/` — formats closed-issue messages
-- `.github/actions/send-telegram-message/` — sends plain-text messages through the Telegram Bot API
-- `.github/workflows/lint-shared.yml` — reusable workflow exported for consuming repos: setup + lint
-- `.github/workflows/embedder-shared.yml` — reusable workflow exported for required content validation
-- `.github/workflows/notify-telegram-pr-shared.yml` — reusable pull request notifications and open-PR digest
-- `.github/workflows/notify-telegram-issue-shared.yml` — optional reusable issue-closure notifications
+- `.github/actions/*telegram*/` — prepares and sends Telegram notifications
+- `.github/workflows/*-shared.yml` — reusable workflows exported to consumers
+- `.github/workflows/lint.yml`, `github.yml`, and `embedder.yml` — local self-check callers
 - `.github/workflows/pr.yml` — validates Baseline pull request titles against Conventional Commits
-- `.github/workflows/lint.yml` — baseline self-lint (uses local `./` references, not `@vX`)
 - `.github/workflows/release.yml` — maintains the release PR and publishes merged releases
 - `.github/workflows/notify-telegram-pr.yml` — Baseline's own Telegram pull request notification caller
+- `.github/workflows/test.yml` — runs the Python test suite
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 
 ## Adding a New Linter
@@ -104,6 +106,15 @@ Pre-commit hooks expect tools to already be on PATH in the developer environment
 
 ## Workflows
 
+`lint-shared.yml` auto-detects applicable linters, installs their CI runtimes,
+checks pre-commit synchronization when configured, and runs the canonical
+tooling.
+
+`github-shared.yml` verifies repository settings and labels against
+`config/github.yml`. `embedder-shared.yml` verifies the base fragment set and
+named configurations selected through its `extra` JSON input. Extra fragment
+IDs use the `<configuration>/<fragment>` namespace in `skip`.
+
 `notify-telegram-pr-shared.yml` exports pull request notifications and the
 open-pull-request digest. Baseline calls it locally through
 `notify-telegram-pr.yml`.
@@ -113,19 +124,16 @@ The caller owns any label or other notification condition; the shared workflow
 does not modify issues. Baseline does not call it because this repository does
 not use issue notifications.
 
-`lint-shared.yml` is the primary export — consuming repos call it via
-`uses: rubykatzen/baseline/.github/workflows/lint-shared.yml@VERSION`.
-
 Pre-commit hook pins in `.pre-commit-config.yaml` are updated by Dependabot
 (`package-ecosystem: pre-commit` in `.github/dependabot.yml`), not by a custom
 workflow.
 
-## Self-linting
+## Self-validation
 
-Baseline lints itself through `.github/workflows/lint.yml`, which calls the
-shared reusable workflow `.github/workflows/lint-shared.yml` using a local
-`./` reference. This ensures the current commit's actions and configs are
-validated, not a pinned release.
+Baseline calls its lint, GitHub, and Embedder reusable workflows through local
+`./` references. This validates the current commit's actions and configurations,
+not a pinned release. The Embedder self-check enables the `release-please` extra
+configuration.
 
 ## Cutting Releases
 
@@ -145,7 +153,8 @@ For language-agnostic file types (YAML, Markdown, shell, etc.), always choose th
 
 Priority order: Python > TypeScript > everything else.
 
-This avoids introducing new runtimes into repos that don't already use them.
+This minimizes setup by preferring the Python runtime already present on GitHub
+runners before introducing another toolchain.
 
 ## Disabled Rules
 
