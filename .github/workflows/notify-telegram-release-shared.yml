@@ -1,0 +1,25 @@
+name: Notify Telegram release (shared)
+on:
+  workflow_call:
+    secrets:
+      TELEGRAM_BOT_TOKEN:
+        required: true
+      TELEGRAM_CHAT_ID:
+        required: true
+jobs:
+  notify:
+    if: >-
+      github.event_name == 'release' &&
+      github.event.action == 'published'
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - id: prepare
+        uses: $/.github/actions/prepare-telegram-release-message
+      - name: Send
+        uses: $/.github/actions/send-telegram-message
+        with:
+          message: ${{ steps.prepare.outputs.message }}
+          telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          telegram-chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          parse-mode: MarkdownV2
