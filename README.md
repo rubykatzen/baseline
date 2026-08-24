@@ -138,6 +138,31 @@ workflow code from the default branch. The shared workflow does not check out
 or execute pull request code. Pass the two secrets explicitly rather than using
 `secrets: inherit`.
 
+## Notify Telegram about releases
+
+Create `.github/workflows/notify-telegram-release.yml`:
+
+<!-- x-release-please-start-version -->
+
+```yaml
+name: Notify Telegram release
+on:
+  release:
+    types: [published]
+jobs:
+  notify:
+    uses: rubykatzen/baseline/.github/workflows/notify-telegram-release-shared.yml@v0.15.0
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+```
+
+<!-- x-release-please-end -->
+
+Baseline sends one notification when a release or prerelease is published. The
+release tag links to the GitHub Release. Pass the two secrets explicitly rather
+than using `secrets: inherit`.
+
 ## Notify Telegram about closed issues
 
 Issue notifications are optional and can use a different Telegram channel from

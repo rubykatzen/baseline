@@ -21,6 +21,7 @@ def load_action_module(name):
 
 PR_TELEGRAM = load_action_module("prepare-telegram-pr-message")
 ISSUE_TELEGRAM = load_action_module("prepare-telegram-issue-message")
+RELEASE_TELEGRAM = load_action_module("prepare-telegram-release-message")
 
 
 class TelegramPullRequestMessageTest(unittest.TestCase):
@@ -189,6 +190,37 @@ class TelegramIssueMessageTest(unittest.TestCase):
         self.assertNotIn("Ignored", message)
 
 
+class TelegramReleaseMessageTest(unittest.TestCase):
+    def test_formats_release_without_repeating_tag_as_name(self):
+        release = {
+            "tag": "v1.2.3",
+            "name": "v1.2.3",
+            "url": "https://github.com/owner/repo/releases/tag/v1.2.3",
+            "actor": "octocat",
+        }
+
+        message = RELEASE_TELEGRAM.format_published("owner/repo", release)
+
+        self.assertEqual(
+            message,
+            "*owner/repo* · [release v1\\.2\\.3](https://github.com/owner/repo/releases/tag/v1.2.3) "
+            "published · octocat",
+        )
+
+    def test_formats_distinct_release_name_and_escapes_markdown(self):
+        release = {
+            "tag": "v1.2.3",
+            "name": "Summer [release]",
+            "url": "https://github.com/owner/repo/releases/tag/v1.2.3",
+            "actor": "dependabot[bot]",
+        }
+
+        message = RELEASE_TELEGRAM.format_published("owner/repo", release)
+
+        self.assertIn(r"*Summer \[release\]*", message)
+        self.assertTrue(message.endswith(r"dependabot\[bot\]"))
+
+
 class TelegramWorkflowTest(unittest.TestCase):
     def load_workflow(self, name):
         with open(BASELINE_ROOT / ".github" / "workflows" / name) as workflow:
@@ -228,30 +260,62 @@ class TelegramWorkflowTest(unittest.TestCase):
         )
         self.assertEqual(job["steps"][-1]["with"]["parse-mode"], "MarkdownV2")
 
-    def test_baseline_caller_passes_only_explicit_telegram_secrets(self):
-        path = BASELINE_ROOT / ".github" / "workflows" / "notify-telegram-pr.yml"
-        content = path.read_text()
-        workflow = yaml.safe_load(content)
-        secrets = workflow["jobs"]["notify"]["secrets"]
+    def test_release_workflow_only_sends_published_release_notification(self):
+        workflow = self.load_workflow("notify-telegram-release-shared.yml")
+        job = workflow["jobs"]["notify"]
 
-        self.assertEqual(set(secrets), {"TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"})
-        self.assertNotIn("secrets: inherit", content)
+        self.assertIn("github.event_name == 'release'", job["if"])
+        self.assertIn("github.event.action == 'published'", job["if"])
+        self.assertEqual(job["permissions"], {})
+        self.assertEqual(
+            [step["uses"] for step in job["steps"]],
+            [
+                "$/.github/actions/prepare-telegram-release-message",
+                "$/.github/actions/send-telegram-message",
+            ],
+        )
+        self.assertEqual(job["steps"][-1]["with"]["parse-mode"], "MarkdownV2")
+
+    def test_baseline_callers_pass_only_explicit_telegram_secrets(self):
+        for name in ("notify-telegram-pr.yml", "notify-telegram-release.yml"):
+            path = BASELINE_ROOT / ".github" / "workflows" / name
+            content = path.read_text()
+            workflow = yaml.safe_load(content)
+            secrets = workflow["jobs"]["notify"]["secrets"]
+
+            with self.subTest(name=name):
+                self.assertEqual(set(secrets), {"TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"})
+                self.assertNotIn("secrets: inherit", content)
+
+    def test_baseline_release_caller_uses_published_event(self):
+        content = (BASELINE_ROOT / ".github" / "workflows" / "notify-telegram-release.yml").read_text()
+
+        self.assertIn("release:\n    types: [published]", content)
+        self.assertIn("uses: ./.github/workflows/notify-telegram-release-shared.yml", content)
 
     def test_internal_actions_separate_formatting_and_delivery(self):
         action_root = BASELINE_ROOT / ".github" / "actions"
         telegram_actions = sorted(path.parent.name for path in action_root.glob("*telegram*/action.yml"))
         pr_action = (action_root / "prepare-telegram-pr-message" / "action.yml").read_text()
         issue_action = (action_root / "prepare-telegram-issue-message" / "action.yml").read_text()
+        release_action = (action_root / "prepare-telegram-release-message" / "action.yml").read_text()
         send_action = (action_root / "send-telegram-message" / "action.yml").read_text()
 
         self.assertEqual(
             telegram_actions,
-            ["prepare-telegram-issue-message", "prepare-telegram-pr-message", "send-telegram-message"],
+            [
+                "prepare-telegram-issue-message",
+                "prepare-telegram-pr-message",
+                "prepare-telegram-release-message",
+                "send-telegram-message",
+            ],
         )
         self.assertIn('run: python3 "${{ github.action_path }}/prepare.py"', pr_action)
         self.assertIn('run: python3 "${{ github.action_path }}/prepare.py"', issue_action)
+        self.assertIn('run: python3 "${{ github.action_path }}/prepare.py"', release_action)
         self.assertNotIn("api.telegram.org", pr_action)
         self.assertNotIn("api.telegram.org", issue_action)
+        self.assertNotIn("api.telegram.org", release_action)
         self.assertIn("inputs:\n  message:", send_action)
         self.assertIn("parse-mode:", send_action)
         self.assertIn("parse_mode", send_action)

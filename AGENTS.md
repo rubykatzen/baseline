@@ -82,7 +82,7 @@ installed in the developer environment.
 - `.github/workflows/lint.yml`, `github.yml`, and `embedder.yml` — local self-check callers
 - `.github/workflows/pr.yml` — validates Baseline pull request titles against Conventional Commits
 - `.github/workflows/release.yml` — maintains the release PR and publishes merged releases
-- `.github/workflows/notify-telegram-pr.yml` — Baseline's own Telegram pull request notification caller
+- `.github/workflows/notify-telegram-pr.yml` and `notify-telegram-release.yml` — Baseline's own Telegram notification callers
 - `.github/workflows/test.yml` — runs the Python test suite
 - `.pre-commit-hooks.yaml` — hook definitions for pre-commit
 
@@ -123,6 +123,9 @@ open-pull-request digest. Baseline calls it locally through
 The caller owns any label or other notification condition; the shared workflow
 does not modify issues. Baseline does not call it because this repository does
 not use issue notifications.
+
+`notify-telegram-release-shared.yml` exports release publication notifications.
+Baseline calls it locally through `notify-telegram-release.yml`.
 
 Pre-commit hook pins in `.pre-commit-config.yaml` are updated by Dependabot
 (`package-ecosystem: pre-commit` in `.github/dependabot.yml`), not by a custom
