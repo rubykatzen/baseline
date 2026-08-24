@@ -220,6 +220,38 @@ class TelegramReleaseMessageTest(unittest.TestCase):
         self.assertIn(r"*Summer \[release\]*", message)
         self.assertTrue(message.endswith(r"dependabot\[bot\]"))
 
+    def test_includes_release_please_description_as_plain_text(self):
+        release = {
+            "tag": "v0.16.0",
+            "name": "v0.16.0",
+            "url": "https://github.com/owner/repo/releases/tag/v0.16.0",
+            "body": (
+                "## [0.16.0](https://github.com/owner/repo/compare/v0.15.0...v0.16.0) (2026-08-24)\n\n"
+                "### Features\n\n"
+                "* add Telegram release notifications "
+                "([#171](https://github.com/owner/repo/issues/171)) "
+                "([8d9e8c0](https://github.com/owner/repo/commit/8d9e8c0))"
+            ),
+            "actor": "octocat",
+        }
+
+        message = RELEASE_TELEGRAM.format_published("owner/repo", release)
+
+        self.assertTrue(
+            message.endswith(
+                "octocat\n0\\.16\\.0 \\(2026\\-08\\-24\\)\n\n"
+                "Features\n\nadd Telegram release notifications \\(\\#171\\) \\(8d9e8c0\\)"
+            )
+        )
+
+    def test_truncates_long_release_description(self):
+        description = RELEASE_TELEGRAM.release_description(
+            "x" * (RELEASE_TELEGRAM.RELEASE_DESCRIPTION_LIMIT + 10)
+        )
+
+        self.assertEqual(len(description), RELEASE_TELEGRAM.RELEASE_DESCRIPTION_LIMIT)
+        self.assertTrue(description.endswith("..."))
+
 
 class TelegramWorkflowTest(unittest.TestCase):
     def load_workflow(self, name):

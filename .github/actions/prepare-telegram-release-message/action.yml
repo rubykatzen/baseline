@@ -14,5 +14,6 @@ runs:
         TAG_NAME: ${{ github.event.release.tag_name }}
         RELEASE_NAME: ${{ github.event.release.name }}
         RELEASE_URL: ${{ github.event.release.html_url }}
+        RELEASE_BODY: ${{ github.event.release.body }}
         ACTOR: ${{ github.event.release.author.login }}
       run: python3 "${{ github.action_path }}/prepare.py"
