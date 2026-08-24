@@ -71,7 +71,7 @@ def format_digest(repository, pull_requests, now=None):
     for pull_request in pull_requests[:DIGEST_PR_LIMIT]:
         age = max(0, (now - parse_github_time(pull_request["createdAt"])).days)
         line = (
-            f"{pull_request_link(pull_request)} *{escape_markdown(pull_request['title'])}* · "
+            f"{pull_request_link(pull_request)} · *{escape_markdown(pull_request['title'])}* · "
             f"{escape_markdown(author_login(pull_request))} · {age}d"
         )
         remaining = len(pull_requests) - len(lines) - 1
