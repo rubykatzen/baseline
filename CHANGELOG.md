@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/rubykatzen/baseline/compare/v0.15.0...v0.16.0) (2026-08-24)
+
+
+### Features
+
+* add Telegram release notifications ([#171](https://github.com/rubykatzen/baseline/issues/171)) ([8d9e8c0](https://github.com/rubykatzen/baseline/commit/8d9e8c069592ecfb47842fa6679286842edd3415))
+
 ## [0.15.0](https://github.com/rubykatzen/baseline/compare/v0.14.0...v0.15.0) (2026-08-22)
 
 
