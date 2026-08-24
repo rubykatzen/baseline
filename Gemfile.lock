@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubykatzen-baseline (0.16.0)
+    rubykatzen-baseline (0.16.1)
       erb_lint (~> 0.9)
       herb (~> 0.10)
       rubocop (~> 1.88)
