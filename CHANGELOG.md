@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/rubykatzen/baseline/compare/v0.16.0...v0.16.1) (2026-08-24)
+
+
+### Bug Fixes
+
+* include release notes in Telegram ([#173](https://github.com/rubykatzen/baseline/issues/173)) ([419b2e2](https://github.com/rubykatzen/baseline/commit/419b2e29b1299cc1e7e964f15c8a7c35bfbe8b32))
+
 ## [0.16.0](https://github.com/rubykatzen/baseline/compare/v0.15.0...v0.16.0) (2026-08-24)
 
 
