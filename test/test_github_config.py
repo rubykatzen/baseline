@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import yaml
+
 BASELINE_ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "check_github_config", BASELINE_ROOT / ".github" / "actions" / "check-github-config" / "check.py"
@@ -42,6 +44,14 @@ class GitHubConfigTest(unittest.TestCase):
             checks["labels"]["required"]["dependencies"]["description"],
             "Pull requests that update a dependency file",
         )
+
+    def test_shared_workflow_grants_permissions_for_repository_and_label_checks(self):
+        with open(BASELINE_ROOT / ".github" / "workflows" / "github-shared.yml") as workflow_file:
+            workflow = yaml.safe_load(workflow_file)
+
+        permissions = workflow["jobs"]["github-config-check"]["permissions"]
+
+        self.assertEqual(permissions, {"contents": "read", "issues": "read"})
 
     def test_rejects_invalid_repository_config(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
