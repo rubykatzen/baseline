@@ -12,7 +12,7 @@ labels:
     ":triangular_flag_on_post:":
       color: FFEFEF
       description: Temporary fast-track flag
-    dependencies:
+    deps:
       color: 0366d6
       description: Pull requests that update a dependency file
     "priority: P1":

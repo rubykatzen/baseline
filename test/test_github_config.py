@@ -38,10 +38,10 @@ class GitHubConfigTest(unittest.TestCase):
                 "labels",
             },
         )
-        self.assertIn("dependencies", checks["labels"]["required"])
+        self.assertIn("deps", checks["labels"]["required"])
         self.assertIn("autorelease: pending", checks["labels"]["optional"])
         self.assertEqual(
-            checks["labels"]["required"]["dependencies"]["description"],
+            checks["labels"]["required"]["deps"]["description"],
             "Pull requests that update a dependency file",
         )
 
@@ -73,7 +73,7 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    dependencies:\n"
+                "labels:\n  required:\n    deps:\n"
                 "      color: blue\n      description: Dependency updates\n"
             )
             config.flush()
@@ -85,7 +85,7 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    dependencies:\n      color: 0366d6\n"
+                "labels:\n  required:\n    deps:\n      color: 0366d6\n"
             )
             config.flush()
 
@@ -150,7 +150,7 @@ class GitHubConfigTest(unittest.TestCase):
     def test_label_policy_accepts_required_and_present_optional_labels(self):
         policy = {
             "required": {
-                "dependencies": {"color": "0366d6", "description": "Dependency updates"}
+                "deps": {"color": "0366d6", "description": "Dependency updates"}
             },
             "optional": {
                 "autorelease: pending": {"color": "fbca04", "description": "Pending release"}
@@ -160,7 +160,7 @@ class GitHubConfigTest(unittest.TestCase):
             policy,
             "owner/repo",
             request=lambda _repository: [
-                {"name": "dependencies", "color": "0366D6", "description": "Dependency updates"},
+                {"name": "deps", "color": "0366D6", "description": "Dependency updates"},
                 {"name": "autorelease: pending", "color": "fbca04", "description": "Pending release"},
             ],
         )
@@ -170,7 +170,7 @@ class GitHubConfigTest(unittest.TestCase):
     def test_label_policy_accepts_absent_optional_labels(self):
         policy = {
             "required": {
-                "dependencies": {"color": "0366d6", "description": "Dependency updates"}
+                "deps": {"color": "0366d6", "description": "Dependency updates"}
             },
             "optional": {
                 "autorelease: pending": {"color": "fbca04", "description": "Pending release"}
@@ -180,7 +180,7 @@ class GitHubConfigTest(unittest.TestCase):
             policy,
             "owner/repo",
             request=lambda _repository: [
-                {"name": "dependencies", "color": "0366d6", "description": "Dependency updates"}
+                {"name": "deps", "color": "0366d6", "description": "Dependency updates"}
             ],
         )
 
@@ -189,7 +189,7 @@ class GitHubConfigTest(unittest.TestCase):
     def test_label_policy_reports_all_differences(self):
         policy = {
             "required": {
-                "dependencies": {"color": "0366d6", "description": "Dependency updates"},
+                "deps": {"color": "0366d6", "description": "Dependency updates"},
                 "size: S": {"color": "bfd4f2", "description": "Less than an hour"},
             },
             "optional": {
@@ -200,7 +200,7 @@ class GitHubConfigTest(unittest.TestCase):
             policy,
             "owner/repo",
             request=lambda _repository: [
-                {"name": "dependencies", "color": "ffffff", "description": None},
+                {"name": "deps", "color": "ffffff", "description": None},
                 {"name": "bug", "color": "d73a4a", "description": "Something is broken"},
             ],
         )
@@ -208,8 +208,8 @@ class GitHubConfigTest(unittest.TestCase):
         self.assertEqual(result.status, "failed")
         self.assertIn("missing: size: S", result.message)
         self.assertIn("unexpected: bug", result.message)
-        self.assertIn("dependencies expected #0366d6, got #ffffff", result.message)
-        self.assertIn('dependencies expected "Dependency updates", got ""', result.message)
+        self.assertIn("deps expected #0366d6, got #ffffff", result.message)
+        self.assertIn('deps expected "Dependency updates", got ""', result.message)
 
     def test_skips_label_policy_without_requesting_labels(self):
         results = CHECK_GITHUB_CONFIG.evaluate_checks(
