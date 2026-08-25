@@ -53,6 +53,9 @@ on:
   pull_request:
 jobs:
   github:
+    permissions:
+      contents: read
+      issues: read
     uses: rubykatzen/baseline/.github/workflows/github-shared.yml@v0.16.2
 ```
 
@@ -62,6 +65,9 @@ Baseline checks the repository settings and labels against
 [`config/github.yml`](config/github.yml). This includes squash-only merging,
 automatic branch deletion, auto-merge, and the canonical label set and colors.
 Release Please labels are allowed but optional.
+
+The caller grants both permissions because a reusable workflow can reduce its
+caller's `GITHUB_TOKEN` permissions, but cannot elevate them.
 
 ## Check shared repository files
 
