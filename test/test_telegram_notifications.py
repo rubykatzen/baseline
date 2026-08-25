@@ -101,8 +101,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn("[PR 10](https://github.com/owner/repo/pull/10) *feat: add notifications*", message)
-        self.assertNotIn("[PR 11](https://github.com/owner/repo/pull/11) *feat: add notifications*", message)
+        self.assertIn("[PR 10](https://github.com/owner/repo/pull/10) · *feat: add notifications*", message)
+        self.assertNotIn("[PR 11](https://github.com/owner/repo/pull/11) · *feat: add notifications*", message)
         self.assertIn(r"[\.\.\.and 2 more](https://github.com/owner/repo/pulls)", message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
