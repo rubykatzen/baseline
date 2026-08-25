@@ -61,7 +61,7 @@ fragments:
       updates:
         - package-ecosystem: github-actions
           directory: /
-          labels: [dependencies]
+          labels: [deps]
           commit-message:
             prefix: chore
             include: scope
@@ -71,7 +71,7 @@ fragments:
             timezone: "Europe/Berlin"
         - package-ecosystem: pre-commit
           directory: /
-          labels: [dependencies]
+          labels: [deps]
           commit-message:
             prefix: chore
             include: scope
@@ -81,7 +81,7 @@ fragments:
             timezone: "Europe/Berlin"
         - package-ecosystem: pip
           directory: /
-          labels: [dependencies]
+          labels: [deps]
           commit-message:
             prefix: chore
             include: scope
@@ -91,7 +91,7 @@ fragments:
             timezone: "Europe/Berlin"
         - package-ecosystem: bundler
           directory: /
-          labels: [dependencies]
+          labels: [deps]
           commit-message:
             prefix: chore
             include: scope
