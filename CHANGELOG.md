@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.2](https://github.com/rubykatzen/baseline/compare/v0.16.1...v0.16.2) (2026-08-25)
+
+
+### Bug Fixes
+
+* grant label check permission ([#176](https://github.com/rubykatzen/baseline/issues/176)) ([588a81f](https://github.com/rubykatzen/baseline/commit/588a81fd9c749ec0682cd57c43187cff81fd22fb))
+* separate PR digest titles ([#170](https://github.com/rubykatzen/baseline/issues/170)) ([29fe4bb](https://github.com/rubykatzen/baseline/commit/29fe4bb5a851bf972396afc8cb1bd30e352c3eae))
+
 ## [0.16.1](https://github.com/rubykatzen/baseline/compare/v0.16.0...v0.16.1) (2026-08-24)
 
 
