@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/rubykatzen/baseline/compare/v0.17.0...v0.17.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* compact Telegram release descriptions ([#187](https://github.com/rubykatzen/baseline/issues/187)) ([d48ad08](https://github.com/rubykatzen/baseline/commit/d48ad08111c37e4c2dbf0b95a93b00091d026c20))
+
 ## [0.17.0](https://github.com/rubykatzen/baseline/compare/v0.16.2...v0.17.0) (2026-08-29)
 
 
