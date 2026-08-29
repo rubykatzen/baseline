@@ -128,9 +128,10 @@ on:
 jobs:
   notify:
     uses: rubykatzen/baseline/.github/workflows/notify-telegram-pr-shared.yml@v0.16.2
+    with:
+      telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
     secrets:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 ```
 
 <!-- x-release-please-end -->
@@ -141,7 +142,8 @@ digests do not send a message.
 
 `pull_request_target` keeps Telegram secrets available while loading trusted
 workflow code from the default branch. The shared workflow does not check out
-or execute pull request code. Pass the two secrets explicitly rather than using
+or execute pull request code. Store `TELEGRAM_CHAT_ID` as an Actions variable,
+keep `TELEGRAM_BOT_TOKEN` as a secret, and pass both explicitly rather than using
 `secrets: inherit`.
 
 ## Notify Telegram about releases
@@ -158,16 +160,17 @@ on:
 jobs:
   notify:
     uses: rubykatzen/baseline/.github/workflows/notify-telegram-release-shared.yml@v0.16.2
+    with:
+      telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
     secrets:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 ```
 
 <!-- x-release-please-end -->
 
 Baseline sends one notification when a release or prerelease is published. The
-release tag links to the GitHub Release. Pass the two secrets explicitly rather
-than using `secrets: inherit`.
+release tag links to the GitHub Release. Pass the chat ID as an Actions variable
+and the bot token as a secret.
 
 ## Notify Telegram about closed issues
 
@@ -185,9 +188,10 @@ jobs:
   notify:
     if: contains(github.event.issue.labels.*.name, 'notify')
     uses: rubykatzen/baseline/.github/workflows/notify-telegram-issue-shared.yml@v0.16.2
+    with:
+      telegram-chat-id: ${{ vars.TELEGRAM_ISSUE_CHAT_ID }}
     secrets:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_ISSUE_CHAT_ID }}
+      telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 ```
 
 <!-- x-release-please-end -->
