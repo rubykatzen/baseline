@@ -6,6 +6,8 @@ import uuid
 RELEASE_DESCRIPTION_LIMIT = 3500
 MARKDOWN_V2_SPECIAL_CHARACTERS = frozenset("_*[]()~`>#+-=|{}.!\\")
 MARKDOWN_LINK = re.compile(r"\[([^]]+)]\([^)]*\)")
+MARKDOWN_HEADING = re.compile(r"^(#{1,6})\s+")
+MARKDOWN_LIST_ITEM = re.compile(r"^(?:[-+*]|\d+\.)\s+")
 
 
 def escape_markdown(value):
@@ -22,16 +24,31 @@ def truncate(value, limit):
     return value[: limit - 3].rstrip() + "..."
 
 
-def release_description(value, limit=RELEASE_DESCRIPTION_LIMIT):
+def is_release_heading(value, tag):
+    version = re.escape(tag.removeprefix("v"))
+    return bool(re.fullmatch(rf"v?{version}(?:\s+\(\d{{4}}-\d{{2}}-\d{{2}}\))?", value))
+
+
+def release_description(value, tag="", limit=RELEASE_DESCRIPTION_LIMIT):
     lines = []
     for source_line in value.strip().splitlines():
-        line = re.sub(r"^#{1,6}\s+", "", source_line.strip())
-        line = re.sub(r"^(?:[-+*]|\d+\.)\s+", "", line)
-        line = MARKDOWN_LINK.sub(r"\1", line)
-        if line or (lines and lines[-1]):
-            lines.append(line)
+        source_line = source_line.strip()
+        if not source_line:
+            continue
 
-    return truncate("\n".join(lines).strip(), limit)
+        heading = bool(MARKDOWN_HEADING.match(source_line))
+        line = MARKDOWN_HEADING.sub("", source_line)
+        line = MARKDOWN_LIST_ITEM.sub("", line)
+        line = MARKDOWN_LINK.sub(r"\1", line)
+        if not line or line in ("---", "***"):
+            continue
+        if heading and not lines and tag and is_release_heading(line, tag):
+            continue
+
+        escaped = escape_markdown(line)
+        lines.append(f"*{escaped}*" if heading else f"• {escaped}")
+
+    return truncate("\n".join(lines), limit)
 
 
 def format_published(repository, release):
@@ -46,8 +63,8 @@ def format_published(repository, release):
 
     parts.append(escape_markdown(release.get("actor") or "ghost"))
     message = " · ".join(parts)
-    if description := release_description(release.get("body") or ""):
-        message += f"\n{escape_markdown(description)}"
+    if description := release_description(release.get("body") or "", tag=tag):
+        message += f"\n{description}"
     return message
 
 
