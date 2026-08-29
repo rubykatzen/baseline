@@ -258,6 +258,31 @@ class TelegramWorkflowTest(unittest.TestCase):
         with open(BASELINE_ROOT / ".github" / "workflows" / name) as workflow:
             return yaml.safe_load(workflow)
 
+    def test_shared_workflows_accept_chat_id_as_input(self):
+        for name in (
+            "notify-telegram-pr-shared.yml",
+            "notify-telegram-issue-shared.yml",
+            "notify-telegram-release-shared.yml",
+        ):
+            workflow = self.load_workflow(name)
+            workflow_call = workflow[True]["workflow_call"]
+            job = next(iter(workflow["jobs"].values()))
+
+            with self.subTest(name=name):
+                self.assertEqual(set(workflow_call["secrets"]), {"telegram-bot-token"})
+                self.assertEqual(
+                    workflow_call["inputs"]["telegram-chat-id"],
+                    {
+                        "description": "Telegram chat ID that receives notifications.",
+                        "required": True,
+                        "type": "string",
+                    },
+                )
+                self.assertEqual(
+                    job["steps"][-1]["with"]["telegram-chat-id"],
+                    "${{ inputs.telegram-chat-id }}",
+                )
+
     def test_pr_workflow_prepares_and_sends_supported_events(self):
         workflow = self.load_workflow("notify-telegram-pr-shared.yml")
         job = workflow["jobs"]["notify"]
@@ -308,15 +333,16 @@ class TelegramWorkflowTest(unittest.TestCase):
         )
         self.assertEqual(job["steps"][-1]["with"]["parse-mode"], "MarkdownV2")
 
-    def test_baseline_callers_pass_only_explicit_telegram_secrets(self):
+    def test_baseline_callers_pass_chat_id_as_variable_input(self):
         for name in ("notify-telegram-pr.yml", "notify-telegram-release.yml"):
             path = BASELINE_ROOT / ".github" / "workflows" / name
             content = path.read_text()
             workflow = yaml.safe_load(content)
-            secrets = workflow["jobs"]["notify"]["secrets"]
+            job = workflow["jobs"]["notify"]
 
             with self.subTest(name=name):
-                self.assertEqual(set(secrets), {"TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"})
+                self.assertEqual(set(job["secrets"]), {"telegram-bot-token"})
+                self.assertEqual(job["with"]["telegram-chat-id"], "${{ vars.TELEGRAM_CHAT_ID }}")
                 self.assertNotIn("secrets: inherit", content)
 
     def test_baseline_release_caller_uses_published_event(self):

@@ -1,10 +1,13 @@
 name: Notify Telegram PR (shared)
 on:
   workflow_call:
-    secrets:
-      TELEGRAM_BOT_TOKEN:
+    inputs:
+      telegram-chat-id:
+        description: Telegram chat ID that receives notifications.
         required: true
-      TELEGRAM_CHAT_ID:
+        type: string
+    secrets:
+      telegram-bot-token:
         required: true
 jobs:
   notify:
@@ -25,6 +28,6 @@ jobs:
         uses: $/.github/actions/send-telegram-message
         with:
           message: ${{ steps.prepare.outputs.message }}
-          telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          telegram-chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          telegram-bot-token: ${{ secrets.telegram-bot-token }}
+          telegram-chat-id: ${{ inputs.telegram-chat-id }}
           parse-mode: MarkdownV2

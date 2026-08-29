@@ -5,6 +5,7 @@ on:
 jobs:
   notify:
     uses: ./.github/workflows/notify-telegram-release-shared.yml
+    with:
+      telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
     secrets:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
