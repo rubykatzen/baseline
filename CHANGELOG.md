@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/rubykatzen/baseline/compare/v0.17.1...v0.17.2) (2026-08-29)
+
+
+### Bug Fixes
+
+* italicize Telegram release heading lines ([#189](https://github.com/rubykatzen/baseline/issues/189)) ([93d7427](https://github.com/rubykatzen/baseline/commit/93d7427d38218ab47014c7e49ee2079ad31c514f))
+
 ## [0.17.1](https://github.com/rubykatzen/baseline/compare/v0.17.0...v0.17.1) (2026-08-29)
 
 
