@@ -240,7 +240,7 @@ class TelegramReleaseMessageTest(unittest.TestCase):
 
         self.assertTrue(
             message.endswith(
-                "octocat\n*Features*\n"
+                "octocat\n_Features_\n"
                 "• add Telegram release notifications \\(\\#171\\) \\(8d9e8c0\\)\n"
                 "• Deploy: mainframe updated"
             )
