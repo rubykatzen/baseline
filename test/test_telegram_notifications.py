@@ -220,7 +220,7 @@ class TelegramReleaseMessageTest(unittest.TestCase):
         self.assertIn(r"*Summer \[release\]*", message)
         self.assertTrue(message.endswith(r"dependabot\[bot\]"))
 
-    def test_includes_release_please_description_as_plain_text(self):
+    def test_formats_release_please_description_as_compact_list(self):
         release = {
             "tag": "v0.16.0",
             "name": "v0.16.0",
@@ -230,7 +230,8 @@ class TelegramReleaseMessageTest(unittest.TestCase):
                 "### Features\n\n"
                 "* add Telegram release notifications "
                 "([#171](https://github.com/owner/repo/issues/171)) "
-                "([8d9e8c0](https://github.com/owner/repo/commit/8d9e8c0))"
+                "([8d9e8c0](https://github.com/owner/repo/commit/8d9e8c0))\n\n"
+                "Deploy: mainframe updated"
             ),
             "actor": "octocat",
         }
@@ -239,10 +240,13 @@ class TelegramReleaseMessageTest(unittest.TestCase):
 
         self.assertTrue(
             message.endswith(
-                "octocat\n0\\.16\\.0 \\(2026\\-08\\-24\\)\n\n"
-                "Features\n\nadd Telegram release notifications \\(\\#171\\) \\(8d9e8c0\\)"
+                "octocat\n*Features*\n"
+                "• add Telegram release notifications \\(\\#171\\) \\(8d9e8c0\\)\n"
+                "• Deploy: mainframe updated"
             )
         )
+        self.assertNotIn("0\\.16\\.0 \\(2026\\-08\\-24\\)", message)
+        self.assertNotIn("\n\n", message)
 
     def test_truncates_long_release_description(self):
         description = RELEASE_TELEGRAM.release_description(
