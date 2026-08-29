@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/rubykatzen/baseline/compare/v0.16.2...v0.17.0) (2026-08-29)
+
+
+### Features
+
+* accept Telegram chat ID as input ([#185](https://github.com/rubykatzen/baseline/issues/185)) ([61caef4](https://github.com/rubykatzen/baseline/commit/61caef42116897e465e968d8d57a0e4e114fae7c))
+
 ## [0.16.2](https://github.com/rubykatzen/baseline/compare/v0.16.1...v0.16.2) (2026-08-25)
 
 
