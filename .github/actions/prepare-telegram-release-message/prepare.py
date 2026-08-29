@@ -46,7 +46,7 @@ def release_description(value, tag="", limit=RELEASE_DESCRIPTION_LIMIT):
             continue
 
         escaped = escape_markdown(line)
-        lines.append(f"*{escaped}*" if heading else f"• {escaped}")
+        lines.append(f"_{escaped}_" if heading else f"• {escaped}")
 
     return truncate("\n".join(lines), limit)
 
