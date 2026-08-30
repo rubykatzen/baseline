@@ -62,7 +62,7 @@ def format_published(repository, release):
         parts.append(f"*{escape_markdown(name)}*")
 
     parts.append(escape_markdown(release.get("actor") or "ghost"))
-    message = " · ".join(parts)
+    message = " • ".join(parts)
     if description := release_description(release.get("body") or "", tag=tag):
         message += f"\n{description}"
     return message
