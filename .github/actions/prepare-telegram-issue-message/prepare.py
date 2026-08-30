@@ -66,7 +66,7 @@ def format_closed(repository, issue, actor):
         f"*{escape_markdown(issue['title'])}*",
         escape_markdown(actor),
     ]
-    message = " · ".join(parts)
+    message = " • ".join(parts)
     if excerpt := body_excerpt(issue.get("body") or ""):
         message += f"\n{escape_markdown(excerpt)}"
     return message

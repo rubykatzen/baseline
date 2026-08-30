@@ -39,8 +39,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [PR 42](https://github.com/owner/repo/pull/42) opened · "
-            "*feat: add notifications* · octocat",
+            "*owner/repo* • [PR 42](https://github.com/owner/repo/pull/42) opened • "
+            "*feat: add notifications* • octocat",
         )
 
     def test_formats_ready_and_reopened_pull_request_actions(self):
@@ -57,8 +57,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [PR 42](https://github.com/owner/repo/pull/42) merged · "
-            "*feat: add notifications* · octocat",
+            "*owner/repo* • [PR 42](https://github.com/owner/repo/pull/42) merged • "
+            "*feat: add notifications* • octocat",
         )
 
     def test_escapes_pull_request_values_for_telegram_markdown(self):
@@ -80,7 +80,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
         self.assertIn("1 open PR", message)
         self.assertTrue(message.startswith("*owner/repo*"))
-        self.assertIn("octocat · 2d", message)
+        self.assertIn("octocat • 2d", message)
         self.assertNotIn("#41", message)
         self.assertNotIn("more", message)
 
@@ -101,8 +101,8 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest("owner/repo", pull_requests)
 
         self.assertIn("12 open PRs", message)
-        self.assertIn("[PR 10](https://github.com/owner/repo/pull/10) · *feat: add notifications*", message)
-        self.assertNotIn("[PR 11](https://github.com/owner/repo/pull/11) · *feat: add notifications*", message)
+        self.assertIn("[PR 10](https://github.com/owner/repo/pull/10) • *feat: add notifications*", message)
+        self.assertNotIn("[PR 11](https://github.com/owner/repo/pull/11) • *feat: add notifications*", message)
         self.assertIn(r"[\.\.\.and 2 more](https://github.com/owner/repo/pulls)", message)
 
     def test_open_pull_request_digest_stays_within_telegram_limit(self):
@@ -143,8 +143,8 @@ class TelegramIssueMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [issue 12](https://github.com/owner/repo/issues/12) closed · "
-            "*Move notifications* · octocat\nResolution summary\\.",
+            "*owner/repo* • [issue 12](https://github.com/owner/repo/issues/12) closed • "
+            "*Move notifications* • octocat\nResolution summary\\.",
         )
 
     def test_closed_issue_truncates_long_body(self):
@@ -203,8 +203,8 @@ class TelegramReleaseMessageTest(unittest.TestCase):
 
         self.assertEqual(
             message,
-            "*owner/repo* · [release v1\\.2\\.3](https://github.com/owner/repo/releases/tag/v1.2.3) "
-            "published · octocat",
+            "*owner/repo* • [release v1\\.2\\.3](https://github.com/owner/repo/releases/tag/v1.2.3) "
+            "published • octocat",
         )
 
     def test_formats_distinct_release_name_and_escapes_markdown(self):
