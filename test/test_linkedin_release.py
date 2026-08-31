@@ -42,6 +42,8 @@ class FakeResponse:
 
 class LinkedInReleasePostTest(unittest.TestCase):
     def setUp(self):
+        self.repository_description = "Homogeneous development baseline."
+        self.topics = ["github-actions", "release-please", "python"]
         self.release = {
             "tag": "v0.18.0",
             "name": "v0.18.0",
@@ -55,16 +57,23 @@ class LinkedInReleasePostTest(unittest.TestCase):
             ),
         }
 
-    def test_formats_release_please_body_as_plain_text(self):
-        message = PREPARE.format_published("owner/repo", self.release)
+    def test_formats_release_please_body_as_little_text(self):
+        message = PREPARE.format_published(
+            "owner/repo",
+            self.release,
+            repository_description=self.repository_description,
+            topics=self.topics,
+        )
 
         self.assertEqual(
             message,
             "owner/repo v0.18.0\n\n"
+            "Homogeneous development baseline.\n\n"
             "Features\n\n"
-            "• publish releases to LinkedIn (#193)\n\n"
+            "• publish releases to LinkedIn \\(\\#193\\)\n\n"
             "Release automation stays deterministic.\n\n"
-            "https://github.com/owner/repo/releases/tag/v0.18.0",
+            "https://github.com/owner/repo/releases/tag/v0.18.0\n\n"
+            "#githubactions #releaseplease #python",
         )
         self.assertNotIn("[", message)
 
@@ -78,21 +87,48 @@ class LinkedInReleasePostTest(unittest.TestCase):
     def test_formats_release_without_body(self):
         self.release["body"] = ""
 
-        message = PREPARE.format_published("owner/repo", self.release)
+        message = PREPARE.format_published(
+            "owner/repo",
+            self.release,
+            repository_description=self.repository_description,
+            topics=self.topics,
+        )
 
         self.assertEqual(
             message,
-            "owner/repo v0.18.0\n\nhttps://github.com/owner/repo/releases/tag/v0.18.0",
+            "owner/repo v0.18.0\n\n"
+            "Homogeneous development baseline.\n\n"
+            "https://github.com/owner/repo/releases/tag/v0.18.0\n\n"
+            "#githubactions #releaseplease #python",
+        )
+
+    def test_escapes_little_reserved_characters(self):
+        self.release["body"] = "Use @name, #tag, *bold*, and snake_case."
+
+        message = PREPARE.format_published("owner/repo", self.release)
+
+        self.assertIn(r"Use \@name, \#tag, \*bold\*, and snake\_case.", message)
+
+    def test_normalizes_and_deduplicates_repository_topics(self):
+        self.assertEqual(
+            PREPARE.format_hashtags(["github-actions", "c-plus-plus", "github-actions", "---"]),
+            "#githubactions #cplusplus",
         )
 
     def test_truncates_body_and_preserves_release_url(self):
         self.release["body"] = "x" * 4000
 
-        message = PREPARE.format_published("owner/repo", self.release)
+        message = PREPARE.format_published(
+            "owner/repo",
+            self.release,
+            repository_description=self.repository_description,
+            topics=self.topics,
+        )
 
-        self.assertEqual(len(message), PREPARE.LINKEDIN_POST_LIMIT)
+        self.assertLessEqual(len(message), PREPARE.LINKEDIN_POST_LIMIT)
         self.assertIn("...\n\n", message)
-        self.assertTrue(message.endswith(self.release["url"]))
+        self.assertIn(self.release["url"], message)
+        self.assertTrue(message.endswith("#githubactions #releaseplease #python"))
 
     def test_writes_multiline_github_output(self):
         with tempfile.NamedTemporaryFile() as output, patch.dict(os.environ, {"GITHUB_OUTPUT": output.name}):
@@ -238,6 +274,8 @@ class LinkedInWorkflowTest(unittest.TestCase):
         send_script = (action_root / "send-linkedin-post" / "send.py").read_text()
 
         self.assertIn('run: python3 "${{ github.action_path }}/prepare.py"', prepare_action)
+        self.assertIn("REPOSITORY_DESCRIPTION: ${{ github.event.repository.description }}", prepare_action)
+        self.assertIn("REPOSITORY_TOPICS: ${{ toJSON(github.event.repository.topics) }}", prepare_action)
         self.assertNotIn("api.linkedin.com", prepare_action)
         self.assertIn('run: python3 "${{ github.action_path }}/send.py"', send_action)
         self.assertIn("LINKEDIN_ACCESS_TOKEN", send_action)

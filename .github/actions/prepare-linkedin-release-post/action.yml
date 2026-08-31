@@ -15,4 +15,6 @@ runs:
         RELEASE_NAME: ${{ github.event.release.name }}
         RELEASE_URL: ${{ github.event.release.html_url }}
         RELEASE_BODY: ${{ github.event.release.body }}
+        REPOSITORY_DESCRIPTION: ${{ github.event.repository.description }}
+        REPOSITORY_TOPICS: ${{ toJSON(github.event.repository.topics) }}
       run: python3 "${{ github.action_path }}/prepare.py"

@@ -193,9 +193,10 @@ jobs:
 <!-- x-release-please-end -->
 
 Baseline publishes stable releases to the authenticated member's public LinkedIn
-feed. It converts the release name, body, and URL to a plain-text post, resolves
-the member identity through OpenID Connect, and reports the resulting LinkedIn
-post URN. Drafts and prereleases are skipped.
+feed. It converts the repository name, description, topics, release name, body,
+and URL to LinkedIn's `little` text format. Repository topics become hashtags.
+The workflow resolves the member identity through OpenID Connect and reports the
+resulting LinkedIn post URN. Drafts and prereleases are skipped.
 
 Create a LinkedIn developer application with the `Share on LinkedIn` and `Sign
 In with LinkedIn using OpenID Connect` products. Generate a member token with
