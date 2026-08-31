@@ -172,6 +172,42 @@ Baseline sends one notification when a release or prerelease is published. The
 release tag links to the GitHub Release. Pass the chat ID as an Actions variable
 and the bot token as a secret.
 
+## Publish releases on LinkedIn
+
+Create `.github/workflows/publish-linkedin-release.yml`:
+
+<!-- x-release-please-start-version -->
+
+```yaml
+name: Publish LinkedIn release
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    uses: rubykatzen/baseline/.github/workflows/publish-linkedin-release-shared.yml@v0.17.2
+    secrets:
+      linkedin-access-token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+```
+
+<!-- x-release-please-end -->
+
+Baseline publishes stable releases to the authenticated member's public LinkedIn
+feed. It converts the release name, body, and URL to a plain-text post, resolves
+the member identity through OpenID Connect, and reports the resulting LinkedIn
+post URN. Drafts and prereleases are skipped.
+
+Create a LinkedIn developer application with the `Share on LinkedIn` and `Sign
+In with LinkedIn using OpenID Connect` products. Generate a member token with
+the `openid`, `profile`, and `w_member_social` scopes, then store it as the
+`LINKEDIN_ACCESS_TOKEN` Actions secret. LinkedIn member access tokens normally
+expire after 60 days and must be replaced manually unless the application has
+partner-only programmatic refresh access.
+
+The publish request is sent once and is not retried automatically. Do not rerun
+a failed job until confirming that LinkedIn did not create the post; a connection
+failure after LinkedIn accepts the request can otherwise produce a duplicate.
+
 ## Notify Telegram about closed issues
 
 Issue notifications are optional and can use a different Telegram channel from

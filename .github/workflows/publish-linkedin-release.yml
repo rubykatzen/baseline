@@ -1,0 +1,9 @@
+name: Publish LinkedIn release
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-linkedin-release-shared.yml
+    secrets:
+      linkedin-access-token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}

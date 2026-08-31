@@ -1,0 +1,22 @@
+name: Send LinkedIn post
+description: Publish a text post to an authenticated LinkedIn member feed.
+inputs:
+  message:
+    description: Post text.
+    required: true
+  linkedin-access-token:
+    description: LinkedIn member OAuth access token.
+    required: true
+outputs:
+  post-id:
+    description: Published LinkedIn post URN.
+    value: ${{ steps.send.outputs.post-id }}
+runs:
+  using: composite
+  steps:
+    - id: send
+      shell: bash
+      env:
+        MESSAGE: ${{ inputs.message }}
+        LINKEDIN_ACCESS_TOKEN: ${{ inputs.linkedin-access-token }}
+      run: python3 "${{ github.action_path }}/send.py"

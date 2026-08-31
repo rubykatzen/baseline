@@ -1,0 +1,33 @@
+name: Publish LinkedIn release (shared)
+on:
+  workflow_call:
+    secrets:
+      linkedin-access-token:
+        required: true
+    outputs:
+      post-id:
+        description: Published LinkedIn post URN.
+        value: ${{ jobs.publish.outputs.post-id }}
+concurrency:
+  group: linkedin-release-${{ github.repository_id }}-${{ github.event.release.id }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: >-
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      github.event.release.draft == false &&
+      github.event.release.prerelease == false
+    runs-on: ubuntu-slim
+    permissions: {}
+    outputs:
+      post-id: ${{ steps.send.outputs.post-id }}
+    steps:
+      - id: prepare
+        uses: $/.github/actions/prepare-linkedin-release-post
+      - id: send
+        name: Publish
+        uses: $/.github/actions/send-linkedin-post
+        with:
+          message: ${{ steps.prepare.outputs.message }}
+          linkedin-access-token: ${{ secrets.linkedin-access-token }}
