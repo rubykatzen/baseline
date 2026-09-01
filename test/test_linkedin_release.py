@@ -73,7 +73,7 @@ class LinkedInReleasePostTest(unittest.TestCase):
             "• publish releases to LinkedIn \\(\\#193\\)\n\n"
             "Release automation stays deterministic.\n\n"
             "https://github.com/owner/repo/releases/tag/v0.18.0\n\n"
-            "#githubactions #releaseplease #python",
+            "#GithubActions #ReleasePlease #Python",
         )
         self.assertNotIn("[", message)
 
@@ -99,7 +99,7 @@ class LinkedInReleasePostTest(unittest.TestCase):
             "owner/repo v0.18.0\n\n"
             "Homogeneous development baseline.\n\n"
             "https://github.com/owner/repo/releases/tag/v0.18.0\n\n"
-            "#githubactions #releaseplease #python",
+            "#GithubActions #ReleasePlease #Python",
         )
 
     def test_escapes_little_reserved_characters(self):
@@ -112,7 +112,7 @@ class LinkedInReleasePostTest(unittest.TestCase):
     def test_normalizes_and_deduplicates_repository_topics(self):
         self.assertEqual(
             PREPARE.format_hashtags(["github-actions", "c-plus-plus", "github-actions", "---"]),
-            "#githubactions #cplusplus",
+            "#GithubActions #CPlusPlus",
         )
 
     def test_truncates_body_and_preserves_release_url(self):
@@ -128,7 +128,7 @@ class LinkedInReleasePostTest(unittest.TestCase):
         self.assertLessEqual(len(message), PREPARE.LINKEDIN_POST_LIMIT)
         self.assertIn("...\n\n", message)
         self.assertIn(self.release["url"], message)
-        self.assertTrue(message.endswith("#githubactions #releaseplease #python"))
+        self.assertTrue(message.endswith("#GithubActions #ReleasePlease #Python"))
 
     def test_writes_multiline_github_output(self):
         with tempfile.NamedTemporaryFile() as output, patch.dict(os.environ, {"GITHUB_OUTPUT": output.name}):

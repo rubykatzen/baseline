@@ -72,7 +72,7 @@ def release_description(value, tag=""):
 def format_hashtags(topics):
     hashtags = []
     for topic in topics:
-        name = re.sub(r"[^A-Za-z0-9]", "", topic)
+        name = "".join(word.capitalize() for word in re.findall(r"[A-Za-z0-9]+", topic))
         hashtag = f"#{name}" if name else ""
         if hashtag and hashtag not in hashtags:
             hashtags.append(hashtag)

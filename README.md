@@ -194,7 +194,8 @@ jobs:
 
 Baseline publishes stable releases to the authenticated member's public LinkedIn
 feed. It converts the repository name, description, topics, release name, body,
-and URL to LinkedIn's `little` text format. Repository topics become hashtags.
+and URL to LinkedIn's `little` text format. Repository topics become PascalCase
+hashtags.
 The workflow resolves the member identity through OpenID Connect and reports the
 resulting LinkedIn post URN. Drafts and prereleases are skipped.
 
