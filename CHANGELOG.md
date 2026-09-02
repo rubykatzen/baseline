@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/rubykatzen/baseline/compare/v0.18.0...v0.18.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* align LinkedIn publish Telegram notification with other formats ([#200](https://github.com/rubykatzen/baseline/issues/200)) ([d5bea5a](https://github.com/rubykatzen/baseline/commit/d5bea5a089c2b9332d41cd52a5695b55bba3010f))
+
 ## [0.18.0](https://github.com/rubykatzen/baseline/compare/v0.17.2...v0.18.0) (2026-09-02)
 
 
