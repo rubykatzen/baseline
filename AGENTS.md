@@ -33,6 +33,17 @@ line containing exactly three emoji relevant to the message context:
 `EMOJI EMOJI EMOJI`
 <!-- /baseline fragment: message-suffix -->
 
+<!-- baseline fragment: no-emoji-in-docs -->
+## No Emoji in Documentation
+
+Do not use emoji in documentation or README content, including headings,
+prose, lists, and code comments. This applies to `README.md`, `AGENTS.md`,
+and any other Markdown documentation in the repository.
+
+This does not apply to the Message Prefix and Message Suffix conventions
+above, which require emoji in written agent communication.
+<!-- /baseline fragment: no-emoji-in-docs -->
+
 <!-- baseline fragment: embedded-fragments -->
 ## Embedded Fragments
 
