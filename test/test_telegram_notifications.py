@@ -367,6 +367,7 @@ class TelegramWorkflowTest(unittest.TestCase):
             telegram_actions,
             [
                 "prepare-telegram-issue-message",
+                "prepare-telegram-linkedin-message",
                 "prepare-telegram-pr-message",
                 "prepare-telegram-release-message",
                 "send-telegram-message",

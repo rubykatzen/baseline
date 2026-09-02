@@ -52,22 +52,31 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.telegram-bot-token }}
         run: echo "present=${TELEGRAM_BOT_TOKEN:+true}" >> "$GITHUB_OUTPUT"
+      - id: prepare-success
+        if: needs.publish.result == 'success' && steps.check-token.outputs.present == 'true'
+        uses: $/.github/actions/prepare-telegram-linkedin-message
+        with:
+          result: success
+          post-id: ${{ needs.publish.outputs.post-id }}
       - name: Notify success
         if: needs.publish.result == 'success' && steps.check-token.outputs.present == 'true'
         uses: $/.github/actions/send-telegram-message
         with:
-          message: >-
-            ${{ github.repository }} — LinkedIn post published for
-            ${{ github.event.release.tag_name }}: ${{ needs.publish.outputs.post-id }}
+          message: ${{ steps.prepare-success.outputs.message }}
           telegram-bot-token: ${{ secrets.telegram-bot-token }}
           telegram-chat-id: ${{ inputs.telegram-chat-id }}
+          parse-mode: MarkdownV2
+      - id: prepare-failure
+        if: needs.publish.result == 'failure' && steps.check-token.outputs.present == 'true'
+        uses: $/.github/actions/prepare-telegram-linkedin-message
+        with:
+          result: failure
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       - name: Notify failure
         if: needs.publish.result == 'failure' && steps.check-token.outputs.present == 'true'
         uses: $/.github/actions/send-telegram-message
         with:
-          message: >-
-            ${{ github.repository }} — failed to publish LinkedIn post for
-            ${{ github.event.release.tag_name }}:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          message: ${{ steps.prepare-failure.outputs.message }}
           telegram-bot-token: ${{ secrets.telegram-bot-token }}
           telegram-chat-id: ${{ inputs.telegram-chat-id }}
+          parse-mode: MarkdownV2
