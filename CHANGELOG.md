@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.18.0](https://github.com/rubykatzen/baseline/compare/v0.17.2...v0.18.0) (2026-09-02)
+
+
+### Features
+
+* add no-emoji-in-docs AGENTS.md fragment ([#197](https://github.com/rubykatzen/baseline/issues/197)) ([e02bdd1](https://github.com/rubykatzen/baseline/commit/e02bdd16c860222f3be8b05d8aa63caeff1b3423))
+* publish releases to LinkedIn ([#194](https://github.com/rubykatzen/baseline/issues/194)) ([a20a784](https://github.com/rubykatzen/baseline/commit/a20a784020920e000d38ceec9610a9073ac2acb2))
+
+
+### Bug Fixes
+
+* address Copilot review findings on LinkedIn release publishing ([#199](https://github.com/rubykatzen/baseline/issues/199)) ([12254ce](https://github.com/rubykatzen/baseline/commit/12254ce23da128e9d50982a6984377980a66fa3b))
+
 ## [0.17.2](https://github.com/rubykatzen/baseline/compare/v0.17.1...v0.17.2) (2026-08-29)
 
 
