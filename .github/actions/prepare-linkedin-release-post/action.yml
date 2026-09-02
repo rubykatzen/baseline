@@ -1,0 +1,20 @@
+name: Prepare LinkedIn release post
+description: Prepare a LinkedIn post for a published release.
+outputs:
+  message:
+    description: Prepared post text.
+    value: ${{ steps.prepare.outputs.message }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: bash
+      env:
+        REPOSITORY: ${{ github.repository }}
+        TAG_NAME: ${{ github.event.release.tag_name }}
+        RELEASE_NAME: ${{ github.event.release.name }}
+        RELEASE_URL: ${{ github.event.release.html_url }}
+        RELEASE_BODY: ${{ github.event.release.body }}
+        REPOSITORY_DESCRIPTION: ${{ github.event.repository.description }}
+        REPOSITORY_TOPICS: ${{ toJSON(github.event.repository.topics) }}
+      run: python3 "${{ github.action_path }}/prepare.py"
