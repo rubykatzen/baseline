@@ -48,8 +48,12 @@ jobs:
     runs-on: ubuntu-slim
     permissions: {}
     steps:
+      - id: check-token
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.telegram-bot-token }}
+        run: echo "present=${TELEGRAM_BOT_TOKEN:+true}" >> "$GITHUB_OUTPUT"
       - name: Notify success
-        if: needs.publish.result == 'success'
+        if: needs.publish.result == 'success' && steps.check-token.outputs.present == 'true'
         uses: $/.github/actions/send-telegram-message
         with:
           message: >-
@@ -58,7 +62,7 @@ jobs:
           telegram-bot-token: ${{ secrets.telegram-bot-token }}
           telegram-chat-id: ${{ inputs.telegram-chat-id }}
       - name: Notify failure
-        if: needs.publish.result == 'failure'
+        if: needs.publish.result == 'failure' && steps.check-token.outputs.present == 'true'
         uses: $/.github/actions/send-telegram-message
         with:
           message: >-

@@ -115,6 +115,16 @@ class LinkedInReleasePostTest(unittest.TestCase):
             "#GithubActions #CPlusPlus",
         )
 
+    def test_truncate_never_exceeds_limit_for_small_limits(self):
+        for limit in range(4):
+            with self.subTest(limit=limit):
+                self.assertLessEqual(len(PREPARE.truncate("hello world", limit)), limit)
+
+    def test_truncate_little_text_never_exceeds_limit_for_small_limits(self):
+        for limit in range(4):
+            with self.subTest(limit=limit):
+                self.assertLessEqual(len(PREPARE.truncate_little_text("hello #world", limit)), limit)
+
     def test_truncates_body_and_preserves_release_url(self):
         self.release["body"] = "x" * 4000
 
@@ -270,15 +280,18 @@ class LinkedInWorkflowTest(unittest.TestCase):
         self.assertIn("needs.publish.result == 'success'", job["if"])
         self.assertIn("needs.publish.result == 'failure'", job["if"])
         self.assertEqual(job["permissions"], {})
-        self.assertEqual(
-            [step["uses"] for step in job["steps"]],
-            ["$/.github/actions/send-telegram-message", "$/.github/actions/send-telegram-message"],
-        )
-        for step in job["steps"]:
+
+        check_token, notify_success, notify_failure = job["steps"]
+        self.assertEqual(check_token["id"], "check-token")
+        self.assertIn("secrets.telegram-bot-token", check_token["env"]["TELEGRAM_BOT_TOKEN"])
+
+        for step in (notify_success, notify_failure):
+            self.assertEqual(step["uses"], "$/.github/actions/send-telegram-message")
+            self.assertIn("steps.check-token.outputs.present == 'true'", step["if"])
             self.assertEqual(step["with"]["telegram-bot-token"], "${{ secrets.telegram-bot-token }}")
             self.assertEqual(step["with"]["telegram-chat-id"], "${{ inputs.telegram-chat-id }}")
-        self.assertEqual(job["steps"][0]["if"], "needs.publish.result == 'success'")
-        self.assertEqual(job["steps"][1]["if"], "needs.publish.result == 'failure'")
+        self.assertIn("needs.publish.result == 'success'", notify_success["if"])
+        self.assertIn("needs.publish.result == 'failure'", notify_failure["if"])
 
     def test_baseline_caller_passes_token_explicitly(self):
         path = BASELINE_ROOT / ".github" / "workflows" / "publish-linkedin-release.yml"
