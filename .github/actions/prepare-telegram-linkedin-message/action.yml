@@ -1,0 +1,28 @@
+name: Prepare Telegram LinkedIn notification
+description: Prepare a Telegram message reporting whether a LinkedIn release post succeeded or failed.
+inputs:
+  result:
+    description: Outcome of the LinkedIn publish job (success or failure).
+    required: true
+  post-id:
+    description: Published LinkedIn post URN. Required when result is success.
+    default: ""
+  run-url:
+    description: Workflow run URL. Required when result is failure.
+    default: ""
+outputs:
+  message:
+    description: Prepared Telegram message text.
+    value: ${{ steps.prepare.outputs.message }}
+runs:
+  using: composite
+  steps:
+    - id: prepare
+      shell: bash
+      env:
+        REPOSITORY: ${{ github.repository }}
+        TAG_NAME: ${{ github.event.release.tag_name }}
+        RESULT: ${{ inputs.result }}
+        POST_ID: ${{ inputs.post-id }}
+        RUN_URL: ${{ inputs.run-url }}
+      run: python3 "${{ github.action_path }}/prepare.py"

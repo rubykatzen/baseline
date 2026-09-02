@@ -22,6 +22,7 @@ def load_action_module(action, module):
 
 PREPARE = load_action_module("prepare-linkedin-release-post", "prepare.py")
 SEND = load_action_module("send-linkedin-post", "send.py")
+PREPARE_NOTIFY = load_action_module("prepare-telegram-linkedin-message", "prepare.py")
 
 
 class FakeResponse:
@@ -238,6 +239,46 @@ class LinkedInSenderTest(unittest.TestCase):
         self.assertEqual(detail, 'LinkedIn API request failed with HTTP 401: {"message":"Expired token"}')
 
 
+class LinkedInNotifyMessageTest(unittest.TestCase):
+    def test_formats_success_message_with_post_link(self):
+        message = PREPARE_NOTIFY.format_published("owner/repo", "v0.18.0", "urn:li:share:123")
+
+        self.assertEqual(
+            message,
+            r"*owner/repo* • [LinkedIn post](https://www.linkedin.com/feed/update/urn:li:share:123/) "
+            r"published for v0\.18\.0",
+        )
+
+    def test_formats_failure_message_with_run_link(self):
+        message = PREPARE_NOTIFY.format_failed(
+            "owner/repo", "v0.18.0", "https://github.com/owner/repo/actions/runs/123"
+        )
+
+        self.assertEqual(
+            message,
+            r"*owner/repo* • [LinkedIn post](https://github.com/owner/repo/actions/runs/123) "
+            r"failed for v0\.18\.0",
+        )
+
+    def test_escapes_markdown_special_characters_in_repository_and_tag(self):
+        message = PREPARE_NOTIFY.format_published("owner/my-repo", "v0.18.0-rc.1", "urn:li:share:123")
+
+        self.assertIn(r"owner/my\-repo", message)
+        self.assertIn(r"v0\.18\.0\-rc\.1", message)
+
+    def test_rejects_unknown_result(self):
+        env = {"REPOSITORY": "owner/repo", "TAG_NAME": "v0.18.0", "RESULT": "cancelled"}
+        with patch.dict(os.environ, env), self.assertRaisesRegex(ValueError, "success or failure"):
+            PREPARE_NOTIFY.main()
+
+    def test_writes_multiline_github_output(self):
+        with tempfile.NamedTemporaryFile() as output, patch.dict(os.environ, {"GITHUB_OUTPUT": output.name}):
+            PREPARE_NOTIFY.write_output("first\nsecond")
+            value = Path(output.name).read_text()
+
+        self.assertRegex(value, r"^message<<ghdelim_[0-9a-f]+\nfirst\nsecond\nghdelim_[0-9a-f]+\n$")
+
+
 class LinkedInWorkflowTest(unittest.TestCase):
     def load_workflow(self, name):
         with open(BASELINE_ROOT / ".github" / "workflows" / name) as workflow:
@@ -281,15 +322,25 @@ class LinkedInWorkflowTest(unittest.TestCase):
         self.assertIn("needs.publish.result == 'failure'", job["if"])
         self.assertEqual(job["permissions"], {})
 
-        check_token, notify_success, notify_failure = job["steps"]
+        check_token, prepare_success, notify_success, prepare_failure, notify_failure = job["steps"]
         self.assertEqual(check_token["id"], "check-token")
         self.assertIn("secrets.telegram-bot-token", check_token["env"]["TELEGRAM_BOT_TOKEN"])
+
+        self.assertEqual(prepare_success["uses"], "$/.github/actions/prepare-telegram-linkedin-message")
+        self.assertEqual(prepare_success["with"]["result"], "success")
+        self.assertEqual(prepare_success["with"]["post-id"], "${{ needs.publish.outputs.post-id }}")
+        self.assertEqual(prepare_failure["uses"], "$/.github/actions/prepare-telegram-linkedin-message")
+        self.assertEqual(prepare_failure["with"]["result"], "failure")
+        self.assertIn("actions/runs", prepare_failure["with"]["run-url"])
 
         for step in (notify_success, notify_failure):
             self.assertEqual(step["uses"], "$/.github/actions/send-telegram-message")
             self.assertIn("steps.check-token.outputs.present == 'true'", step["if"])
             self.assertEqual(step["with"]["telegram-bot-token"], "${{ secrets.telegram-bot-token }}")
             self.assertEqual(step["with"]["telegram-chat-id"], "${{ inputs.telegram-chat-id }}")
+            self.assertEqual(step["with"]["parse-mode"], "MarkdownV2")
+        self.assertEqual(notify_success["with"]["message"], "${{ steps.prepare-success.outputs.message }}")
+        self.assertEqual(notify_failure["with"]["message"], "${{ steps.prepare-failure.outputs.message }}")
         self.assertIn("needs.publish.result == 'success'", notify_success["if"])
         self.assertIn("needs.publish.result == 'failure'", notify_failure["if"])
 
