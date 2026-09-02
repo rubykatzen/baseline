@@ -18,7 +18,7 @@ class GitHubConfigTest(unittest.TestCase):
     def setUp(self):
         self.checks = {
             "hasWikiEnabled": False,
-            "autoMergeAllowed": True,
+            "deleteBranchOnMerge": True,
         }
 
     def test_loads_repository_config(self):
@@ -28,7 +28,6 @@ class GitHubConfigTest(unittest.TestCase):
             set(checks),
             {
                 "hasWikiEnabled",
-                "autoMergeAllowed",
                 "deleteBranchOnMerge",
                 "mergeCommitAllowed",
                 "rebaseMergeAllowed",
@@ -109,12 +108,12 @@ class GitHubConfigTest(unittest.TestCase):
 
         def request(repository, fields):
             requests.append((repository, fields))
-            return {"hasWikiEnabled": False, "autoMergeAllowed": True}
+            return {"hasWikiEnabled": False, "deleteBranchOnMerge": True}
 
         results = CHECK_GITHUB_CONFIG.evaluate_checks(self.checks, "owner/repo", request=request)
 
         self.assertEqual([result.status for result in results], ["passed", "passed"])
-        self.assertEqual(requests, [("owner/repo", ["hasWikiEnabled", "autoMergeAllowed"])])
+        self.assertEqual(requests, [("owner/repo", ["hasWikiEnabled", "deleteBranchOnMerge"])])
 
     def test_skips_check_without_requesting_it(self):
         results = CHECK_GITHUB_CONFIG.evaluate_checks(
@@ -130,12 +129,12 @@ class GitHubConfigTest(unittest.TestCase):
         results = CHECK_GITHUB_CONFIG.evaluate_checks(
             self.checks,
             "owner/repo",
-            request=lambda _repository, _fields: {"hasWikiEnabled": True, "autoMergeAllowed": False},
+            request=lambda _repository, _fields: {"hasWikiEnabled": True, "deleteBranchOnMerge": False},
         )
 
         self.assertEqual(
             [result.name for result in results if result.status == "failed"],
-            ["hasWikiEnabled", "autoMergeAllowed"],
+            ["hasWikiEnabled", "deleteBranchOnMerge"],
         )
 
     def test_reports_api_failure_for_each_dependent_check(self):

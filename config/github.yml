@@ -1,6 +1,5 @@
 config:
   hasWikiEnabled: false
-  autoMergeAllowed: true
   deleteBranchOnMerge: true
   mergeCommitAllowed: false
   rebaseMergeAllowed: false
