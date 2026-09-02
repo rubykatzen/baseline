@@ -186,8 +186,11 @@ on:
 jobs:
   publish:
     uses: rubykatzen/baseline/.github/workflows/publish-linkedin-release-shared.yml@v0.17.2
+    with:
+      telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
     secrets:
       linkedin-access-token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+      telegram-bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 ```
 
 <!-- x-release-please-end -->
@@ -198,6 +201,10 @@ and URL to LinkedIn's `little` text format. Repository topics become PascalCase
 hashtags.
 The workflow resolves the member identity through OpenID Connect and reports the
 resulting LinkedIn post URN. Drafts and prereleases are skipped.
+
+`telegram-chat-id` and `telegram-bot-token` are optional. When both are set, the
+workflow sends a Telegram message reporting whether the LinkedIn post succeeded
+or failed. Omit them to skip these notifications.
 
 Create a LinkedIn developer application with the `Share on LinkedIn` and `Sign
 In with LinkedIn using OpenID Connect` products. Generate a member token with

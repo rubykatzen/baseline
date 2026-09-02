@@ -1,9 +1,17 @@
 name: Publish LinkedIn release (shared)
 on:
   workflow_call:
+    inputs:
+      telegram-chat-id:
+        description: Telegram chat ID that receives publish notifications. Omit to skip notifications.
+        required: false
+        type: string
     secrets:
       linkedin-access-token:
         required: true
+      telegram-bot-token:
+        description: Telegram bot token. Omit to skip publish notifications.
+        required: false
     outputs:
       post-id:
         description: Published LinkedIn post URN.
@@ -31,3 +39,31 @@ jobs:
         with:
           message: ${{ steps.prepare.outputs.message }}
           linkedin-access-token: ${{ secrets.linkedin-access-token }}
+  notify:
+    needs: publish
+    if: >-
+      always() &&
+      inputs.telegram-chat-id != '' &&
+      (needs.publish.result == 'success' || needs.publish.result == 'failure')
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - name: Notify success
+        if: needs.publish.result == 'success'
+        uses: $/.github/actions/send-telegram-message
+        with:
+          message: >-
+            ${{ github.repository }} — LinkedIn post published for
+            ${{ github.event.release.tag_name }}: ${{ needs.publish.outputs.post-id }}
+          telegram-bot-token: ${{ secrets.telegram-bot-token }}
+          telegram-chat-id: ${{ inputs.telegram-chat-id }}
+      - name: Notify failure
+        if: needs.publish.result == 'failure'
+        uses: $/.github/actions/send-telegram-message
+        with:
+          message: >-
+            ${{ github.repository }} — failed to publish LinkedIn post for
+            ${{ github.event.release.tag_name }}:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          telegram-bot-token: ${{ secrets.telegram-bot-token }}
+          telegram-chat-id: ${{ inputs.telegram-chat-id }}

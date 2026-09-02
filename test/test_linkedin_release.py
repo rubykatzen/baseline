@@ -238,8 +238,16 @@ class LinkedInWorkflowTest(unittest.TestCase):
         workflow_call = workflow[True]["workflow_call"]
         job = workflow["jobs"]["publish"]
 
-        self.assertEqual(set(workflow_call["secrets"]), {"linkedin-access-token"})
-        self.assertNotIn("inputs", workflow_call)
+        self.assertEqual(set(workflow_call["secrets"]), {"linkedin-access-token", "telegram-bot-token"})
+        self.assertFalse(workflow_call["secrets"]["telegram-bot-token"]["required"])
+        self.assertEqual(
+            workflow_call["inputs"]["telegram-chat-id"],
+            {
+                "description": "Telegram chat ID that receives publish notifications. Omit to skip notifications.",
+                "required": False,
+                "type": "string",
+            },
+        )
         self.assertEqual(workflow_call["outputs"]["post-id"]["value"], "${{ jobs.publish.outputs.post-id }}")
         self.assertIn("github.event_name == 'release'", job["if"])
         self.assertIn("github.event.release.prerelease == false", job["if"])
@@ -253,6 +261,25 @@ class LinkedInWorkflowTest(unittest.TestCase):
             ],
         )
 
+    def test_shared_workflow_notifies_telegram_when_chat_id_is_set(self):
+        workflow = self.load_workflow("publish-linkedin-release-shared.yml")
+        job = workflow["jobs"]["notify"]
+
+        self.assertEqual(job["needs"], "publish")
+        self.assertIn("inputs.telegram-chat-id != ''", job["if"])
+        self.assertIn("needs.publish.result == 'success'", job["if"])
+        self.assertIn("needs.publish.result == 'failure'", job["if"])
+        self.assertEqual(job["permissions"], {})
+        self.assertEqual(
+            [step["uses"] for step in job["steps"]],
+            ["$/.github/actions/send-telegram-message", "$/.github/actions/send-telegram-message"],
+        )
+        for step in job["steps"]:
+            self.assertEqual(step["with"]["telegram-bot-token"], "${{ secrets.telegram-bot-token }}")
+            self.assertEqual(step["with"]["telegram-chat-id"], "${{ inputs.telegram-chat-id }}")
+        self.assertEqual(job["steps"][0]["if"], "needs.publish.result == 'success'")
+        self.assertEqual(job["steps"][1]["if"], "needs.publish.result == 'failure'")
+
     def test_baseline_caller_passes_token_explicitly(self):
         path = BASELINE_ROOT / ".github" / "workflows" / "publish-linkedin-release.yml"
         content = path.read_text()
@@ -261,9 +288,13 @@ class LinkedInWorkflowTest(unittest.TestCase):
 
         self.assertIn("release:\n    types: [published]", content)
         self.assertEqual(job["uses"], "./.github/workflows/publish-linkedin-release-shared.yml")
+        self.assertEqual(job["with"], {"telegram-chat-id": "${{ vars.TELEGRAM_CHAT_ID }}"})
         self.assertEqual(
             job["secrets"],
-            {"linkedin-access-token": "${{ secrets.LINKEDIN_ACCESS_TOKEN }}"},
+            {
+                "linkedin-access-token": "${{ secrets.LINKEDIN_ACCESS_TOKEN }}",
+                "telegram-bot-token": "${{ secrets.TELEGRAM_BOT_TOKEN }}",
+            },
         )
         self.assertNotIn("secrets: inherit", content)
 
