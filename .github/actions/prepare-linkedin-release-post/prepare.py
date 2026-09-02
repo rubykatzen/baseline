@@ -14,6 +14,8 @@ LITTLE_RESERVED = frozenset("|{}@[]()<>#\\*_~")
 def truncate(value, limit):
     if len(value) <= limit:
         return value
+    if limit <= 3:
+        return value[:limit]
     return value[: limit - 3].rstrip() + "..."
 
 
@@ -26,7 +28,7 @@ def truncate_little_text(value, limit):
     if len(escaped) <= limit:
         return escaped
 
-    available = limit - 3
+    available = limit if limit <= 3 else limit - 3
     result = []
     length = 0
     for character in value:
@@ -35,7 +37,8 @@ def truncate_little_text(value, limit):
             break
         result.append(token)
         length += len(token)
-    return "".join(result).rstrip() + "..."
+    joined = "".join(result).rstrip()
+    return joined if limit <= 3 else f"{joined}..."
 
 
 def is_release_heading(value, tag):
