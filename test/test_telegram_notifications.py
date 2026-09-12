@@ -131,7 +131,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
 
 class TelegramIssueMessageTest(unittest.TestCase):
 
-    def test_closed_issue_includes_body(self):
+    def test_closed_issue_excludes_body(self):
         issue = {
             "number": 12,
             "title": "Move notifications",
@@ -144,50 +144,8 @@ class TelegramIssueMessageTest(unittest.TestCase):
         self.assertEqual(
             message,
             "*owner/repo* • [issue 12](https://github.com/owner/repo/issues/12) closed • "
-            "*Move notifications* • octocat\nResolution summary\\.",
+            "*Move notifications* • octocat",
         )
-
-    def test_closed_issue_truncates_long_body(self):
-        issue = {
-            "number": 12,
-            "title": "Move notifications",
-            "body": "x" * (ISSUE_TELEGRAM.ISSUE_BODY_LIMIT + 10),
-            "url": "https://github.com/owner/repo/issues/12",
-        }
-
-        message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
-        body = ISSUE_TELEGRAM.truncate(issue["body"], ISSUE_TELEGRAM.ISSUE_BODY_LIMIT)
-
-        self.assertEqual(len(body), ISSUE_TELEGRAM.ISSUE_BODY_LIMIT)
-        self.assertTrue(body.endswith("..."))
-        self.assertTrue(message.endswith(r"\.\.\."))
-
-    def test_closed_issue_uses_only_first_body_paragraph(self):
-        issue = {
-            "number": 12,
-            "title": "Fix [alerts]",
-            "body": "First line.\nContinued *line*.\n\nIgnored paragraph.",
-            "url": "https://github.com/owner/repo/issues/12",
-        }
-
-        message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "dependabot[bot]")
-
-        self.assertIn(r"*Fix \[alerts\]*", message)
-        self.assertTrue(message.endswith("dependabot\\[bot\\]\nFirst line\\. Continued \\*line\\*\\."))
-        self.assertNotIn("Ignored", message)
-
-    def test_closed_issue_includes_leading_heading_and_first_paragraph(self):
-        issue = {
-            "number": 12,
-            "title": "Move notifications",
-            "body": "## Resolution\n\nFirst line.\nContinued line.\n\nIgnored paragraph.",
-            "url": "https://github.com/owner/repo/issues/12",
-        }
-
-        message = ISSUE_TELEGRAM.format_closed("owner/repo", issue, "octocat")
-
-        self.assertTrue(message.endswith("\nResolution\nFirst line\\. Continued line\\."))
-        self.assertNotIn("Ignored", message)
 
 
 class TelegramReleaseMessageTest(unittest.TestCase):
