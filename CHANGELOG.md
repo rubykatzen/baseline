@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.2](https://github.com/rubykatzen/baseline/compare/v0.18.1...v0.18.2) (2026-09-12)
+
+
+### Bug Fixes
+
+* drop issue body excerpt from Telegram close notification ([#203](https://github.com/rubykatzen/baseline/issues/203)) ([ed60774](https://github.com/rubykatzen/baseline/commit/ed60774329ac14c80b6d6f5d32c1102655f63b77))
+
 ## [0.18.1](https://github.com/rubykatzen/baseline/compare/v0.18.0...v0.18.1) (2026-09-02)
 
 
