@@ -59,7 +59,7 @@ types:
   optional:
     Epic:
       color: PURPLE
-      description: A goal split into sub-issues
+      description: A large goal tracked via sub-issues
     Research:
       color: GREEN
       description: An inquiry to reduce uncertainty
