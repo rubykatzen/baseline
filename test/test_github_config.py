@@ -72,12 +72,20 @@ class GitHubConfigTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "must be valid YAML"):
                 CHECK_GITHUB_CONFIG.load_config(config.name)
 
+    def test_rejects_missing_issues_mapping(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write("config:\n  hasWikiEnabled: false\n")
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "must contain an issues mapping"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
     def test_rejects_invalid_label_color(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n"
-                "      color: blue\n      description: Dependency updates\n"
+                "issues:\n  labels:\n    required:\n      deps:\n"
+                "        color: blue\n        description: Dependency updates\n"
             )
             config.flush()
 
@@ -88,7 +96,7 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n      color: 0366d6\n"
+                "issues:\n  labels:\n    required:\n      deps:\n        color: 0366d6\n"
             )
             config.flush()
 
@@ -99,19 +107,23 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
+                "issues:\n  labels:\n    required:\n      deps:\n"
+                "        color: 0366d6\n        description: Dependency updates\n"
             )
             config.flush()
 
-            with self.assertRaisesRegex(ValueError, "must contain a types mapping"):
+            with self.assertRaisesRegex(ValueError, "must contain an issues.types mapping"):
                 CHECK_GITHUB_CONFIG.load_config(config.name)
 
     def test_rejects_invalid_type_color(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
-                "types:\n  required:\n    Task:\n      color: blue\n      description: A specific piece of work\n"
+                "issues:\n"
+                "  labels:\n    required:\n      deps:\n"
+                "        color: 0366d6\n        description: Dependency updates\n"
+                "  types:\n    required:\n      Task:\n"
+                "        color: blue\n        description: A specific piece of work\n"
             )
             config.flush()
 
@@ -122,8 +134,10 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
-                "types:\n  required:\n    Task:\n      color: BLUE\n"
+                "issues:\n"
+                "  labels:\n    required:\n      deps:\n"
+                "        color: 0366d6\n        description: Dependency updates\n"
+                "  types:\n    required:\n      Task:\n        color: BLUE\n"
             )
             config.flush()
 
@@ -134,10 +148,12 @@ class GitHubConfigTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
             config.write(
                 "config:\n  hasWikiEnabled: false\n"
-                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
-                "types:\n"
-                "  required:\n    Task:\n      color: BLUE\n      description: A specific piece of work\n"
-                "  optional:\n    Task:\n      color: BLUE\n      description: A specific piece of work\n"
+                "issues:\n"
+                "  labels:\n    required:\n      deps:\n"
+                "        color: 0366d6\n        description: Dependency updates\n"
+                "  types:\n"
+                "    required:\n      Task:\n        color: BLUE\n        description: A specific piece of work\n"
+                "    optional:\n      Task:\n        color: BLUE\n        description: A specific piece of work\n"
             )
             config.flush()
 

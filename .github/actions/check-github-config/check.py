@@ -52,18 +52,22 @@ def load_config(config_path):
         if not isinstance(field, str) or not FIELD_PATTERN.fullmatch(field):
             raise ValueError("github repo check names must be GraphQL field names")
 
-    labels = config.get("labels")
+    issues = config.get("issues")
+    if not isinstance(issues, dict):
+        raise ValueError("github repo config must contain an issues mapping")
+
+    labels = issues.get("labels")
     if not isinstance(labels, dict):
-        raise ValueError("github repo config must contain a labels mapping")
+        raise ValueError("github repo config must contain an issues.labels mapping")
     required = validate_label_group(labels.get("required"), "required")
     optional = validate_label_group(labels.get("optional", {}), "optional", allow_empty=True)
     if duplicate := set(required) & set(optional):
         names = ", ".join(sorted(duplicate))
         raise ValueError(f"GitHub labels cannot be both required and optional: {names}")
 
-    types = config.get("types")
+    types = issues.get("types")
     if not isinstance(types, dict):
-        raise ValueError("github repo config must contain a types mapping")
+        raise ValueError("github repo config must contain an issues.types mapping")
     types_required = validate_type_group(types.get("required"), "required")
     types_optional = validate_type_group(types.get("optional", {}), "optional", allow_empty=True)
     if duplicate := set(types_required) & set(types_optional):
