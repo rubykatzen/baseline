@@ -361,9 +361,26 @@ class GitHubConfigTest(unittest.TestCase):
 
         self.assertEqual(result.status, "failed")
         self.assertIn("missing: Bug", result.message)
-        self.assertIn("unexpected: Research", result.message)
+        self.assertNotIn("unexpected", result.message)
         self.assertIn("Task expected BLUE, got GREEN", result.message)
         self.assertIn('Task expected "A specific piece of work", got ""', result.message)
+
+    def test_type_policy_ignores_types_outside_the_policy(self):
+        policy = {
+            "required": {"Task": {"color": "BLUE", "description": "A specific piece of work"}},
+            "optional": {},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_type_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "Task", "color": "BLUE", "description": "A specific piece of work", "isEnabled": True},
+                {"name": "Book", "color": "YELLOW", "description": "A book to read", "isEnabled": True},
+                {"name": "Guitar", "color": "YELLOW", "description": "A song to learn", "isEnabled": True},
+            ],
+        )
+
+        self.assertEqual(result.status, "passed")
 
     def test_skips_type_policy_without_requesting_types(self):
         results = CHECK_GITHUB_CONFIG.evaluate_checks(

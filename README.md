@@ -67,9 +67,11 @@ automatic branch deletion, auto-merge, and the canonical label and issue type
 sets and colors. Release Please labels are allowed but optional, as is the
 Epic issue type.
 
-Issue types are set at the organization level, so this check reports the
-types visible to the repository rather than something the repository can fix
-on its own; unexpected types must be removed from the organization.
+Issue types are set at the organization level, not per repository, so unlike
+labels the check only verifies that the required and optional types are
+present and correctly defined. Other types in the organization are ignored,
+since an organization may use issue types for repositories outside Baseline's
+policy.
 
 The caller grants both permissions because a reusable workflow can reduce its
 caller's `GITHUB_TOKEN` permissions, but cannot elevate them.

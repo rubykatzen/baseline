@@ -185,14 +185,14 @@ def format_value(value):
     return json.dumps(value, separators=(",", ":"), sort_keys=True)
 
 
-def evaluate_style_check(name, noun, policy, actual, format_color=lambda color: f"#{color}"):
+def evaluate_style_check(name, noun, policy, actual, format_color=lambda color: f"#{color}", check_unexpected=True):
     required = policy["required"]
     optional = policy["optional"]
     allowed = {**required, **optional}
     problems = []
     if missing := set(required) - set(actual):
         problems.append(f"missing: {', '.join(sorted(missing))}")
-    if unexpected := set(actual) - set(allowed):
+    if check_unexpected and (unexpected := set(actual) - set(allowed)):
         problems.append(f"unexpected: {', '.join(sorted(unexpected))}")
     incorrect_colors = [
         f"{key} expected {format_color(allowed[key]['color'])}, got {format_color(actual[key]['color'])}"
@@ -245,7 +245,9 @@ def evaluate_type_check(policy, repository, request=github_issue_types):
     except (KeyError, TypeError, RuntimeError) as error:
         return CheckResult(TYPES_CHECK, "failed", f"GitHub request failed: {error}")
 
-    return evaluate_style_check(TYPES_CHECK, "types", policy, actual, format_color=lambda color: color)
+    return evaluate_style_check(
+        TYPES_CHECK, "types", policy, actual, format_color=lambda color: color, check_unexpected=False
+    )
 
 
 def evaluate_checks(
