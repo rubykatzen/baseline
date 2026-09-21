@@ -61,10 +61,17 @@ jobs:
 
 <!-- x-release-please-end -->
 
-Baseline checks the repository settings and labels against
+Baseline checks the repository settings, labels, and issue types against
 [`config/github.yml`](config/github.yml). This includes squash-only merging,
-automatic branch deletion, auto-merge, and the canonical label set and colors.
-Release Please labels are allowed but optional.
+automatic branch deletion, auto-merge, and the canonical label and issue type
+sets and colors. Release Please labels are allowed but optional, as is the
+Epic issue type.
+
+Issue types are set at the organization level, not per repository, so unlike
+labels the check only verifies that the required and optional types are
+present and correctly defined. Other types in the organization are ignored,
+since an organization may use issue types for repositories outside Baseline's
+policy.
 
 The caller grants both permissions because a reusable workflow can reduce its
 caller's `GITHUB_TOKEN` permissions, but cannot elevate them.
