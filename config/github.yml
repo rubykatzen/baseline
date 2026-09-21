@@ -45,3 +45,24 @@ labels:
     "autorelease: tagged":
       color: fbca04
       description: Tagged release
+types:
+  required:
+    Task:
+      color: BLUE
+      description: A specific piece of work
+    Bug:
+      color: RED
+      description: An unexpected problem or behavior
+    Feature:
+      color: GREEN
+      description: A request, idea, or new functionality
+  optional:
+    Epic:
+      color: PURPLE
+      description: A goal split into sub-issues
+    Research:
+      color: GREEN
+      description: An inquiry to reduce uncertainty
+    Proposal:
+      color: GRAY
+      description: "A proposal for changes to another issue, created as its native sub-issue (see #11)"

@@ -11,7 +11,9 @@ import yaml
 
 FIELD_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 COLOR_PATTERN = re.compile(r"^[0-9A-Fa-f]{6}$")
+TYPE_COLORS = frozenset({"GRAY", "BLUE", "GREEN", "YELLOW", "ORANGE", "RED", "PINK", "PURPLE"})
 LABELS_CHECK = "labels"
+TYPES_CHECK = "types"
 
 
 @dataclass(frozen=True)
@@ -59,29 +61,57 @@ def load_config(config_path):
         names = ", ".join(sorted(duplicate))
         raise ValueError(f"GitHub labels cannot be both required and optional: {names}")
 
+    types = config.get("types")
+    if not isinstance(types, dict):
+        raise ValueError("github repo config must contain a types mapping")
+    types_required = validate_type_group(types.get("required"), "required")
+    types_optional = validate_type_group(types.get("optional", {}), "optional", allow_empty=True)
+    if duplicate := set(types_required) & set(types_optional):
+        names = ", ".join(sorted(duplicate))
+        raise ValueError(f"GitHub issue types cannot be both required and optional: {names}")
+
     checks = dict(repository_config)
     checks[LABELS_CHECK] = {"required": required, "optional": optional}
+    checks[TYPES_CHECK] = {"required": types_required, "optional": types_optional}
     return checks
 
 
-def validate_label_group(group, name, allow_empty=False):
+def validate_named_group(group, kind, name, allow_empty, validate_color, color_hint, normalize_color):
     if not isinstance(group, dict) or (not group and not allow_empty):
-        raise ValueError(f"GitHub {name} labels must be a{' non-empty' if not allow_empty else ''} mapping")
+        raise ValueError(f"GitHub {name} {kind} must be a{' non-empty' if not allow_empty else ''} mapping")
 
     validated = {}
-    for label, settings in group.items():
-        if not isinstance(label, str) or not label:
-            raise ValueError(f"GitHub {name} label names must be non-empty strings")
+    for item, settings in group.items():
+        if not isinstance(item, str) or not item:
+            raise ValueError(f"GitHub {name} {kind[:-1]} names must be non-empty strings")
         if not isinstance(settings, dict) or set(settings) != {"color", "description"}:
-            raise ValueError(f"GitHub label {label} must contain only color and description")
+            raise ValueError(f"GitHub {kind[:-1]} {item} must contain only color and description")
         color = settings["color"]
-        if not isinstance(color, str) or not COLOR_PATTERN.fullmatch(color):
-            raise ValueError(f"GitHub label {label} color must be a six-digit hex value")
+        if not isinstance(color, str) or not validate_color(color):
+            raise ValueError(f"GitHub {kind[:-1]} {item} color must be {color_hint}")
         description = settings["description"]
         if not isinstance(description, str) or not description:
-            raise ValueError(f"GitHub label {label} description must be a non-empty string")
-        validated[label] = {"color": color.lower(), "description": description}
+            raise ValueError(f"GitHub {kind[:-1]} {item} description must be a non-empty string")
+        validated[item] = {"color": normalize_color(color), "description": description}
     return validated
+
+
+def validate_label_group(group, name, allow_empty=False):
+    return validate_named_group(
+        group, "labels", name, allow_empty, COLOR_PATTERN.fullmatch, "a six-digit hex value", str.lower
+    )
+
+
+def validate_type_group(group, name, allow_empty=False):
+    return validate_named_group(
+        group,
+        "types",
+        name,
+        allow_empty,
+        lambda color: color in TYPE_COLORS,
+        f"one of {sorted(TYPE_COLORS)}",
+        lambda color: color,
+    )
 
 
 def github_request(args):
@@ -131,8 +161,54 @@ def github_labels(repository):
         raise RuntimeError("GitHub returned an invalid labels response") from error
 
 
+def github_issue_types(repository):
+    owner, name = repository_name(repository)
+    query = (
+        "query($owner: String!, $name: String!) { "
+        "repository(owner: $owner, name: $name) { "
+        "issueTypes(first: 100) { nodes { name color description isEnabled } } } }"
+    )
+    response = github_request(
+        ["api", "graphql", "-f", f"query={query}", "-F", f"owner={owner}", "-F", f"name={name}"]
+    )
+    try:
+        return response["data"]["repository"]["issueTypes"]["nodes"]
+    except (KeyError, TypeError) as error:
+        raise RuntimeError("GitHub returned an invalid issue types response") from error
+
+
 def format_value(value):
     return json.dumps(value, separators=(",", ":"), sort_keys=True)
+
+
+def evaluate_style_check(name, noun, policy, actual, format_color=lambda color: f"#{color}"):
+    required = policy["required"]
+    optional = policy["optional"]
+    allowed = {**required, **optional}
+    problems = []
+    if missing := set(required) - set(actual):
+        problems.append(f"missing: {', '.join(sorted(missing))}")
+    if unexpected := set(actual) - set(allowed):
+        problems.append(f"unexpected: {', '.join(sorted(unexpected))}")
+    incorrect_colors = [
+        f"{key} expected {format_color(allowed[key]['color'])}, got {format_color(actual[key]['color'])}"
+        for key in sorted(set(actual) & set(allowed))
+        if actual[key]["color"] != allowed[key]["color"]
+    ]
+    if incorrect_colors:
+        problems.append(f"incorrect colors: {'; '.join(incorrect_colors)}")
+    incorrect_descriptions = [
+        f"{key} expected {format_value(allowed[key]['description'])}, "
+        f"got {format_value(actual[key]['description'])}"
+        for key in sorted(set(actual) & set(allowed))
+        if actual[key]["description"] != allowed[key]["description"]
+    ]
+    if incorrect_descriptions:
+        problems.append(f"incorrect descriptions: {'; '.join(incorrect_descriptions)}")
+
+    if problems:
+        return CheckResult(name, "failed", "; ".join(problems))
+    return CheckResult(name, "passed", f"{len(actual)} {noun} match policy")
 
 
 def evaluate_label_check(policy, repository, request=github_labels):
@@ -148,33 +224,24 @@ def evaluate_label_check(policy, repository, request=github_labels):
     except (KeyError, TypeError, RuntimeError) as error:
         return CheckResult(LABELS_CHECK, "failed", f"GitHub request failed: {error}")
 
-    required = policy["required"]
-    optional = policy["optional"]
-    allowed = {**required, **optional}
-    problems = []
-    if missing := set(required) - set(actual):
-        problems.append(f"missing: {', '.join(sorted(missing))}")
-    if unexpected := set(actual) - set(allowed):
-        problems.append(f"unexpected: {', '.join(sorted(unexpected))}")
-    incorrect_colors = [
-        f"{name} expected #{allowed[name]['color']}, got #{actual[name]['color']}"
-        for name in sorted(set(actual) & set(allowed))
-        if actual[name]["color"] != allowed[name]["color"]
-    ]
-    if incorrect_colors:
-        problems.append(f"incorrect colors: {'; '.join(incorrect_colors)}")
-    incorrect_descriptions = [
-        f"{name} expected {format_value(allowed[name]['description'])}, "
-        f"got {format_value(actual[name]['description'])}"
-        for name in sorted(set(actual) & set(allowed))
-        if actual[name]["description"] != allowed[name]["description"]
-    ]
-    if incorrect_descriptions:
-        problems.append(f"incorrect descriptions: {'; '.join(incorrect_descriptions)}")
+    return evaluate_style_check(LABELS_CHECK, "labels", policy, actual)
 
-    if problems:
-        return CheckResult(LABELS_CHECK, "failed", "; ".join(problems))
-    return CheckResult(LABELS_CHECK, "passed", f"{len(actual)} labels match policy")
+
+def evaluate_type_check(policy, repository, request=github_issue_types):
+    try:
+        types = request(repository)
+        actual = {
+            issue_type["name"]: {
+                "color": issue_type["color"],
+                "description": issue_type.get("description") or "",
+            }
+            for issue_type in types
+            if issue_type.get("isEnabled")
+        }
+    except (KeyError, TypeError, RuntimeError) as error:
+        return CheckResult(TYPES_CHECK, "failed", f"GitHub request failed: {error}")
+
+    return evaluate_style_check(TYPES_CHECK, "types", policy, actual, format_color=lambda color: color)
 
 
 def evaluate_checks(
@@ -183,13 +250,16 @@ def evaluate_checks(
     skipped=(),
     request=github_repository,
     labels_request=github_labels,
+    types_request=github_issue_types,
 ):
     skipped = set(skipped)
     if unknown := skipped - set(checks):
         names = ", ".join(sorted(unknown))
         raise ValueError(f"Unknown skipped GitHub config checks: {names}")
 
-    active_fields = [field for field in checks if field != LABELS_CHECK and field not in skipped]
+    active_fields = [
+        field for field in checks if field not in (LABELS_CHECK, TYPES_CHECK) and field not in skipped
+    ]
     payload = None
     request_error = None
     if active_fields:
@@ -206,6 +276,10 @@ def evaluate_checks(
 
         if field == LABELS_CHECK:
             results.append(evaluate_label_check(expected, repository, labels_request))
+            continue
+
+        if field == TYPES_CHECK:
+            results.append(evaluate_type_check(expected, repository, types_request))
             continue
 
         if request_error:

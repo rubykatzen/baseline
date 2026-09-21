@@ -35,6 +35,7 @@ class GitHubConfigTest(unittest.TestCase):
                 "squashMergeCommitMessage",
                 "squashMergeCommitTitle",
                 "labels",
+                "types",
             },
         )
         self.assertIn("deps", checks["labels"]["required"])
@@ -43,6 +44,9 @@ class GitHubConfigTest(unittest.TestCase):
             checks["labels"]["required"]["deps"]["description"],
             "Pull requests that update a dependency file",
         )
+        self.assertIn("Task", checks["types"]["required"])
+        self.assertIn("Epic", checks["types"]["optional"])
+        self.assertEqual(checks["types"]["required"]["Task"]["color"], "BLUE")
 
     def test_shared_workflow_grants_permissions_for_repository_and_label_checks(self):
         with open(BASELINE_ROOT / ".github" / "workflows" / "github-shared.yml") as workflow_file:
@@ -89,6 +93,55 @@ class GitHubConfigTest(unittest.TestCase):
             config.flush()
 
             with self.assertRaisesRegex(ValueError, "color and description"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
+    def test_rejects_missing_types_mapping(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write(
+                "config:\n  hasWikiEnabled: false\n"
+                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
+            )
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "must contain a types mapping"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
+    def test_rejects_invalid_type_color(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write(
+                "config:\n  hasWikiEnabled: false\n"
+                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
+                "types:\n  required:\n    Task:\n      color: blue\n      description: A specific piece of work\n"
+            )
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "one of"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
+    def test_rejects_missing_type_description(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write(
+                "config:\n  hasWikiEnabled: false\n"
+                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
+                "types:\n  required:\n    Task:\n      color: BLUE\n"
+            )
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "color and description"):
+                CHECK_GITHUB_CONFIG.load_config(config.name)
+
+    def test_rejects_type_that_is_both_required_and_optional(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml") as config:
+            config.write(
+                "config:\n  hasWikiEnabled: false\n"
+                "labels:\n  required:\n    deps:\n      color: 0366d6\n      description: Dependency updates\n"
+                "types:\n"
+                "  required:\n    Task:\n      color: BLUE\n      description: A specific piece of work\n"
+                "  optional:\n    Task:\n      color: BLUE\n      description: A specific piece of work\n"
+            )
+            config.flush()
+
+            with self.assertRaisesRegex(ValueError, "cannot be both required and optional"):
                 CHECK_GITHUB_CONFIG.load_config(config.name)
 
     def test_parses_json_skip(self):
@@ -217,6 +270,92 @@ class GitHubConfigTest(unittest.TestCase):
             {"labels"},
             request=lambda _repository, _fields: {},
             labels_request=lambda _repository: self.fail("skipped check made an API request"),
+        )
+
+        self.assertEqual(results[0].status, "skipped")
+
+    def test_type_policy_accepts_required_and_present_optional_types(self):
+        policy = {
+            "required": {"Task": {"color": "BLUE", "description": "A specific piece of work"}},
+            "optional": {"Epic": {"color": "PURPLE", "description": "A goal split into sub-issues"}},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_type_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "Task", "color": "BLUE", "description": "A specific piece of work", "isEnabled": True},
+                {
+                    "name": "Epic",
+                    "color": "PURPLE",
+                    "description": "A goal split into sub-issues",
+                    "isEnabled": True,
+                },
+            ],
+        )
+
+        self.assertEqual(result.status, "passed")
+
+    def test_type_policy_accepts_absent_optional_types(self):
+        policy = {
+            "required": {"Task": {"color": "BLUE", "description": "A specific piece of work"}},
+            "optional": {"Epic": {"color": "PURPLE", "description": "A goal split into sub-issues"}},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_type_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "Task", "color": "BLUE", "description": "A specific piece of work", "isEnabled": True}
+            ],
+        )
+
+        self.assertEqual(result.status, "passed")
+
+    def test_type_policy_ignores_disabled_types(self):
+        policy = {
+            "required": {"Task": {"color": "BLUE", "description": "A specific piece of work"}},
+            "optional": {},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_type_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "Task", "color": "BLUE", "description": "A specific piece of work", "isEnabled": True},
+                {"name": "Idea", "color": "ORANGE", "description": "A product idea", "isEnabled": False},
+            ],
+        )
+
+        self.assertEqual(result.status, "passed")
+
+    def test_type_policy_reports_all_differences(self):
+        policy = {
+            "required": {
+                "Task": {"color": "BLUE", "description": "A specific piece of work"},
+                "Bug": {"color": "RED", "description": "An unexpected problem or behavior"},
+            },
+            "optional": {"Epic": {"color": "PURPLE", "description": "A goal split into sub-issues"}},
+        }
+        result = CHECK_GITHUB_CONFIG.evaluate_type_check(
+            policy,
+            "owner/repo",
+            request=lambda _repository: [
+                {"name": "Task", "color": "GREEN", "description": None, "isEnabled": True},
+                {"name": "Research", "color": "GREEN", "description": "An inquiry", "isEnabled": True},
+            ],
+        )
+
+        self.assertEqual(result.status, "failed")
+        self.assertIn("missing: Bug", result.message)
+        self.assertIn("unexpected: Research", result.message)
+        self.assertIn("Task expected BLUE, got GREEN", result.message)
+        self.assertIn('Task expected "A specific piece of work", got ""', result.message)
+
+    def test_skips_type_policy_without_requesting_types(self):
+        results = CHECK_GITHUB_CONFIG.evaluate_checks(
+            {"types": {"required": {}, "optional": {}}},
+            "owner/repo",
+            {"types"},
+            request=lambda _repository, _fields: {},
+            types_request=lambda _repository: self.fail("skipped check made an API request"),
         )
 
         self.assertEqual(results[0].status, "skipped")
