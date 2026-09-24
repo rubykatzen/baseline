@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/rubykatzen/baseline/compare/v0.18.2...v0.19.0) (2026-09-24)
+
+
+### Features
+
+* check GitHub issue types against baseline policy ([#207](https://github.com/rubykatzen/baseline/issues/207)) ([5b1edcc](https://github.com/rubykatzen/baseline/commit/5b1edcc801034cee91f47e36e4b89072e576e42c))
+
 ## [0.18.2](https://github.com/rubykatzen/baseline/compare/v0.18.1...v0.18.2) (2026-09-12)
 
 
