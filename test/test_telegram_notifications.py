@@ -2,7 +2,7 @@ import importlib.util
 import os
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -75,7 +75,7 @@ class TelegramPullRequestMessageTest(unittest.TestCase):
         message = PR_TELEGRAM.format_digest(
             "owner/repo",
             [draft, self.pull_request | {"createdAt": "2026-08-10T12:00:00Z"}],
-            now=datetime(2026, 8, 12, 12, tzinfo=timezone.utc),
+            now=datetime(2026, 8, 12, 12, tzinfo=UTC),
         )
 
         self.assertIn("1 open PR", message)
