@@ -3,7 +3,7 @@ import json
 import os
 import subprocess
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 DIGEST_PR_LIMIT = 10
 MARKDOWN_V2_SPECIAL_CHARACTERS = frozenset("_*[]()~`>#+-=|{}.!\\")
@@ -64,7 +64,7 @@ def format_digest(repository, pull_requests, now=None):
     if not pull_requests:
         return ""
 
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     count = len(pull_requests)
     header = f"*{escape_markdown(repository)}* • {count} open {'PR' if count == 1 else 'PRs'}"
     lines = []
